@@ -21,14 +21,14 @@ class PdfImages:
     def show_images(self, next_image_delay: int = 2):
         for image_index, image in enumerate(self.pdf_images):
             image_np = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
-            cv2.imshow(f'Page: {image_index + 1}', image_np)
+            cv2.imshow(f"Page: {image_index + 1}", image_np)
             cv2.waitKey(next_image_delay * 1000)
             cv2.destroyAllWindows()
 
     def save_images(self):
         makedirs(IMAGES_ROOT_PATH, exist_ok=True)
         for image_index, image in enumerate(self.pdf_images):
-            image_name = f'{self.pdf_features.file_name}_{image_index}.jpg'
+            image_name = f"{self.pdf_features.file_name}_{image_index}.jpg"
             image.save(join(IMAGES_ROOT_PATH, image_name))
 
     @staticmethod

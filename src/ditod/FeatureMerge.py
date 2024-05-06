@@ -1,17 +1,20 @@
 import torch
 from torch import nn
 
+
 class FeatureMerge(nn.Module):
     """Multimodal feature fusion used in VSR."""
-    def __init__(self,
-                 feature_names,
-                 visual_dim,
-                 semantic_dim,
-                 merge_type='Sum',
-                 dropout_ratio=0.1,
-                 with_extra_fc=True,
-                 shortcut=False
-                 ):
+
+    def __init__(
+        self,
+        feature_names,
+        visual_dim,
+        semantic_dim,
+        merge_type="Sum",
+        dropout_ratio=0.1,
+        with_extra_fc=True,
+        shortcut=False,
+    ):
         """Multimodal feature merge used in VSR.
         Args:
             visual_dim (list): the dim of visual features, e.g. [256]
@@ -31,25 +34,25 @@ class FeatureMerge(nn.Module):
         self.with_extra_fc = with_extra_fc
         self.shortcut = shortcut
         self.relu = nn.ReLU(inplace=True)
-        
-        if self.merge_type == 'Sum':
+
+        if self.merge_type == "Sum":
             assert len(self.visual_dim) == len(self.textual_dim)
-        elif self.merge_type == 'Concat':
+        elif self.merge_type == "Concat":
             assert len(self.visual_dim) == len(self.textual_dim)
             # self.concat_proj = nn.ModuleList()
-            
+
             self.vis_proj = nn.ModuleList()
             self.text_proj = nn.ModuleList()
             self.alpha_proj = nn.ModuleList()
-            
+
             for idx in range(len(self.visual_dim)):
                 # self.concat_proj.append(nn.Conv2d(self.visual_dim[idx] + self.textual_dim[idx], self.visual_dim[idx], kernel_size = (1,1), stride=1))
                 if self.with_extra_fc:
                     self.vis_proj.append(nn.Linear(self.visual_dim[idx], self.visual_dim[idx]))
                     self.text_proj.append(nn.Linear(self.textual_dim[idx], self.textual_dim[idx]))
                 self.alpha_proj.append(nn.Linear(self.visual_dim[idx] + self.textual_dim[idx], self.visual_dim[idx]))
-            
-        elif self.merge_type == 'Weighted':
+
+        elif self.merge_type == "Weighted":
             assert len(self.visual_dim) == len(self.textual_dim)
             self.total_num = len(self.visual_dim)
 
@@ -76,9 +79,8 @@ class FeatureMerge(nn.Module):
         # visual context
         # self.visual_ap = nn.AdaptiveAvgPool2d((1, 1))
 
-
     def forward(self, visual_feat=None, textual_feat=None):
-        """ Forward computation
+        """Forward computation
         Args:
             visual_feat (list(Tensor)): visual feature maps, in shape of [L x C x H x W] x B
             textual_feat (Tensor): textual feature maps, in shape of B x L x C
@@ -89,10 +91,10 @@ class FeatureMerge(nn.Module):
 
         # feature merge
         merged_feat = {}
-        if self.merge_type == 'Sum':
+        if self.merge_type == "Sum":
             for name in self.feature_names:
                 merged_feat[name] = visual_feat[name] + textual_feat[name]
-        elif self.merge_type == 'Concat':
+        elif self.merge_type == "Concat":
             for idx, name in enumerate(self.feature_names):
                 # merged_feat[name] = self.concat_proj[idx](torch.cat((visual_feat[name],textual_feat[name]),1))
                 per_vis = visual_feat[name].permute(0, 2, 3, 1)
@@ -101,7 +103,7 @@ class FeatureMerge(nn.Module):
                     per_vis = self.relu(self.vis_proj[idx](per_vis))
                     per_text = self.relu(self.text_proj[idx](per_text))
                 x_sentence = self.alpha_proj[idx](torch.cat((per_vis, per_text), -1))
-                x_sentence = x_sentence.permute(0,3,1,2).contiguous()
+                x_sentence = x_sentence.permute(0, 3, 1, 2).contiguous()
                 merged_feat[name] = x_sentence
         else:
             assert self.total_num == len(visual_feat) or self.total_num == 1
@@ -121,7 +123,7 @@ class FeatureMerge(nn.Module):
                     # selection
                     x_sentence = alpha * per_vis + (1 - alpha) * per_text
 
-                x_sentence = x_sentence.permute(0,3,1,2).contiguous()
+                x_sentence = x_sentence.permute(0, 3, 1, 2).contiguous()
                 merged_feat[name] = x_sentence
 
         return merged_feat

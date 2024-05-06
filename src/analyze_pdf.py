@@ -7,19 +7,16 @@ from typing import AnyStr
 
 from data_model.SegmentBox import SegmentBox
 from ditod.VGTTrainer import VGTTrainer
-from get_json_annotations import get_annotations
+
 from get_most_probable_pdf_segments import get_most_probable_pdf_segments
 from src.PdfImages import PdfImages
 from src.configuration import service_logger, JSON_TEST_FILE_PATH, IMAGES_ROOT_PATH
 from src.create_word_grid import create_word_grid, remove_word_grids
 
-from detectron2.data import DatasetCatalog
+
 from detectron2.checkpoint import DetectionCheckpointer
-from detectron2.config import get_cfg
-from detectron2.engine import default_argument_parser, default_setup, launch
 from detectron2.data.datasets import register_coco_instances
 from detectron2.data import DatasetCatalog
-
 
 with open("model_configuration/doclaynet_configuration.pickle", mode="rb") as file:
     configuration = pickle.load(file)
@@ -47,12 +44,7 @@ def register_data():
     except KeyError:
         pass
 
-    register_coco_instances(
-        "predict_data",
-        {},
-        JSON_TEST_FILE_PATH,
-        IMAGES_ROOT_PATH
-    )
+    register_coco_instances("predict_data", {}, JSON_TEST_FILE_PATH, IMAGES_ROOT_PATH)
 
 
 def predict_doclaynet():
@@ -62,10 +54,9 @@ def predict_doclaynet():
 
 def analyze_pdf(file: AnyStr):
     pdf_path = pdf_content_to_pdf_path(file)
-    service_logger.info(f'Creating PDF images')
+    service_logger.info(f"Creating PDF images")
     pdf_images_list: list[PdfImages] = [PdfImages.from_pdf_path(pdf_path)]
     create_word_grid([pdf_images.pdf_features for pdf_images in pdf_images_list])
-    get_annotations(pdf_images_list)
     predict_doclaynet()
     remove_files()
     predicted_segments = get_most_probable_pdf_segments("doclaynet", pdf_images_list, False)

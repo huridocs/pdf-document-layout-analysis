@@ -21,7 +21,7 @@ class SegmentBox(BaseModel):
             "height": self.height,
             "page_number": self.page_number,
             "text": self.text,
-            "type": DOCLAYNET_TYPE_BY_ID[self.type] if self.type in DOCLAYNET_TYPE_BY_ID else "Unknown"
+            "type": DOCLAYNET_TYPE_BY_ID[self.type] if self.type in DOCLAYNET_TYPE_BY_ID else "Unknown",
         }
 
     @staticmethod
@@ -33,5 +33,5 @@ class SegmentBox(BaseModel):
             height=pdf_segment.bounding_box.height,
             page_number=pdf_segment.page_number,
             text=pdf_segment.text_content,
-            type=pdf_segment.segment_type if type(pdf_segment.segment_type) is int else pdf_segment.segment_type.get_index()
+            type=pdf_segment.segment_type if type(pdf_segment.segment_type) is int else pdf_segment.segment_type.get_index(),
         )

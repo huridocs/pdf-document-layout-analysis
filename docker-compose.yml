@@ -1,15 +1,15 @@
 version: "3.8"
 services:
-  pdf_extractor:
-    container_name: pdf_extractor
-    entrypoint: [ "gunicorn", "-k", "uvicorn.workers.UvicornWorker", "--chdir", "./src", "app:app", "--bind", "0.0.0.0:5059", "--timeout", "300"]
+  pdf-document-layout-analysis:
+    container_name: pdf-document-layout-analysis
+    entrypoint: [ "gunicorn", "-k", "uvicorn.workers.UvicornWorker", "--chdir", "./src", "app:app", "--bind", "0.0.0.0:5060", "--timeout", "300"]
     init: true
     restart: unless-stopped
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "5059:5059"
+      - "5060:5060"
     deploy:
       resources:
         reservations:

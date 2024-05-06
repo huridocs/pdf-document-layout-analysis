@@ -19,10 +19,10 @@ RUN pip install --upgrade pip
 RUN pip --default-timeout=1000 install -r requirements.txt
 
 WORKDIR /app
-RUN git clone https://github.com/facebookresearch/detectron2
-RUN cd detectron2 && python setup.py build develop
+RUN cd src; git clone https://github.com/facebookresearch/detectron2
+RUN cd src/detectron2; python setup.py build develop
 
-COPY ./src ./src
+COPY ./src/. ./src
 COPY ./models/. ./models/
 RUN python src/download_models.py
 

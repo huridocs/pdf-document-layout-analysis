@@ -14,12 +14,14 @@ from data_model.Prediction import Prediction
 def get_prediction_from_annotation(annotation, images_names, vgt_predictions_dict):
     pdf_name = images_names[annotation["image_id"]][:-4]
     category_id = annotation["category_id"]
-    bounding_box = Rectangle.from_width_height(left=int(annotation["bbox"][0]), top=int(annotation["bbox"][1]),
-                                               width=int(annotation["bbox"][2]), height=int(annotation["bbox"][3]))
+    bounding_box = Rectangle.from_width_height(
+        left=int(annotation["bbox"][0]),
+        top=int(annotation["bbox"][1]),
+        width=int(annotation["bbox"][2]),
+        height=int(annotation["bbox"][3]),
+    )
     prediction = Prediction(
-        bounding_box=bounding_box,
-        category_id=category_id,
-        score=round(float(annotation['score']) * 100, 2)
+        bounding_box=bounding_box, category_id=category_id, score=round(float(annotation["score"]) * 100, 2)
     )
     vgt_predictions_dict.setdefault(pdf_name, list()).append(prediction)
 
@@ -45,8 +47,7 @@ def find_best_prediction_for_token(page_pdf_name, token, vgt_predictions_dict, m
     best_score: float = 0
     most_probable_prediction: Prediction | None = None
     for prediction in vgt_predictions_dict[page_pdf_name]:
-        if prediction.score > best_score and prediction.bounding_box.get_intersection_percentage(
-                token.bounding_box):
+        if prediction.score > best_score and prediction.bounding_box.get_intersection_percentage(token.bounding_box):
             best_score = prediction.score
             most_probable_prediction = prediction
             if best_score >= 99:
@@ -78,7 +79,7 @@ def get_most_probable_pdf_segments(model_name: str, pdf_images_list: list[PdfIma
     pdf_features_list: list[PdfFeatures] = [pdf_images.pdf_features for pdf_images in pdf_images_list]
     for pdf_features in pdf_features_list:
         for page in pdf_features.pages:
-            page_pdf_name = pdf_features.file_name + "_" + str(page.page_number-1)
+            page_pdf_name = pdf_features.file_name + "_" + str(page.page_number - 1)
             page_segments = get_pdf_segments_for_page(page, pdf_features.file_name, page_pdf_name, vgt_predictions_dict)
             most_probable_pdf_segments.extend(page_segments)
     if save_output:

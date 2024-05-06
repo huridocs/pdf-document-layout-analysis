@@ -117,7 +117,7 @@ class DetrDatasetMapper:
         self.cfg = cfg
 
         logger = logging.getLogger("detectron2")
-            
+
     def __call__(self, dataset_dict):
         """
         Args:
@@ -160,22 +160,22 @@ class DetrDatasetMapper:
                 )
 
         image_shape = image.shape[:2]  # h, w
-        
+
         # Pytorch's dataloader is efficient on torch.Tensor due to shared-memory,
         # but not efficient on large generic data structures due to the use of pickle & mp.Queue.
         # Therefore it's important to use torch.Tensor.
         dataset_dict["image"] = torch.as_tensor(np.ascontiguousarray(image.transpose(2, 0, 1)))
-        
-        ## 产出 text grid 
+
+        ## 产出 text grid
         bbox = []
         for bbox_per_subword in bbox_subword_list:
             text_word = {}
-            text_word['bbox'] = bbox_per_subword.tolist()
-            text_word['bbox_mode'] = BoxMode.XYWH_ABS
+            text_word["bbox"] = bbox_per_subword.tolist()
+            text_word["bbox_mode"] = BoxMode.XYWH_ABS
             utils.transform_instance_annotations(text_word, transforms, image_shape)
-            bbox.append(text_word['bbox'])
-                
-        dataset_dict["input_ids"] = input_ids 
+            bbox.append(text_word["bbox"])
+
+        dataset_dict["input_ids"] = input_ids
         dataset_dict["bbox"] = bbox
 
         if not self.is_train:
@@ -197,6 +197,6 @@ class DetrDatasetMapper:
                 if obj.get("iscrowd", 0) == 0
             ]
             instances = utils.annotations_to_instances(annos, image_shape)
-            dataset_dict["instances"] = utils.filter_empty_instances(instances)           
+            dataset_dict["instances"] = utils.filter_empty_instances(instances)
 
         return dataset_dict

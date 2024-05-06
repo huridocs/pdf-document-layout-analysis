@@ -29,7 +29,7 @@ def get_words_positions(text: str, rectangle: Rectangle):
     words_bboxes[-1].right = words_bboxes[-1].left
 
     for letter in text:
-        if letter == ' ':
+        if letter == " ":
             left = words_bboxes[-1].right + width_per_letter
             words_bboxes.append(Rectangle(left, words_bboxes[-1].top, left + 5, words_bboxes[-1].bottom))
             words_bboxes[-1].width = 0
@@ -44,12 +44,12 @@ def get_words_positions(text: str, rectangle: Rectangle):
 
 def get_subwords_positions(word: str, rectangle: Rectangle):
     width_per_letter = rectangle.width / len(word)
-    word_tokens = [x.replace('#', '') for x in tokenizer.tokenize(word)]
+    word_tokens = [x.replace("#", "") for x in tokenizer.tokenize(word)]
 
     if not word_tokens:
         return [], []
 
-    ids = [x[-2] for x in tokenizer(word_tokens)['input_ids']]
+    ids = [x[-2] for x in tokenizer(word_tokens)["input_ids"]]
 
     right = rectangle.left + len(word_tokens[0]) * width_per_letter
     bboxes = [Rectangle(rectangle.left, rectangle.top, right, rectangle.bottom)]
@@ -72,10 +72,12 @@ def get_grid_words_dict(tokens: list[PdfToken]):
             inputs_ids += ids
             bbox_subword_list += [rectangle_to_bbox(r) for r in subwords_bboxes]
 
-    return {'input_ids': np.array(inputs_ids),
-            'bbox_subword_list': np.array(bbox_subword_list),
-            'texts': texts,
-            'bbox_texts_list': np.array(bbox_texts_list)}
+    return {
+        "input_ids": np.array(inputs_ids),
+        "bbox_subword_list": np.array(bbox_subword_list),
+        "texts": texts,
+        "bbox_texts_list": np.array(bbox_texts_list),
+    }
 
 
 def create_word_grid(pdf_features_list: list[PdfFeatures]):
@@ -84,10 +86,10 @@ def create_word_grid(pdf_features_list: list[PdfFeatures]):
     for pdf_features in pdf_features_list:
         for page in pdf_features.pages:
             image_id = f"{pdf_features.file_name}_{page.page_number - 1}"
-            if exists(join(WORD_GRIDS_PATH, image_id + '.pkl')):
+            if exists(join(WORD_GRIDS_PATH, image_id + ".pkl")):
                 continue
             grid_words_dict = get_grid_words_dict(page.tokens)
-            with open(join(WORD_GRIDS_PATH, f'{image_id}.pkl'), mode="wb") as file:
+            with open(join(WORD_GRIDS_PATH, f"{image_id}.pkl"), mode="wb") as file:
                 pickle.dump(grid_words_dict, file)
 
 

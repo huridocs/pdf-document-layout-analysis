@@ -6,12 +6,12 @@ from fastapi import FastAPI, HTTPException, UploadFile, File
 from configuration import service_logger
 from src.analyze_pdf import analyze_pdf
 
-service_logger.info(f'Is PyTorch using GPU: {torch.cuda.is_available()}')
+service_logger.info(f"Is PyTorch using GPU: {torch.cuda.is_available()}")
 
 app = FastAPI()
 
 
-@app.get("/info")
+@app.get("/")
 async def info():
     return sys.version
 
