@@ -7,6 +7,7 @@ from typing import AnyStr
 
 from data_model.SegmentBox import SegmentBox
 from ditod.VGTTrainer import VGTTrainer
+from get_json_annotations import get_annotations
 
 from get_most_probable_pdf_segments import get_most_probable_pdf_segments
 from src.PdfImages import PdfImages
@@ -57,6 +58,7 @@ def analyze_pdf(file: AnyStr):
     service_logger.info(f"Creating PDF images")
     pdf_images_list: list[PdfImages] = [PdfImages.from_pdf_path(pdf_path)]
     create_word_grid([pdf_images.pdf_features for pdf_images in pdf_images_list])
+    get_annotations(pdf_images_list)
     predict_doclaynet()
     remove_files()
     predicted_segments = get_most_probable_pdf_segments("doclaynet", pdf_images_list, False)
