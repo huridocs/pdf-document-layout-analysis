@@ -1,10 +1,8 @@
-from dataclasses import dataclass
-
 from pdf_features.Rectangle import Rectangle
 
 
-@dataclass
 class Prediction:
-    bounding_box: Rectangle
-    category_id: int
-    score: float
+    def __init__(self, bounding_box: Rectangle, category_id: int, score: float):
+        self.bounding_box: Rectangle = bounding_box
+        self.category_id: int = category_id
+        self.score: float = score
