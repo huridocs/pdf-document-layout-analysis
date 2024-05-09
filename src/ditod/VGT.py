@@ -19,19 +19,17 @@ from .Wordnn_embedding import WordnnEmbedding
 
 __all__ = ["VGT"]
 
-
 def torch_memory(device, tag=""):
     # Checks and prints GPU memory
-    print(tag, f"{torch.cuda.memory_allocated(device)/1024/1024:.2f} MB USED")
-    print(tag, f"{torch.cuda.memory_reserved(device)/1024/1024:.2f} MB RESERVED")
-    print(tag, f"{torch.cuda.max_memory_allocated(device)/1024/1024:.2f} MB USED MAX")
-    print(tag, f"{torch.cuda.max_memory_reserved(device)/1024/1024:.2f} MB RESERVED MAX")
-    print("")
-
-
+    print(tag, f'{torch.cuda.memory_allocated(device)/1024/1024:.2f} MB USED')
+    print(tag, f'{torch.cuda.memory_reserved(device)/1024/1024:.2f} MB RESERVED')
+    print(tag, f'{torch.cuda.max_memory_allocated(device)/1024/1024:.2f} MB USED MAX')
+    print(tag, f'{torch.cuda.max_memory_reserved(device)/1024/1024:.2f} MB RESERVED MAX')
+    print('') 
+                    
 @META_ARCH_REGISTRY.register()
 class VGT(GeneralizedRCNN):
-
+    
     @configurable
     def __init__(
         self,
@@ -39,7 +37,7 @@ class VGT(GeneralizedRCNN):
         vocab_size: int = 30552,
         hidden_size: int = 768,
         embedding_dim: int = 64,
-        bros_embedding_path: str = "",
+        bros_embedding_path: str = '',
         use_pretrain_weight: bool = True,
         use_UNK_text: bool = False,
         **kwargs,
@@ -47,10 +45,8 @@ class VGT(GeneralizedRCNN):
         super().__init__(**kwargs)
         self.vocab_size = vocab_size
         self.embedding_dim = embedding_dim
-        self.Wordgrid_embedding = WordnnEmbedding(
-            vocab_size, hidden_size, embedding_dim, bros_embedding_path, use_pretrain_weight, use_UNK_text
-        )
-
+        self.Wordgrid_embedding = WordnnEmbedding(vocab_size, hidden_size, embedding_dim, \
+                                                    bros_embedding_path, use_pretrain_weight, use_UNK_text)
     @classmethod
     def from_config(cls, cfg):
         ret = super().from_config(cfg)
@@ -65,7 +61,7 @@ class VGT(GeneralizedRCNN):
             }
         )
         return ret
-
+    
     def forward(self, batched_inputs: List[Dict[str, torch.Tensor]]):
         """
         Args:
@@ -93,7 +89,7 @@ class VGT(GeneralizedRCNN):
             return self.inference(batched_inputs)
 
         images = self.preprocess_image(batched_inputs)
-
+        
         if "instances" in batched_inputs[0]:
             gt_instances = [x["instances"].to(self.device) for x in batched_inputs]
         else:
@@ -108,7 +104,7 @@ class VGT(GeneralizedRCNN):
             assert "proposals" in batched_inputs[0]
             proposals = [x["proposals"].to(self.device) for x in batched_inputs]
             proposal_losses = {}
-
+            
         _, detector_losses = self.roi_heads(images, features, proposals, gt_instances)
         if self.vis_period > 0:
             storage = get_event_storage()
@@ -118,9 +114,10 @@ class VGT(GeneralizedRCNN):
         losses = {}
         losses.update(detector_losses)
         losses.update(proposal_losses)
-
+        
         return losses
 
+    
     def inference(
         self,
         batched_inputs: List[Dict[str, torch.Tensor]],
@@ -147,7 +144,7 @@ class VGT(GeneralizedRCNN):
         assert not self.training
 
         images = self.preprocess_image(batched_inputs)
-
+        
         chargrid = self.Wordgrid_embedding(images.tensor, batched_inputs)
         features = self.backbone(images.tensor, chargrid)
 
@@ -162,7 +159,7 @@ class VGT(GeneralizedRCNN):
         else:
             detected_instances = [x.to(self.device) for x in detected_instances]
             results = self.roi_heads.forward_with_given_boxes(features, detected_instances)
-
+        
         if do_postprocess:
             assert not torch.jit.is_scripting(), "Scripting is not supported for postprocess."
             return GeneralizedRCNN._postprocess(results, batched_inputs, images.image_sizes)
