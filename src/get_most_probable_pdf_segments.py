@@ -6,6 +6,7 @@ from paragraph_extraction_trainer.PdfSegment import PdfSegment
 from pdf_features.PdfFeatures import PdfFeatures
 from pdf_features.PdfToken import PdfToken
 from pdf_features.Rectangle import Rectangle
+from pdf_token_type_labels.TokenType import TokenType
 from PdfImages import PdfImages
 from configuration import ROOT_PATH
 from data_model.Prediction import Prediction
@@ -18,10 +19,13 @@ def get_prediction_from_annotation(annotation, images_names, vgt_predictions_dic
         left=int(annotation["bbox"][0]),
         top=int(annotation["bbox"][1]),
         width=int(annotation["bbox"][2]),
-        height=int(annotation["bbox"][3]),
+        height=int(annotation["bbox"][3])
     )
+
     prediction = Prediction(
-        bounding_box=bounding_box, category_id=category_id, score=round(float(annotation["score"]) * 100, 2)
+        bounding_box=bounding_box,
+        category_id=category_id,
+        score=round(float(annotation['score']) * 100, 2)
     )
     vgt_predictions_dict.setdefault(pdf_name, list()).append(prediction)
 
@@ -67,7 +71,7 @@ def get_pdf_segments_for_page(page, pdf_name, page_pdf_name, vgt_predictions_dic
 
     for prediction, tokens in most_probable_tokens_by_predictions.items():
         new_segment = PdfSegment.from_pdf_tokens(tokens, pdf_name)
-        new_segment.segment_type = prediction.category_id
+        new_segment.segment_type = TokenType.from_index(prediction.category_id-1)
         most_probable_pdf_segments_for_page.append(new_segment)
 
     return most_probable_pdf_segments_for_page
