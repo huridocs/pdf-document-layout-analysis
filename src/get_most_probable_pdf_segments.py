@@ -8,7 +8,7 @@ from pdf_features.PdfToken import PdfToken
 from pdf_features.Rectangle import Rectangle
 from pdf_token_type_labels.TokenType import TokenType
 from PdfImages import PdfImages
-from configuration import ROOT_PATH
+from configuration import ROOT_PATH, DOCLAYNET_TYPE_BY_ID
 from data_model.Prediction import Prediction
 
 
@@ -73,7 +73,7 @@ def get_pdf_segments_for_page(page, pdf_name, page_pdf_name, vgt_predictions_dic
 
     for prediction, tokens in most_probable_tokens_by_predictions.items():
         new_segment = PdfSegment.from_pdf_tokens(tokens, pdf_name)
-        new_segment.segment_type = TokenType.from_index(prediction.category_id-1)
+        new_segment.segment_type = TokenType.from_text(DOCLAYNET_TYPE_BY_ID[prediction.category_id])
         most_probable_pdf_segments_for_page.append(new_segment)
 
     return most_probable_pdf_segments_for_page
