@@ -36,8 +36,11 @@ class PdfImages:
         shutil.rmtree(IMAGES_ROOT_PATH)
 
     @staticmethod
-    def from_pdf_path(pdf_path: str):
+    def from_pdf_path(pdf_path: str, pdf_name: str = ""):
         pdf_features: PdfFeatures = PdfFeatures.from_pdf_path(pdf_path)
-        pdf_features.file_name = Path(pdf_path).parent.name
+        if pdf_name:
+            pdf_features.file_name = pdf_name
+        else:
+            pdf_features.file_name = Path(pdf_path).parent.name
         pdf_images = convert_from_path(pdf_path, dpi=72)
         return PdfImages(pdf_features, pdf_images)

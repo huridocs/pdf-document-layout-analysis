@@ -67,6 +67,8 @@ def get_pdf_segments_for_page(page, pdf_name, page_pdf_name, vgt_predictions_dic
     most_probable_pdf_segments_for_page: list[PdfSegment] = []
     most_probable_tokens_by_predictions: dict[Prediction, list[PdfToken]] = {}
     for token in page.tokens:
+        if not page_pdf_name in vgt_predictions_dict:
+            continue
         find_best_prediction_for_token(page_pdf_name, token, vgt_predictions_dict, most_probable_tokens_by_predictions)
 
     for prediction, tokens in most_probable_tokens_by_predictions.items():
