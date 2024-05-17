@@ -23,11 +23,11 @@ remove_docker_images:
 
 start:
 	mkdir -p ./models
-	docker compose up --build
+	docker compose -f docker-compose-gpu.yml up --build
 
 start_no_gpu:
 	mkdir -p ./models
-	docker compose -f docker-compose-no-gpu.yml up --build
+	docker compose up --build
 
 stop:
 	docker compose stop
