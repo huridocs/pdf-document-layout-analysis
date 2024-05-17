@@ -10,10 +10,3 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5060:5060"
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [ gpu ]

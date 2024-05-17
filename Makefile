@@ -25,5 +25,9 @@ start:
 	mkdir -p ./models
 	docker compose up --build
 
+start_no_gpu:
+    mkdir -p ./models
+    docker compose -f docker-compose-no-gpu.yml up --build
+
 stop:
 	docker compose stop
