@@ -1,4 +1,5 @@
 from paragraph_extraction_trainer.PdfSegment import PdfSegment
+from pdf_token_type_labels.TokenType import TokenType
 from pydantic import BaseModel
 
 from configuration import DOCLAYNET_TYPE_BY_ID
@@ -21,7 +22,7 @@ class SegmentBox(BaseModel):
             "height": self.height,
             "page_number": self.page_number,
             "text": self.text,
-            "type": DOCLAYNET_TYPE_BY_ID[self.type] if self.type in DOCLAYNET_TYPE_BY_ID else "Unknown",
+            "type": TokenType.from_index(self.type).name
         }
 
     @staticmethod
