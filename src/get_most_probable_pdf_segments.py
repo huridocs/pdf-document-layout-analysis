@@ -63,17 +63,50 @@ def find_best_prediction_for_token(page_pdf_name, token, vgt_predictions_dict, m
         most_probable_tokens_by_predictions.setdefault(dummy_prediction, list()).append(token)
 
 
+def merge_colliding_predictions(predictions: list[Prediction]):
+    while True:
+        new_predictions, merged = [], False
+        while predictions:
+            p1 = predictions.pop(0)
+            to_merge = [p for p in predictions if p1.bounding_box.get_intersection_percentage(p.bounding_box) > 0]
+            for prediction in to_merge:
+                predictions.remove(prediction)
+            if to_merge:
+                to_merge.append(p1)
+                p1.bounding_box = Rectangle.merge_rectangles([prediction.bounding_box for prediction in to_merge])
+                p1.category_id = max(to_merge, key=lambda x: x.score).category_id
+                merged = True
+            new_predictions.append(p1)
+        if not merged:
+            return new_predictions
+        predictions = new_predictions
+
+
 def get_pdf_segments_for_page(page, pdf_name, page_pdf_name, vgt_predictions_dict):
     most_probable_pdf_segments_for_page: list[PdfSegment] = []
     most_probable_tokens_by_predictions: dict[Prediction, list[PdfToken]] = {}
+
+    if page_pdf_name in vgt_predictions_dict:
+        vgt_predictions_dict[page_pdf_name] = merge_colliding_predictions(vgt_predictions_dict[page_pdf_name])
+
     for token in page.tokens:
-        if not page_pdf_name in vgt_predictions_dict:
+        if page_pdf_name not in vgt_predictions_dict:
             continue
         find_best_prediction_for_token(page_pdf_name, token, vgt_predictions_dict, most_probable_tokens_by_predictions)
 
     for prediction, tokens in most_probable_tokens_by_predictions.items():
         new_segment = PdfSegment.from_pdf_tokens(tokens, pdf_name)
+        new_segment.bounding_box = prediction.bounding_box
         new_segment.segment_type = TokenType.from_text(DOCLAYNET_TYPE_BY_ID[prediction.category_id])
+        most_probable_pdf_segments_for_page.append(new_segment)
+
+    no_token_predictions = [prediction for prediction in vgt_predictions_dict[page_pdf_name]
+                            if prediction not in most_probable_tokens_by_predictions]
+
+    for prediction in no_token_predictions:
+        segment_type = TokenType.from_text(DOCLAYNET_TYPE_BY_ID[prediction.category_id])
+        page_number = page.tokens[0].page_number
+        new_segment = PdfSegment(page_number, prediction.bounding_box, "", segment_type, pdf_name)
         most_probable_pdf_segments_for_page.append(new_segment)
 
     return most_probable_pdf_segments_for_page
