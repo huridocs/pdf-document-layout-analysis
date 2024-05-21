@@ -8,6 +8,7 @@ from ditod.VGTTrainer import VGTTrainer
 from get_json_annotations import get_annotations
 from get_model_configuration import get_model_configuration
 from get_most_probable_pdf_segments import get_most_probable_pdf_segments
+from get_reading_orders import get_reading_orders
 from src.PdfImages import PdfImages
 from src.configuration import service_logger, JSON_TEST_FILE_PATH, IMAGES_ROOT_PATH
 from src.create_word_grid import create_word_grid, remove_word_grids
@@ -57,6 +58,7 @@ def analyze_pdf(file: AnyStr):
     predict_doclaynet()
     remove_files()
     predicted_segments = get_most_probable_pdf_segments("doclaynet", pdf_images_list, False)
+    predicted_segments = get_reading_orders(pdf_images_list, predicted_segments)
     return [SegmentBox.from_pdf_segment(pdf_segment).to_dict() for pdf_segment in predicted_segments]
 
 
