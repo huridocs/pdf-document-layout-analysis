@@ -18,12 +18,12 @@ def is_gpu_available():
             service_logger.info(f"  Allocated Memory: {allocated_memory} MB")
             service_logger.info(f"  Cached Memory: {cached_memory} MB")
             total_free_memory_in_system += total_memory - allocated_memory - cached_memory
-        if total_free_memory_in_system < 7000:
-            service_logger.info(f"Total free GPU memory is {total_free_memory_in_system} < 7000 MB. Switching to CPU.")
+        if total_free_memory_in_system < 3000:
+            service_logger.info(f"Total free GPU memory is {total_free_memory_in_system} < 3000 MB. Switching to CPU.")
             service_logger.info("The process is probably going to be 15 times slower.")
     else:
         service_logger.info("No CUDA-compatible GPU detected. Switching to CPU.")
-    return total_free_memory_in_system > 7000
+    return total_free_memory_in_system > 3000
 
 
 def get_model_configuration():
