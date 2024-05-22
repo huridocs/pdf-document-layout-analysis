@@ -13,7 +13,7 @@ Start the service:
     # With GPU support
     make start
     
-    # Without GPU support [Recommended if you do not have a GPU on your system]
+    # Without GPU support [if you do not have a GPU on your system]
     make start_no_gpu
 
 Get the segments from a PDF:
@@ -38,7 +38,7 @@ To stop the server:
 
 ## Requirements
 * 4 GB RAM memory
-* 7 GB GPU memory (if not, it will run with CPU)
+* 6 GB GPU memory (if not, it will run with CPU)
   
 ## Models
 
