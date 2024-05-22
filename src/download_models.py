@@ -2,7 +2,7 @@ import math
 from os import makedirs
 from os.path import join, exists
 from urllib.request import urlretrieve
-from huggingface_hub import snapshot_download
+from huggingface_hub import snapshot_download, hf_hub_download
 
 from configuration import service_logger, MODELS_PATH
 
@@ -33,7 +33,21 @@ def download_embedding_model():
     snapshot_download(repo_id="microsoft/layoutlm-base-uncased", local_dir=model_path, local_dir_use_symlinks=False)
 
 
+def download_lightgbm_models():
+    tokens_type_model_path = join(MODELS_PATH, "token_type_lightgbm.model")
+    paragraph_extraction_model_path = join(MODELS_PATH, "paragraph_extraction_lightgbm.model")
+    if not exists(tokens_type_model_path):
+        hf_hub_download(repo_id="HURIDOCS/pdf-document-layout-analysis", filename="token_type_lightgbm.model",
+                        local_dir=str(MODELS_PATH), local_dir_use_symlinks=False)
+    if not exists(paragraph_extraction_model_path):
+        hf_hub_download(repo_id="HURIDOCS/pdf-document-layout-analysis", filename="paragraph_extraction_lightgbm.model",
+                        local_dir=str(MODELS_PATH), local_dir_use_symlinks=False)
+
+
 def download_models(model_name: str):
+    if model_name == "fast":
+        download_lightgbm_models()
+        return
     makedirs(MODELS_PATH, exist_ok=True)
     download_vgt_model(model_name)
     download_embedding_model()
