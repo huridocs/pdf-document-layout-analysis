@@ -2,7 +2,9 @@
 <p align="center">A Docker-powered service for PDF document layout analysis</p>
 
 ---
-[ Descriptions needed ]
+This project provides a powerful and flexible PDF analysis service. The service allows for 
+the segmentation and classification of different parts of PDF pages, identifying the elements such as texts, titles, 
+pictures, tables and so on. Additionally, it determines the correct order of these identified elements.
 
 
 ## Quick Start
@@ -11,7 +13,7 @@ Start the service:
     # With GPU support
     make start
     
-    # Without GPU support
+    # Without GPU support [Recommended if you do not have a GPU on your system]
     make start_no_gpu
 
 Get the segments from a PDF:
@@ -52,13 +54,13 @@ models is predicting the types of the tokens and the other one is trying to find
 By combining both, we are segmenting the pages alongside with the type of the content.
 
 Even though the visual model using more resources than the others, generally it's giving better performance since it 
-"sees" the whole page and has an idea about all the context. On the other hand, LightGBM models are not performing that well
+"sees" the whole page and has an idea about all the context. On the other hand, LightGBM models are performing slightly worse
 but they are much faster and more resource-friendly. It will only require your CPU power.
 
 ## Data
 
 As we mentioned, we are using the visual model that trained on [DocLayNet](https://github.com/DS4SD/DocLayNet) dataset. 
-Also for training the LightGBM models, we again used this dataset. There are 11 categories:
+Also for training the LightGBM models, we again used this dataset. There are 11 categories in this dataset:
 
        1: "Caption"
        2: "Footnote"
@@ -76,7 +78,7 @@ For more information about the data, you can visit the link we shared above.
 
 ## Usage
 
-As we mentioned at the [Quick Start](#quick-start), you can start the service simply like this:
+As we mentioned at the [Quick Start](#quick-start), you can use the service simply like this:
 
     curl -X POST -F 'file=@/PATH/TO/PDF/pdf_name.pdf' localhost:5060
 
@@ -88,7 +90,7 @@ want to use the not visual models, which are the LightGBM models, you can use th
 The shape of the response will be the same in both of these commands. 
 
 
-When the process is done, the output includes list of SegmentBox elements and, every SegmentBox element has this information:
+When the process is done, the output will include a list of SegmentBox elements and, every SegmentBox element will has this information:
 
         {
             "left": Left position of the segment
