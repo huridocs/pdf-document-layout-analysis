@@ -45,13 +45,14 @@ def download_lightgbm_models():
 
 
 def download_models(model_name: str):
+    makedirs(MODELS_PATH, exist_ok=True)
     if model_name == "fast":
         download_lightgbm_models()
         return
-    makedirs(MODELS_PATH, exist_ok=True)
     download_vgt_model(model_name)
     download_embedding_model()
 
 
 if __name__ == "__main__":
     download_models("doclaynet")
+    download_models("fast")

@@ -10,13 +10,11 @@ from pdf_tokens_type_trainer.ModelConfiguration import ModelConfiguration
 from analyze_pdf import pdf_content_to_pdf_path
 from configuration import ROOT_PATH, service_logger
 from data_model.SegmentBox import SegmentBox
-from download_models import download_models
 
 
 def analyze_pdf_fast(file: AnyStr):
     pdf_path = pdf_content_to_pdf_path(file)
     service_logger.info("Creating Paragraph Tokens [fast]")
-    download_models("fast")
     pdf_features = PdfFeatures.from_pdf_path(pdf_path)
     token_type_trainer = TokenTypeTrainer([pdf_features], ModelConfiguration())
     token_type_trainer.set_token_types(join(ROOT_PATH, "models", "token_type_lightgbm.model"))
