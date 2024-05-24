@@ -7,6 +7,11 @@ the segmentation and classification of different parts of PDF pages, identifying
 pictures, tables and so on. Additionally, it determines the correct order of these identified elements.
 
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/huridocs/pdf-document-layout-analysis/main/images/vgtexample1.png" width="431" />
+  <img src="https://raw.githubusercontent.com/huridocs/pdf-document-layout-analysis/main/images/vgtexample3.png" width="400" />
+</p>
+
 ## Quick Start
 Start the service:
 
