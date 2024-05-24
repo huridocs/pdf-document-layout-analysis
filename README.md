@@ -1,4 +1,4 @@
-<h3 align="center">PDF document layout analysis</h3>
+<h3 align="center">PDF Document Layout Analysis</h3>
 <p align="center">A Docker-powered service for PDF document layout analysis</p>
 
 ---
@@ -49,8 +49,8 @@ and according to our benchmarks the best performing model is the one trained wit
 dataset. So, this model is the default model in our project, and it uses more resources than the other model which we ourselves trained.
 
 The second kind of model is the LightGBM models. These models are not visual models, they do not "see" the pages, but
-we are using XML information that we extracted by using Poppler. The reason there are two models existed is, one of these
-models is predicting the types of the tokens and the other one is trying to find out the correct segmentations in the page.
+we are using XML information that we extracted by using [Poppler](https://poppler.freedesktop.org). The reason there are two 
+models existed is, one of these models is predicting the types of the tokens and the other one is trying to find out the correct segmentations in the page.
 By combining both, we are segmenting the pages alongside with the type of the content.
 
 Even though the visual model using more resources than the others, generally it's giving better performance since it 
@@ -105,3 +105,20 @@ When the process is done, the output will include a list of SegmentBox elements 
 And to stop the server, you can simply use this:
 
     make stop
+
+### Order of the Output Elements
+
+When all the processes are done, the service returns a list of SegmentBox elements with some determined order. To figure out this order,
+we are mostly relying on [Poppler](https://poppler.freedesktop.org). In addition to this, we are also getting help from the types of the segments.
+
+During the PDF to XML conversion, Poppler determines an initial reading order for each token it creates. These tokens are typically lines of text,
+but it depends on Poppler's heuristics. When we extract a segment, it usually consists of multiple tokens. Therefore, for each segment on the page,
+we calculate an "average reading order" by averaging the reading orders of the tokens within that segment. We then sort the segments 
+based on this average reading order. However, this process is not solely dependent on Poppler, we also consider the types of segments.
+
+First, we place the "header" segments at the beginning and sort them among themselves. Next, we sort the remaining segments, 
+excluding "footers" and "footnotes," which are positioned at the end of the output.
+
+Occasionally, we encounter segments like pictures that might not contain text. Since Poppler cannot assign a reading order to these non-text segments, 
+we process them after sorting all segments with content. To determine their reading order, we rely on the reading order of the nearest "non-empty" segment, 
+using distance as a criterion.
