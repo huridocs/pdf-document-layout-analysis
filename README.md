@@ -49,6 +49,7 @@ To stop the server:
 - [Models](#models)
 - [Data](#data)
 - [Usage](#usage)
+- [Benchmark](#benchmark)
 
 ## Dependencies
 * Docker Desktop 4.25.0 [install link](https://www.docker.com/products/docker-desktop/)
@@ -60,8 +61,8 @@ To stop the server:
   
 ## Models
 
-There are two kinds of models in the project. The default model is a visual model which has been trained by
-Alibaba Research Group. If you would like to take a look at their original project, you can visit
+There are two kinds of models in the project. The default model is a visual model (specifically called as Vision Grid Transformer - VGT)
+which has been trained by Alibaba Research Group. If you would like to take a look at their original project, you can visit
 [this](https://github.com/AlibabaResearch/AdvancedLiterateMachinery) link. There are various models published by them
 and according to our benchmarks the best performing model is the one trained with the [DocLayNet](https://github.com/DS4SD/DocLayNet)
 dataset. So, this model is the default model in our project, and it uses more resources than the other model which we ourselves trained.
@@ -140,3 +141,29 @@ excluding "footers" and "footnotes," which are positioned at the end of the outp
 Occasionally, we encounter segments like pictures that might not contain text. Since Poppler cannot assign a reading order to these non-text segments, 
 we process them after sorting all segments with content. To determine their reading order, we rely on the reading order of the nearest "non-empty" segment, 
 using distance as a criterion.
+
+
+## Benchmark
+
+These are the benchmark results for VGT model on PubLayNet dataset:
+
+<table>
+  <tr>
+    <th>Overall</th>
+    <th>Text</th>
+    <th>Title</th>
+    <th>List</th>
+    <th>Table</th>
+    <th>Figure</th>
+  </tr>
+  <tr>
+    <td>0.962</td>
+    <td>0.950</td>
+    <td>0.939</td>
+    <td>0.968</td>
+    <td>0.981</td>
+    <td>0.971</td>
+  </tr>
+</table>
+
+You can check this link to see the comparison with the other models: https://paperswithcode.com/sota/document-layout-analysis-on-publaynet-val
