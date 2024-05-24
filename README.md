@@ -8,8 +8,8 @@ pictures, tables and so on. Additionally, it determines the correct order of the
 
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/huridocs/pdf-document-layout-analysis/main/images/vgtexample1.png" width="431" />
-  <img src="https://raw.githubusercontent.com/huridocs/pdf-document-layout-analysis/main/images/vgtexample3.png" width="400" />
+  <img src="https://raw.githubusercontent.com/huridocs/pdf-document-layout-analysis/main/images/vgtexample1.png" width="324" />
+  <img src="https://raw.githubusercontent.com/huridocs/pdf-document-layout-analysis/main/images/vgtexample3.png" width="300" />
 </p>
 
 ## Quick Start
