@@ -34,13 +34,17 @@ def get_distance_between_segments(segment1: PdfSegment, segment2: PdfSegment):
 
 
 def add_no_token_segments(segments, no_token_segments):
-    for no_token_segment in no_token_segments:
-        closest_segment = sorted(segments, key=lambda seg: get_distance_between_segments(no_token_segment, seg))[0]
-        closest_index = segments.index(closest_segment)
-        if closest_segment.bounding_box.top < no_token_segment.bounding_box.top:
-            segments.insert(closest_index+1, no_token_segment)
-        else:
-            segments.insert(closest_index, no_token_segment)
+    if segments:
+        for no_token_segment in no_token_segments:
+            closest_segment = sorted(segments, key=lambda seg: get_distance_between_segments(no_token_segment, seg))[0]
+            closest_index = segments.index(closest_segment)
+            if closest_segment.bounding_box.top < no_token_segment.bounding_box.top:
+                segments.insert(closest_index+1, no_token_segment)
+            else:
+                segments.insert(closest_index, no_token_segment)
+    else:
+        for segment in sorted(no_token_segments, key=lambda r: (r.bounding_box.left, r.bounding_box.top)):
+            segments.append(segment)
 
 
 def filter_and_sort_segments(page, tokens_by_segments, types):
@@ -55,9 +59,9 @@ def get_ordered_segments_for_page(segments_for_page: list[PdfSegment], page: Pdf
         find_segment_for_token(token, segments_for_page, tokens_by_segments)
 
     page_number_segment: None | PdfSegment = None
-    if segments_for_page:
+    if tokens_by_segments:
         last_segment = max(tokens_by_segments.keys(), key=lambda seg: seg.bounding_box.top)
-        if len(last_segment.text_content) < 5:
+        if last_segment.text_content and len(last_segment.text_content) < 5:
             page_number_segment = last_segment
             del tokens_by_segments[last_segment]
 
