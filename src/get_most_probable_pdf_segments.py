@@ -85,13 +85,9 @@ def merge_colliding_predictions(predictions: list[Prediction]):
 def get_pdf_segments_for_page(page, pdf_name, page_pdf_name, vgt_predictions_dict):
     most_probable_pdf_segments_for_page: list[PdfSegment] = []
     most_probable_tokens_by_predictions: dict[Prediction, list[PdfToken]] = {}
-
-    if page_pdf_name in vgt_predictions_dict:
-        vgt_predictions_dict[page_pdf_name] = merge_colliding_predictions(vgt_predictions_dict[page_pdf_name])
+    vgt_predictions_dict[page_pdf_name] = merge_colliding_predictions(vgt_predictions_dict[page_pdf_name])
 
     for token in page.tokens:
-        if page_pdf_name not in vgt_predictions_dict:
-            continue
         find_best_prediction_for_token(page_pdf_name, token, vgt_predictions_dict, most_probable_tokens_by_predictions)
 
     for prediction, tokens in most_probable_tokens_by_predictions.items():
@@ -105,11 +101,15 @@ def get_pdf_segments_for_page(page, pdf_name, page_pdf_name, vgt_predictions_dic
 
     for prediction in no_token_predictions:
         segment_type = TokenType.from_text(DOCLAYNET_TYPE_BY_ID[prediction.category_id])
-        page_number = page.tokens[0].page_number
+        page_number = page.page_number
         new_segment = PdfSegment(page_number, prediction.bounding_box, "", segment_type, pdf_name)
         most_probable_pdf_segments_for_page.append(new_segment)
 
     return most_probable_pdf_segments_for_page
+
+
+def prediction_exists_for_page(page_pdf_name, vgt_predictions_dict):
+    return page_pdf_name in vgt_predictions_dict
 
 
 def get_most_probable_pdf_segments(model_name: str, pdf_images_list: list[PdfImages], save_output: bool = False):
@@ -119,6 +119,8 @@ def get_most_probable_pdf_segments(model_name: str, pdf_images_list: list[PdfIma
     for pdf_features in pdf_features_list:
         for page in pdf_features.pages:
             page_pdf_name = pdf_features.file_name + "_" + str(page.page_number - 1)
+            if not prediction_exists_for_page(page_pdf_name, vgt_predictions_dict):
+                continue
             page_segments = get_pdf_segments_for_page(page, pdf_features.file_name, page_pdf_name, vgt_predictions_dict)
             most_probable_pdf_segments.extend(page_segments)
     if save_output:
