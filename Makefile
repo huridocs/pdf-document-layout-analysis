@@ -31,3 +31,6 @@ start_no_gpu:
 
 stop:
 	docker compose stop
+
+test:
+	. .venv/bin/activate; command cd src; command python -m pytest
