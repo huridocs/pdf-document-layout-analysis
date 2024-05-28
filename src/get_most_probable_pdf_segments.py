@@ -19,13 +19,11 @@ def get_prediction_from_annotation(annotation, images_names, vgt_predictions_dic
         left=int(annotation["bbox"][0]),
         top=int(annotation["bbox"][1]),
         width=int(annotation["bbox"][2]),
-        height=int(annotation["bbox"][3])
+        height=int(annotation["bbox"][3]),
     )
 
     prediction = Prediction(
-        bounding_box=bounding_box,
-        category_id=category_id,
-        score=round(float(annotation['score']) * 100, 2)
+        bounding_box=bounding_box, category_id=category_id, score=round(float(annotation["score"]) * 100, 2)
     )
     vgt_predictions_dict.setdefault(pdf_name, list()).append(prediction)
 
@@ -96,8 +94,11 @@ def get_pdf_segments_for_page(page, pdf_name, page_pdf_name, vgt_predictions_dic
         new_segment.segment_type = TokenType.from_text(DOCLAYNET_TYPE_BY_ID[prediction.category_id])
         most_probable_pdf_segments_for_page.append(new_segment)
 
-    no_token_predictions = [prediction for prediction in vgt_predictions_dict[page_pdf_name]
-                            if prediction not in most_probable_tokens_by_predictions]
+    no_token_predictions = [
+        prediction
+        for prediction in vgt_predictions_dict[page_pdf_name]
+        if prediction not in most_probable_tokens_by_predictions
+    ]
 
     for prediction in no_token_predictions:
         segment_type = TokenType.from_text(DOCLAYNET_TYPE_BY_ID[prediction.category_id])

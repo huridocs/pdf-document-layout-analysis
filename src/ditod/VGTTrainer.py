@@ -79,13 +79,15 @@ __all__ = [
     "GridTextTrainer",
 ]
 
+
 def torch_memory(device, tag=""):
     # Checks and prints GPU memory
-    print(tag, f'{torch.cuda.memory_allocated(device)/1024/1024:.2f} MB USED')
-    print(tag, f'{torch.cuda.memory_reserved(device)/1024/1024:.2f} MB RESERVED')
-    print(tag, f'{torch.cuda.max_memory_allocated(device)/1024/1024:.2f} MB USED MAX')
-    print(tag, f'{torch.cuda.max_memory_reserved(device)/1024/1024:.2f} MB RESERVED MAX')
-    print('')
+    print(tag, f"{torch.cuda.memory_allocated(device)/1024/1024:.2f} MB USED")
+    print(tag, f"{torch.cuda.memory_reserved(device)/1024/1024:.2f} MB RESERVED")
+    print(tag, f"{torch.cuda.max_memory_allocated(device)/1024/1024:.2f} MB USED MAX")
+    print(tag, f"{torch.cuda.max_memory_reserved(device)/1024/1024:.2f} MB RESERVED MAX")
+    print("")
+
 
 def create_ddp_model(model, *, fp16_compression=False, **kwargs):
     """
@@ -146,14 +148,12 @@ Run on multiple machines:
     parser.add_argument("--eval-only", action="store_true", help="perform evaluation only")
     parser.add_argument("--num-gpus", type=int, default=1, help="number of gpus *per machine*")
     parser.add_argument("--num-machines", type=int, default=1, help="total number of machines")
-    parser.add_argument(
-        "--machine-rank", type=int, default=0, help="the rank of this machine (unique per machine)"
-    )
+    parser.add_argument("--machine-rank", type=int, default=0, help="the rank of this machine (unique per machine)")
 
     # PyTorch still may leave orphan processes in multi-gpu training.
     # Therefore we use a deterministic way to obtain port,
     # so that users are aware of orphan processes by seeing the port occupied.
-    port = 2 ** 15 + 2 ** 14 + hash(os.getuid() if sys.platform != "win32" else 1) % 2 ** 14
+    port = 2**15 + 2**14 + hash(os.getuid() if sys.platform != "win32" else 1) % 2**14
     parser.add_argument(
         "--dist-url",
         default="tcp://127.0.0.1:{}".format(port),
@@ -252,9 +252,7 @@ def default_setup(cfg, args):
     # cudnn benchmark has large overhead. It shouldn't be used considering the small size of
     # typical validation set.
     if not (hasattr(args, "eval_only") and args.eval_only):
-        torch.backends.cudnn.benchmark = _try_get_key(
-            cfg, "CUDNN_BENCHMARK", "train.cudnn_benchmark", default=False
-        )
+        torch.backends.cudnn.benchmark = _try_get_key(cfg, "CUDNN_BENCHMARK", "train.cudnn_benchmark", default=False)
 
 
 def default_writers(output_dir: str, max_iter: Optional[int] = None):
@@ -306,7 +304,7 @@ class DefaultPredictor:
         inputs = cv2.imread("input.jpg")
         outputs = pred(inputs)
     """
-    
+
     def __init__(self, cfg):
         self.cfg = cfg.clone()  # cfg can be modified by model
         self.model = build_model(self.cfg)
@@ -317,9 +315,7 @@ class DefaultPredictor:
         checkpointer = DetectionCheckpointer(self.model)
         checkpointer.load(cfg.MODEL.WEIGHTS)
 
-        self.aug = T.ResizeShortestEdge(
-            [cfg.INPUT.MIN_SIZE_TEST, cfg.INPUT.MIN_SIZE_TEST], cfg.INPUT.MAX_SIZE_TEST
-        )
+        self.aug = T.ResizeShortestEdge([cfg.INPUT.MIN_SIZE_TEST, cfg.INPUT.MIN_SIZE_TEST], cfg.INPUT.MAX_SIZE_TEST)
 
         self.input_format = cfg.INPUT.FORMAT
         assert self.input_format in ["RGB", "BGR"], self.input_format
@@ -336,43 +332,43 @@ class DefaultPredictor:
         """
         with torch.no_grad():  # https://github.com/sphinx-doc/sphinx/issues/4258
             # Apply pre-processing to image.
-            
+
             # if self.input_format == "RGB":
             #     # whether the model expects BGR inputs or RGB
-            #     import ipdb;ipdb.set_trace() 
+            #     import ipdb;ipdb.set_trace()
             #     original_image = original_image[:, :, ::-1]
-            
+
             height, width = original_image.shape[:2]
             image, transforms = T.apply_transform_gens([self.aug], original_image)
-            
-            # add grid    
+
+            # add grid
             image_shape = image.shape[:2]  # h, w
             image = torch.as_tensor(image.astype("float32").transpose(2, 0, 1))
-            
+
             with open(grid_path, "rb") as f:
                 sample_inputs = pickle.load(f)
             input_ids = sample_inputs["input_ids"]
             bbox_subword_list = sample_inputs["bbox_subword_list"]
-                
+
             # word bbox
             bbox = []
             for bbox_per_subword in bbox_subword_list:
                 text_word = {}
-                text_word['bbox'] = bbox_per_subword.tolist()
-                text_word['bbox_mode'] = BoxMode.XYWH_ABS
+                text_word["bbox"] = bbox_per_subword.tolist()
+                text_word["bbox_mode"] = BoxMode.XYWH_ABS
                 utils.transform_instance_annotations(text_word, transforms, image_shape)
-                bbox.append(text_word['bbox'])
-                
+                bbox.append(text_word["bbox"])
+
             dataset_dict = {}
-            dataset_dict["input_ids"] = input_ids 
+            dataset_dict["input_ids"] = input_ids
             dataset_dict["bbox"] = bbox
-            dataset_dict["image"] = image 
-            dataset_dict["height"] = height 
-            dataset_dict["width"] = width 
+            dataset_dict["image"] = image
+            dataset_dict["height"] = height
+            dataset_dict["width"] = width
 
             predictions = self.model([dataset_dict])[0]
             return predictions
-        
+
 
 class VGTTrainer(TrainerBase):
     """
@@ -436,9 +432,7 @@ class VGTTrainer(TrainerBase):
         data_loader = self.build_train_loader(cfg)
 
         model = create_ddp_model(model, broadcast_buffers=False)
-        self._trainer = (AMPTrainer if cfg.SOLVER.AMP.ENABLED else SimpleTrainer)(
-            model, data_loader, optimizer
-        )
+        self._trainer = (AMPTrainer if cfg.SOLVER.AMP.ENABLED else SimpleTrainer)(model, data_loader, optimizer)
 
         self.scheduler = self.build_lr_scheduler(cfg, optimizer)
         self.checkpointer = MyDetectionCheckpointer(
@@ -488,16 +482,18 @@ class VGTTrainer(TrainerBase):
         ret = [
             hooks.IterationTimer(),
             hooks.LRScheduler(),
-            hooks.PreciseBN(
-                # Run at the same freq as (but before) evaluation.
-                cfg.TEST.EVAL_PERIOD,
-                self.model,
-                # Build a new data loader to not affect training
-                self.build_train_loader(cfg),
-                cfg.TEST.PRECISE_BN.NUM_ITER,
-            )
-            if cfg.TEST.PRECISE_BN.ENABLED and get_bn_modules(self.model)
-            else None,
+            (
+                hooks.PreciseBN(
+                    # Run at the same freq as (but before) evaluation.
+                    cfg.TEST.EVAL_PERIOD,
+                    self.model,
+                    # Build a new data loader to not affect training
+                    self.build_train_loader(cfg),
+                    cfg.TEST.PRECISE_BN.NUM_ITER,
+                )
+                if cfg.TEST.PRECISE_BN.ENABLED and get_bn_modules(self.model)
+                else None
+            ),
         ]
 
         # Do PreciseBN before checkpointer, because it updates the model and need to
@@ -541,9 +537,7 @@ class VGTTrainer(TrainerBase):
         """
         super().train(self.start_iter, self.max_iter)
         if len(self.cfg.TEST.EXPECTED_RESULTS) and comm.is_main_process():
-            assert hasattr(
-                self, "_last_eval_results"
-            ), "No evaluation results obtained during training!"
+            assert hasattr(self, "_last_eval_results"), "No evaluation results obtained during training!"
             verify_results(self.cfg, self._last_eval_results)
             return self._last_eval_results
 
@@ -556,7 +550,7 @@ class VGTTrainer(TrainerBase):
                 logger = logging.getLogger("detectron2")
                 logger.warn("Out of memory")
                 # import ipdb;ipdb.set_trace()
-                if hasattr(torch.cuda, 'empty_cache'):
+                if hasattr(torch.cuda, "empty_cache"):
                     torch.cuda.empty_cache()
             else:
                 raise exception
@@ -571,7 +565,7 @@ class VGTTrainer(TrainerBase):
         Overwrite it if you'd like a different model.
         """
         model = build_model(cfg)
-        
+
         def compute_para(model):
             params_num = []
             filtered_parameters = []
@@ -579,10 +573,10 @@ class VGTTrainer(TrainerBase):
                 filtered_parameters.append(p)
                 params_num.append(np.prod(p.size()))
             total_params = int(sum(params_num))
-            total_params = f'Trainable network params num : {total_params:,}'
+            total_params = f"Trainable network params num : {total_params:,}"
             # print(total_params)
             return total_params
-        
+
         logger = logging.getLogger("detectron2")
         logger.info("Model: {}".format(compute_para(model)))
         return model
@@ -608,9 +602,9 @@ class VGTTrainer(TrainerBase):
             # detectron2 doesn't have full model gradient clipping now
             clip_norm_val = cfg.SOLVER.CLIP_GRADIENTS.CLIP_VALUE
             enable = (
-                    cfg.SOLVER.CLIP_GRADIENTS.ENABLED
-                    and cfg.SOLVER.CLIP_GRADIENTS.CLIP_TYPE == "full_model"
-                    and clip_norm_val > 0.0
+                cfg.SOLVER.CLIP_GRADIENTS.ENABLED
+                and cfg.SOLVER.CLIP_GRADIENTS.CLIP_TYPE == "full_model"
+                and clip_norm_val > 0.0
             )
 
             class FullModelGradientClippingOptimizer(optim):
@@ -627,9 +621,7 @@ class VGTTrainer(TrainerBase):
                 params, cfg.SOLVER.BASE_LR, momentum=cfg.SOLVER.MOMENTUM
             )
         elif optimizer_type == "ADAMW":
-            optimizer = maybe_add_full_model_gradient_clipping(torch.optim.AdamW)(
-                params, cfg.SOLVER.BASE_LR
-            )
+            optimizer = maybe_add_full_model_gradient_clipping(torch.optim.AdamW)(params, cfg.SOLVER.BASE_LR)
         else:
             raise NotImplementedError(f"no optimizer type {optimizer_type}")
         if not cfg.SOLVER.CLIP_GRADIENTS.CLIP_TYPE == "full_model":
@@ -663,7 +655,7 @@ class VGTTrainer(TrainerBase):
         """
         mapper = DetrDatasetMapper(cfg, is_train=False)
         return build_detection_test_loader(cfg, dataset_name, mapper=mapper)
-    
+
         # return build_detection_test_loader(cfg, dataset_name)
 
     @classmethod
@@ -671,7 +663,7 @@ class VGTTrainer(TrainerBase):
         if output_folder is None:
             output_folder = os.path.join(cfg.OUTPUT_DIR, "inference")
             return COCOEvaluator(dataset_name, output_dir=output_folder)
-        
+
         # if 'icdar' not in dataset_name:
         #     return COCOEvaluator(dataset_name, output_dir=output_folder)
         # else:
@@ -697,9 +689,7 @@ class VGTTrainer(TrainerBase):
         if isinstance(evaluators, DatasetEvaluator):
             evaluators = [evaluators]
         if evaluators is not None:
-            assert len(cfg.DATASETS.TEST) == len(evaluators), "{} != {}".format(
-                len(cfg.DATASETS.TEST), len(evaluators)
-            )
+            assert len(cfg.DATASETS.TEST) == len(evaluators), "{} != {}".format(len(cfg.DATASETS.TEST), len(evaluators))
 
         results = OrderedDict()
         for idx, dataset_name in enumerate(cfg.DATASETS.TEST):
@@ -723,9 +713,7 @@ class VGTTrainer(TrainerBase):
             if comm.is_main_process():
                 assert isinstance(
                     results_i, dict
-                ), "Evaluator must return a dict on the main process. Got {} instead.".format(
-                    results_i
-                )
+                ), "Evaluator must return a dict on the main process. Got {} instead.".format(results_i)
                 logger.info("Evaluation results for {} in csv format:".format(dataset_name))
                 print_csv_format(results_i)
 
@@ -782,9 +770,7 @@ class VGTTrainer(TrainerBase):
         frozen = cfg.is_frozen()
         cfg.defrost()
 
-        assert (
-            cfg.SOLVER.IMS_PER_BATCH % old_world_size == 0
-        ), "Invalid REFERENCE_WORLD_SIZE in config!"
+        assert cfg.SOLVER.IMS_PER_BATCH % old_world_size == 0, "Invalid REFERENCE_WORLD_SIZE in config!"
         scale = num_workers / old_world_size
         bs = cfg.SOLVER.IMS_PER_BATCH = int(round(cfg.SOLVER.IMS_PER_BATCH * scale))
         lr = cfg.SOLVER.BASE_LR = cfg.SOLVER.BASE_LR * scale
@@ -796,8 +782,7 @@ class VGTTrainer(TrainerBase):
         cfg.SOLVER.REFERENCE_WORLD_SIZE = num_workers  # maintain invariant
         logger = logging.getLogger(__name__)
         logger.info(
-            f"Auto-scaling the config to batch_size={bs}, learning_rate={lr}, "
-            f"max_iter={max_iter}, warmup={warmup_iter}."
+            f"Auto-scaling the config to batch_size={bs}, learning_rate={lr}, " f"max_iter={max_iter}, warmup={warmup_iter}."
         )
 
         if frozen:

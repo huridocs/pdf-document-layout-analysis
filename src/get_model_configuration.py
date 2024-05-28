@@ -32,8 +32,12 @@ def get_model_configuration():
     args.config_file = join(SRC_PATH, "model_configuration", f"doclaynet_VGT_cascade_PTM.yaml")
     args.eval_only = True
     args.num_gpus = 1
-    args.opts = ['MODEL.WEIGHTS', join(ROOT_PATH, 'models', 'doclaynet_VGT_model.pth'),
-                 'OUTPUT_DIR', join(ROOT_PATH, 'model_output_doclaynet')]
+    args.opts = [
+        "MODEL.WEIGHTS",
+        join(ROOT_PATH, "models", "doclaynet_VGT_model.pth"),
+        "OUTPUT_DIR",
+        join(ROOT_PATH, "model_output_doclaynet"),
+    ]
     args.debug = False
 
     configuration = get_cfg()

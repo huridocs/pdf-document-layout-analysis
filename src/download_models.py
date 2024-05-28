@@ -37,11 +37,19 @@ def download_lightgbm_models():
     tokens_type_model_path = join(MODELS_PATH, "token_type_lightgbm.model")
     paragraph_extraction_model_path = join(MODELS_PATH, "paragraph_extraction_lightgbm.model")
     if not exists(tokens_type_model_path):
-        hf_hub_download(repo_id="HURIDOCS/pdf-document-layout-analysis", filename="token_type_lightgbm.model",
-                        local_dir=str(MODELS_PATH), local_dir_use_symlinks=False)
+        hf_hub_download(
+            repo_id="HURIDOCS/pdf-document-layout-analysis",
+            filename="token_type_lightgbm.model",
+            local_dir=str(MODELS_PATH),
+            local_dir_use_symlinks=False,
+        )
     if not exists(paragraph_extraction_model_path):
-        hf_hub_download(repo_id="HURIDOCS/pdf-document-layout-analysis", filename="paragraph_extraction_lightgbm.model",
-                        local_dir=str(MODELS_PATH), local_dir_use_symlinks=False)
+        hf_hub_download(
+            repo_id="HURIDOCS/pdf-document-layout-analysis",
+            filename="paragraph_extraction_lightgbm.model",
+            local_dir=str(MODELS_PATH),
+            local_dir_use_symlinks=False,
+        )
 
 
 def download_models(model_name: str):

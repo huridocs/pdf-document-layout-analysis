@@ -39,7 +39,7 @@ def add_no_token_segments(segments, no_token_segments):
             closest_segment = sorted(segments, key=lambda seg: get_distance_between_segments(no_token_segment, seg))[0]
             closest_index = segments.index(closest_segment)
             if closest_segment.bounding_box.top < no_token_segment.bounding_box.top:
-                segments.insert(closest_index+1, no_token_segment)
+                segments.insert(closest_index + 1, no_token_segment)
             else:
                 segments.insert(closest_index, no_token_segment)
     else:

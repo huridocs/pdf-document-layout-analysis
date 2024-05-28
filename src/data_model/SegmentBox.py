@@ -22,7 +22,7 @@ class SegmentBox(BaseModel):
             "height": self.height,
             "page_number": self.page_number,
             "text": self.text,
-            "type": TokenType.from_index(self.type).name
+            "type": TokenType.from_index(self.type).name,
         }
 
     @staticmethod
