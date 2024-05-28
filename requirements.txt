@@ -3,7 +3,7 @@ torchvision==0.18.0
 timm==0.9.16
 Pillow==10.3.0
 pdf-annotate==0.12.0
-requests==2.31.0
+requests==2.32.2
 scipy==1.13.0
 opencv-python==4.9.0.80
 Shapely==2.0.4
