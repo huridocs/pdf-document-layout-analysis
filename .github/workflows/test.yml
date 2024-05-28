@@ -31,7 +31,7 @@ jobs:
       run: make check_format
 
     - name: Start service
-      run: make start
+      run: make start_no_gpu
 
     - name: Check API ready
       uses: emilioschepis/wait-for-endpoint@v1.0.3
