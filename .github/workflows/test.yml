@@ -21,6 +21,9 @@ jobs:
       with:
         python-version: '3.11'
 
+    - name: Free up space
+      run: make free_up_space
+
     - name: Install venv
       run: make install_venv
 

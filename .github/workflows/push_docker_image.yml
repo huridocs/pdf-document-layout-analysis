@@ -27,8 +27,8 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      -
-        name: Extract metadata (tags, labels) for Docker
+
+      - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v4
         with:
@@ -38,8 +38,11 @@ jobs:
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-      -
-        name: Build and push
+
+      - name: Create folder models
+        run: mkdir -p models
+
+      - name: Build and push
         uses: docker/build-push-action@v4
         with:
           context: .

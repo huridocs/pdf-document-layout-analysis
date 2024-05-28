@@ -34,3 +34,20 @@ stop:
 
 test:
 	. .venv/bin/activate; command cd src; command python -m pytest
+
+free_up_space:
+	df -h
+	sudo rm -rf /usr/share/dotnet
+	sudo rm -rf /opt/ghc
+	sudo rm -rf "/usr/local/share/boost"
+	sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+	sudo apt-get remove -y '^llvm-.*' || true
+	sudo apt-get remove -y 'php.*' || true
+	sudo apt-get remove -y google-cloud-sdk hhvm google-chrome-stable firefox mono-devel || true
+	sudo apt-get autoremove -y
+	sudo apt-get clean
+	sudo rm -rf /usr/share/dotnet
+	sudo rm -rf /usr/local/lib/android
+	sudo rm -rf /opt/hostedtoolcache/CodeQL
+	sudo docker image prune --all --force
+	df -h
