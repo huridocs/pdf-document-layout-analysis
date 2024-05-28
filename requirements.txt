@@ -7,7 +7,7 @@ requests==2.31.0
 scipy==1.13.0
 opencv-python==4.9.0.80
 Shapely==2.0.4
-transformers==4.40.1
+transformers==4.41.1
 pdf2image==1.17.0
 git+https://github.com/huridocs/pdf-tokens-type-labeler
 git+https://github.com/huridocs/pdf_paragraphs_extraction
