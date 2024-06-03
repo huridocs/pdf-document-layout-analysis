@@ -90,3 +90,35 @@ class TestEndToEnd(TestCase):
             results = requests.post(f"{self.service_url}/fast", files=files)
 
             self.assertEqual(200, results.status_code)
+
+    def test_korean(self):
+        with open(f"{ROOT_PATH}/test_pdfs/korean.pdf", "rb") as stream:
+            files = {"file": stream}
+
+            results = requests.post(f"{self.service_url}", files=files)
+
+            self.assertEqual(200, results.status_code)
+
+    def test_chinese(self):
+        with open(f"{ROOT_PATH}/test_pdfs/chinese.pdf", "rb") as stream:
+            files = {"file": stream}
+
+            results = requests.post(f"{self.service_url}", files=files)
+
+            self.assertEqual(200, results.status_code)
+
+    def test_korean_fast(self):
+        with open(f"{ROOT_PATH}/test_pdfs/korean.pdf", "rb") as stream:
+            files = {"file": stream}
+
+            results = requests.post(f"{self.service_url}/fast", files=files)
+
+            self.assertEqual(200, results.status_code)
+
+    def test_chinese_fast(self):
+        with open(f"{ROOT_PATH}/test_pdfs/chinese.pdf", "rb") as stream:
+            files = {"file": stream}
+
+            results = requests.post(f"{self.service_url}/fast", files=files)
+
+            self.assertEqual(200, results.status_code)
