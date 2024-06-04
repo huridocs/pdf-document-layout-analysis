@@ -51,3 +51,8 @@ free_up_space:
 	sudo rm -rf /opt/hostedtoolcache/CodeQL
 	sudo docker image prune --all --force
 	df -h
+
+
+start_detached:
+	mkdir -p ./models
+	docker compose up --build -d
