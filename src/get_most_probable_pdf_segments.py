@@ -2,6 +2,8 @@ import json
 import pickle
 from os.path import join
 from pathlib import Path
+from statistics import mode
+
 from paragraph_extraction_trainer.PdfSegment import PdfSegment
 from pdf_features.PdfFeatures import PdfFeatures
 from pdf_features.PdfToken import PdfToken
@@ -57,11 +59,19 @@ def find_best_prediction_for_token(page_pdf_name, token, vgt_predictions_dict, m
     if most_probable_prediction:
         most_probable_tokens_by_predictions.setdefault(most_probable_prediction, list()).append(token)
     else:
-        dummy_prediction = Prediction(bounding_box=token.bounding_box, category_id=1, score=0.0)
+        dummy_prediction = Prediction(bounding_box=token.bounding_box, category_id=10, score=0.0)
         most_probable_tokens_by_predictions.setdefault(dummy_prediction, list()).append(token)
 
 
+def get_merged_prediction_type(to_merge: list[Prediction]):
+    table_exists = any([p.category_id == 9 for p in to_merge])
+    if not table_exists:
+        return mode([p.category_id for p in sorted(to_merge, key=lambda x: -x.score)])
+    return 9
+
+
 def merge_colliding_predictions(predictions: list[Prediction]):
+    predictions = [p for p in predictions if not p.score < 20]
     while True:
         new_predictions, merged = [], False
         while predictions:
@@ -72,7 +82,7 @@ def merge_colliding_predictions(predictions: list[Prediction]):
             if to_merge:
                 to_merge.append(p1)
                 p1.bounding_box = Rectangle.merge_rectangles([prediction.bounding_box for prediction in to_merge])
-                p1.category_id = max(to_merge, key=lambda x: x.score).category_id
+                p1.category_id = get_merged_prediction_type(to_merge)
                 merged = True
             new_predictions.append(p1)
         if not merged:

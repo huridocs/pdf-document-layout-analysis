@@ -1,4 +1,4 @@
-FROM pytorch/pytorch:2.3.0-cuda11.8-cudnn8-runtime
+FROM pytorch/pytorch:2.3.1-cuda11.8-cudnn8-runtime
 
 RUN apt-get update
 RUN apt-get install -y -q --no-install-recommends libgomp1 ffmpeg libsm6 libxext6 pdftohtml git ninja-build g++
