@@ -1,4 +1,5 @@
 from paragraph_extraction_trainer.PdfSegment import PdfSegment
+from pdf_features.Rectangle import Rectangle
 from pdf_token_type_labels.TokenType import TokenType
 from pydantic import BaseModel
 
@@ -12,7 +13,7 @@ class SegmentBox(BaseModel):
     height: float
     page_number: int
     text: str = ""
-    type: int = 0
+    type: TokenType = TokenType.TEXT
 
     def to_dict(self):
         return {
@@ -22,7 +23,7 @@ class SegmentBox(BaseModel):
             "height": self.height,
             "page_number": self.page_number,
             "text": self.text,
-            "type": TokenType.from_index(self.type).name,
+            "type": self.type.name,
         }
 
     @staticmethod
@@ -34,5 +35,5 @@ class SegmentBox(BaseModel):
             height=pdf_segment.bounding_box.height,
             page_number=pdf_segment.page_number,
             text=pdf_segment.text_content,
-            type=pdf_segment.segment_type if type(pdf_segment.segment_type) is int else pdf_segment.segment_type.get_index(),
+            type=pdf_segment.segment_type,
         )

@@ -16,6 +16,7 @@ WORD_GRIDS_PATH = Path(join(ROOT_PATH, "word_grids"))
 JSONS_ROOT_PATH = Path(join(ROOT_PATH, "jsons"))
 JSON_TEST_FILE_PATH = Path(join(JSONS_ROOT_PATH, "test.json"))
 MODELS_PATH = Path(join(ROOT_PATH, "models"))
+XMLS_PATH = Path(join(ROOT_PATH, "xmls"))
 
 DOCLAYNET_TYPE_BY_ID = {
     1: "Caption",

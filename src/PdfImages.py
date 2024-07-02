@@ -1,3 +1,4 @@
+import os
 import shutil
 
 import cv2
@@ -9,7 +10,7 @@ from PIL import Image
 from pdf2image import convert_from_path
 from pdf_features.PdfFeatures import PdfFeatures
 
-from src.configuration import IMAGES_ROOT_PATH
+from src.configuration import IMAGES_ROOT_PATH, XMLS_PATH
 
 
 class PdfImages:
@@ -36,8 +37,14 @@ class PdfImages:
         shutil.rmtree(IMAGES_ROOT_PATH)
 
     @staticmethod
-    def from_pdf_path(pdf_path: str, pdf_name: str = ""):
-        pdf_features: PdfFeatures = PdfFeatures.from_pdf_path(pdf_path)
+    def from_pdf_path(pdf_path: str | Path, pdf_name: str = "", xml_name: str = ""):
+        xml_path = Path(join(XMLS_PATH, xml_name)) if xml_name else None
+
+        if xml_path and not xml_path.parent.exists():
+            os.makedirs(xml_path.parent, exist_ok=True)
+
+        pdf_features: PdfFeatures = PdfFeatures.from_pdf_path(pdf_path, str(xml_path) if xml_path else None)
+
         if pdf_name:
             pdf_features.file_name = pdf_name
         else:
