@@ -1,3 +1,8 @@
+fastapi==0.110.2
+python-multipart==0.0.9
+uvicorn==0.29.0
+gunicorn==22.0.0
+requests==2.32.3
 torch==2.3.1
 torchvision==0.18.1
 timm==1.0.7
@@ -9,5 +14,4 @@ opencv-python==4.10.0.84
 Shapely==2.0.4
 transformers==4.42.3
 pdf2image==1.17.0
-git+https://github.com/huridocs/pdf-tokens-type-labeler@0cb4c05d23b8880daa620c54928a6b32b9039f95
-git+https://github.com/huridocs/pdf_paragraphs_extraction@dd9105a221f75974e2719b5817c3c8c66869c58c
+git+https://github.com/huridocs/pdf-tokens-type-labeler@30943759a2866a9b77f225d6511c70bd44650825

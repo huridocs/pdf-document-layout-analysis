@@ -1,8 +1,8 @@
 from os.path import join
 from typing import AnyStr
 
-from paragraph_extraction_trainer.ParagraphExtractorTrainer import ParagraphExtractorTrainer
-from paragraph_extraction_trainer.model_configuration import MODEL_CONFIGURATION as PARAGRAPH_EXTRACTION_CONFIGURATION
+from fast_trainer.ParagraphExtractorTrainer import ParagraphExtractorTrainer
+from fast_trainer.model_configuration import MODEL_CONFIGURATION as PARAGRAPH_EXTRACTION_CONFIGURATION
 from pdf_features.PdfFeatures import PdfFeatures
 from pdf_tokens_type_trainer.TokenTypeTrainer import TokenTypeTrainer
 from pdf_tokens_type_trainer.ModelConfiguration import ModelConfiguration

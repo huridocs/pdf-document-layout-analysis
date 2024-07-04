@@ -1,4 +1,4 @@
-from paragraph_extraction_trainer.PdfSegment import PdfSegment
+from fast_trainer.PdfSegment import PdfSegment
 from pdf_features.PdfPage import PdfPage
 from pdf_features.PdfToken import PdfToken
 from pdf_token_type_labels.TokenType import TokenType
