@@ -46,7 +46,18 @@ class TestEndToEnd(TestCase):
 
             results = requests.post(f"{self.service_url}", files=files)
 
+            results_dict = results.json()
+            expected_content = "RESOLUCIÓN DE LA CORTE INTERAMERICANA DE DERECHOS HUMANOS DEL 29 DE JULIO DE 1991"
             self.assertEqual(200, results.status_code)
+            self.assertEqual(expected_content, results_dict[0]["text"])
+            self.assertEqual(157, results_dict[0]["left"])
+            self.assertEqual(105, results_dict[0]["top"])
+            self.assertEqual(283, results_dict[0]["width"])
+            self.assertEqual(36, results_dict[0]["height"])
+            self.assertEqual(1, results_dict[0]["page_number"])
+            self.assertEqual(595, results_dict[0]["page_width"])
+            self.assertEqual(842, results_dict[0]["page_height"])
+            self.assertEqual("SECTION_HEADER", results_dict[0]["type"])
 
     def test_error_file_fast(self):
         with open(f"{ROOT_PATH}/test_pdfs/error.pdf", "rb") as stream:

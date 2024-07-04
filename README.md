@@ -118,6 +118,8 @@ When the process is done, the output will include a list of SegmentBox elements 
             "width": Width of the segment
             "height": Height of the segment
             "page_number": Page number which the segment belongs to
+            "page_width": Width of the page which the segment belongs to 
+            "page_height": Width of the page which the segment belongs to
             "text": Text inside the segment
             "type": Type of the segment (one of the categories mentioned above)
         }

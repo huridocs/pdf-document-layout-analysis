@@ -59,7 +59,10 @@ def analyze_pdf(file: AnyStr, xml_file_name: str = "") -> list[dict]:
     remove_files()
     predicted_segments = get_most_probable_pdf_segments("doclaynet", pdf_images_list, False)
     predicted_segments = get_reading_orders(pdf_images_list, predicted_segments)
-    return [SegmentBox.from_pdf_segment(pdf_segment).to_dict() for pdf_segment in predicted_segments]
+    return [
+        SegmentBox.from_pdf_segment(pdf_segment, pdf_images_list[0].pdf_features.pages).to_dict()
+        for pdf_segment in predicted_segments
+    ]
 
 
 def remove_files():
