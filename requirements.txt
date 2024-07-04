@@ -15,7 +15,7 @@ Shapely==2.0.4
 transformers==4.42.3
 pdf2image==1.17.0
 lxml==5.2.0
-numpy==1.26.4
+numpy==2.0.0
 lxml==5.2.0
 lightgbm==4.3.0
 huggingface_hub==0.23.2
