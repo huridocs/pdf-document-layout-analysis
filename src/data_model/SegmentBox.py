@@ -44,3 +44,8 @@ class SegmentBox(BaseModel):
             text=pdf_segment.text_content,
             type=pdf_segment.segment_type,
         )
+
+
+if __name__ == "__main__":
+    a = TokenType.TEXT
+    print(a.value)
