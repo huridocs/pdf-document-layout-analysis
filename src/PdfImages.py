@@ -37,8 +37,8 @@ class PdfImages:
         shutil.rmtree(IMAGES_ROOT_PATH)
 
     @staticmethod
-    def from_pdf_path(pdf_path: str | Path, pdf_name: str = "", xml_name: str = ""):
-        xml_path = Path(join(XMLS_PATH, xml_name)) if xml_name else None
+    def from_pdf_path(pdf_path: str | Path, pdf_name: str = "", xml_file_name: str = ""):
+        xml_path = Path(join(XMLS_PATH, xml_file_name)) if xml_file_name else None
 
         if xml_path and not xml_path.parent.exists():
             os.makedirs(xml_path.parent, exist_ok=True)
