@@ -12,7 +12,7 @@ requests==2.32.3
 scipy==1.14.0
 opencv-python==4.10.0.84
 Shapely==2.0.4
-transformers==4.39.0
+transformers==4.42.3
 pdf2image==1.17.0
 lxml==5.2.2
 lightgbm==4.4.0
