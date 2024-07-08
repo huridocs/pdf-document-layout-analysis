@@ -46,5 +46,6 @@ async def get_xml(xml_file_name: str):
 
 
 @app.post("/fast")
+@catch_exceptions
 async def run_fast(file: UploadFile = File(...)):
     return analyze_pdf_fast(file.file.read())

@@ -56,3 +56,6 @@ free_up_space:
 start_detached:
 	mkdir -p ./models
 	docker compose up --build -d
+
+upgrade:
+	. .venv/bin/activate; pip-upgrade
