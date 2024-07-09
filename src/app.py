@@ -6,10 +6,10 @@ import torch
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import PlainTextResponse
 
-from analyze_pdf_fast import analyze_pdf_fast
 from catch_exceptions import catch_exceptions
 from configuration import service_logger, XMLS_PATH
-from src.analyze_pdf import analyze_pdf
+from pdf_layout_analysis.run_pdf_layout_analysis import analyze_pdf
+from pdf_layout_analysis.run_pdf_layout_analysis_fast import analyze_pdf_fast
 
 service_logger.info(f"Is PyTorch using GPU: {torch.cuda.is_available()}")
 

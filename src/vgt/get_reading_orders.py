@@ -3,7 +3,7 @@ from pdf_features.PdfPage import PdfPage
 from pdf_features.PdfToken import PdfToken
 from pdf_token_type_labels.TokenType import TokenType
 
-from PdfImages import PdfImages
+from data_model.PdfImages import PdfImages
 
 
 def find_segment_for_token(token: PdfToken, segments: list[PdfSegment], tokens_by_segments):

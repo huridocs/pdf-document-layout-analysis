@@ -9,7 +9,7 @@ from pdf_features.PdfFeatures import PdfFeatures
 from pdf_features.PdfToken import PdfToken
 from pdf_features.Rectangle import Rectangle
 from pdf_token_type_labels.TokenType import TokenType
-from PdfImages import PdfImages
+from data_model.PdfImages import PdfImages
 from configuration import ROOT_PATH, DOCLAYNET_TYPE_BY_ID
 from data_model.Prediction import Prediction
 

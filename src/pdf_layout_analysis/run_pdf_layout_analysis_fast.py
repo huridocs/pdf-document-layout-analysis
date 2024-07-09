@@ -4,10 +4,10 @@ from typing import AnyStr
 from fast_trainer.ParagraphExtractorTrainer import ParagraphExtractorTrainer
 from fast_trainer.model_configuration import MODEL_CONFIGURATION as PARAGRAPH_EXTRACTION_CONFIGURATION
 from pdf_features.PdfFeatures import PdfFeatures
+from pdf_layout_analysis.run_pdf_layout_analysis import pdf_content_to_pdf_path
 from pdf_tokens_type_trainer.TokenTypeTrainer import TokenTypeTrainer
 from pdf_tokens_type_trainer.ModelConfiguration import ModelConfiguration
 
-from analyze_pdf import pdf_content_to_pdf_path
 from configuration import ROOT_PATH, service_logger
 from data_model.SegmentBox import SegmentBox
 
