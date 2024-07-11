@@ -28,5 +28,12 @@ class TokenType(Enum):
         except IndexError:
             return TokenType.TEXT.name.lower()
 
+    @staticmethod
+    def from_value(value: str):
+        for token_type in TokenType:
+            if token_type.value == value:
+                return token_type
+        return TokenType.TEXT
+
     def get_index(self) -> int:
         return list(TokenType).index(self)

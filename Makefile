@@ -1,3 +1,5 @@
+HAS_GPU := $(shell command -v nvidia-smi > /dev/null && echo 1 || echo 0)
+
 install:
 	. .venv/bin/activate; pip install -Ur requirements.txt
 
@@ -23,7 +25,14 @@ remove_docker_images:
 
 start:
 	mkdir -p ./models
+ifeq ($(HAS_GPU), 1)
+	@echo "NVIDIA GPU detected, using docker-compose-gpu.yml"
 	docker compose -f docker-compose-gpu.yml up --build
+else
+	@echo "No NVIDIA GPU detected, using docker-compose.yml"
+	docker compose -f docker-compose.yml up --build
+endif
+
 
 start_no_gpu:
 	mkdir -p ./models

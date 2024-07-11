@@ -28,11 +28,7 @@ pictures, tables and so on. Additionally, it determines the correct order of the
 ## Quick Start
 Start the service:
 
-    # With GPU support
     make start
-    
-    # Without GPU support [if you do not have a GPU on your system]
-    make start_no_gpu
 
 Get the segments from a PDF:
 
@@ -49,7 +45,9 @@ To stop the server:
 - [Models](#models)
 - [Data](#data)
 - [Usage](#usage)
-- [Benchmark](#benchmark)
+- [Benchmarks](#benchmarks)
+  - [Performance](#performance)
+  - [Speed](#speed)
 - [Related Services](#related-services)
 
 ## Dependencies
@@ -57,8 +55,8 @@ To stop the server:
 * For GPU support [install link](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
 
 ## Requirements
-* 4 GB RAM memory
-* 6 GB GPU memory (if not, it will run with CPU)
+* 2 GB RAM memory
+* 5 GB GPU memory (if not, it will run on CPU)
   
 ## Models
 
@@ -102,10 +100,14 @@ As we mentioned at the [Quick Start](#quick-start), you can use the service simp
 
     curl -X POST -F 'file=@/PATH/TO/PDF/pdf_name.pdf' localhost:5060
 
-This command will run the code on visual model. So you should be prepared that it will use lots of resources. But if you
-want to use the not visual models, which are the LightGBM models, you can use this command:
+This command will run the visual model. So you should be prepared that it will use lots of resources. Also, please note 
+that if you do not have GPU in your system, or if you do not have enough free GPU memory, the visual model will run on CPU. 
+You should be expecting a long response time in that case (See [speed benchmark](#speed) for more details).
 
-    curl -X POST -F 'file=@/PATH/TO/PDF/pdf_name.pdf' localhost:5060/fast
+
+If you want to use the non-visual models, which are the LightGBM models, you can use this command:
+
+    curl -X POST -F 'file=@/PATH/TO/PDF/pdf_name.pdf' -F "fast=true" localhost:5060
 
 The shape of the response will be the same in both of these commands. 
 
@@ -146,7 +148,9 @@ we process them after sorting all segments with content. To determine their read
 using distance as a criterion.
 
 
-## Benchmark
+## Benchmarks
+
+### Performance
 
 These are the benchmark results for VGT model on PubLayNet dataset:
 
@@ -170,6 +174,37 @@ These are the benchmark results for VGT model on PubLayNet dataset:
 </table>
 
 You can check this link to see the comparison with the other models: https://paperswithcode.com/sota/document-layout-analysis-on-publaynet-val
+
+### Speed
+
+For 15 pages academic paper document:
+
+<table>
+  <tr>
+    <th>Model</th>
+    <th>GPU</th>
+    <th>Speed (seconds per page)</th>
+  </tr>
+  <tr>
+    <td>Fast Model</td>
+    <td>✗ [i7-8700 3.2GHz]</td>
+    <td>0.42</td>
+  </tr>
+  <tr>
+    <td>VGT</td>
+    <td>✓ [GTX 1070]</td>
+    <td>1.75</td>
+  </tr>
+  <tr>
+    <td>VGT</td>
+    <td>✗ [i7-8700 3.2GHz]</td>
+    <td>13.5</td>
+  </tr>
+</table>
+
+
+
+
 
 ## Related Services
 Here are some of our other services that is built upon this service:

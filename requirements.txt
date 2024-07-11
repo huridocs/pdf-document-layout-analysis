@@ -18,3 +18,4 @@ lxml==5.2.2
 lightgbm==4.4.0
 huggingface_hub==0.23.4
 setuptools==70.2.0
+roman~=4.2
