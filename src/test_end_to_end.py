@@ -62,16 +62,18 @@ class TestEndToEnd(TestCase):
     def test_error_file_fast(self):
         with open(f"{ROOT_PATH}/test_pdfs/error.pdf", "rb") as stream:
             files = {"file": stream}
+            data = {"fast": "True"}
 
-            results = requests.post(f"{self.service_url}/fast", files=files)
+            results = requests.post(f"{self.service_url}", files=files, data=data)
 
             self.assertEqual(422, results.status_code)
 
     def test_blank_pdf_fast(self):
         with open(f"{ROOT_PATH}/test_pdfs/blank.pdf", "rb") as stream:
             files = {"file": stream}
+            data = {"fast": "True"}
 
-            results = requests.post(f"{self.service_url}/fast", files=files)
+            results = requests.post(f"{self.service_url}", files=files, data=data)
 
             self.assertEqual(200, results.status_code)
             self.assertEqual(0, len(results.json()))
@@ -79,8 +81,9 @@ class TestEndToEnd(TestCase):
     def test_segmentation_some_empty_pages_fast(self):
         with open(f"{ROOT_PATH}/test_pdfs/some_empty_pages.pdf", "rb") as stream:
             files = {"file": stream}
+            data = {"fast": "True"}
 
-            results = requests.post(f"{self.service_url}/fast", files=files)
+            results = requests.post(f"{self.service_url}", files=files, data=data)
 
             self.assertEqual(200, results.status_code)
             self.assertEqual(2, len(results.json()))
@@ -88,8 +91,9 @@ class TestEndToEnd(TestCase):
     def test_image_pdfs_fast(self):
         with open(f"{ROOT_PATH}/test_pdfs/image.pdf", "rb") as stream:
             files = {"file": stream}
+            data = {"fast": "True"}
 
-            results = requests.post(f"{self.service_url}/fast", files=files)
+            results = requests.post(f"{self.service_url}", files=files, data=data)
 
             self.assertEqual(200, results.status_code)
             self.assertEqual(0, len(results.json()))
@@ -97,7 +101,8 @@ class TestEndToEnd(TestCase):
     def test_regular_pdf_fast(self):
         with open(f"{ROOT_PATH}/test_pdfs/regular.pdf", "rb") as stream:
             files = {"file": stream}
-            results = requests.post(f"{self.service_url}/fast", files=files)
+            data = {"fast": "True"}
+            results = requests.post(f"{self.service_url}", files=files, data=data)
         results_dict = results.json()
         expected_content = "RESOLUCIÓN DE LA CORTE INTERAMERICANA DE DERECHOS HUMANOS"
         self.assertEqual(200, results.status_code)
@@ -130,15 +135,17 @@ class TestEndToEnd(TestCase):
     def test_korean_fast(self):
         with open(f"{ROOT_PATH}/test_pdfs/korean.pdf", "rb") as stream:
             files = {"file": stream}
+            data = {"fast": "True"}
 
-            results = requests.post(f"{self.service_url}/fast", files=files)
+            results = requests.post(f"{self.service_url}", files=files, data=data)
 
             self.assertEqual(200, results.status_code)
 
     def test_chinese_fast(self):
         with open(f"{ROOT_PATH}/test_pdfs/chinese.pdf", "rb") as stream:
             files = {"file": stream}
+            data = {"fast": "True"}
 
-            results = requests.post(f"{self.service_url}/fast", files=files)
+            results = requests.post(f"{self.service_url}", files=files, data=data)
 
             self.assertEqual(200, results.status_code)

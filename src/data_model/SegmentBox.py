@@ -1,10 +1,7 @@
 from fast_trainer.PdfSegment import PdfSegment
 from pdf_features.PdfPage import PdfPage
-from pdf_features.Rectangle import Rectangle
 from pdf_token_type_labels.TokenType import TokenType
 from pydantic import BaseModel
-
-from configuration import DOCLAYNET_TYPE_BY_ID
 
 
 class SegmentBox(BaseModel):
