@@ -61,7 +61,7 @@ class TOCExtractor:
             rectangle["width"] = int(toc_item.selection_rectangle.width)
             rectangle["height"] = int(toc_item.selection_rectangle.height)
             rectangle["page"] = str(toc_item.selection_rectangle.page_number)
-            toc_element_dict["selection_rectangle"] = rectangle
+            toc_element_dict["bounding_box"] = rectangle
             toc.append(toc_element_dict)
 
         return toc
