@@ -10,6 +10,7 @@ from pdf_layout_analysis.get_xml import get_xml
 from pdf_layout_analysis.run_pdf_layout_analysis import analyze_pdf
 from pdf_layout_analysis.run_pdf_layout_analysis_fast import analyze_pdf_fast
 from toc.extract_table_of_contents import extract_table_of_contents
+from toc.get_toc import get_toc
 
 service_logger.info(f"Is PyTorch using GPU: {torch.cuda.is_available()}")
 
@@ -52,8 +53,5 @@ async def run_fast(file: UploadFile = File(...)):
 
 @app.post("/toc")
 @catch_exceptions
-async def get_toc(file: UploadFile = File(...), fast: bool = Form(False)):
-    file_content = file.file.read()
-    if fast:
-        return extract_table_of_contents(file_content, analyze_pdf_fast(file_content))
-    return extract_table_of_contents(file_content, analyze_pdf(file_content))
+async def get_toc_endpoint(file: UploadFile = File(...), fast: bool = Form(False)):
+    return await run_in_threadpool(get_toc, file, fast)
