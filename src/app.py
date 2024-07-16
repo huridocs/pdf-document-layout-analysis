@@ -9,7 +9,6 @@ from configuration import service_logger
 from pdf_layout_analysis.get_xml import get_xml
 from pdf_layout_analysis.run_pdf_layout_analysis import analyze_pdf
 from pdf_layout_analysis.run_pdf_layout_analysis_fast import analyze_pdf_fast
-from toc.extract_table_of_contents import extract_table_of_contents
 from toc.get_toc import get_toc
 
 service_logger.info(f"Is PyTorch using GPU: {torch.cuda.is_available()}")
