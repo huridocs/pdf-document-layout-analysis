@@ -28,7 +28,10 @@ async def error():
 
 @app.post("/")
 @catch_exceptions
-async def run(file: UploadFile = File(...)):
+async def run(file: UploadFile = File(...), fast: bool = Form(False)):
+    if fast:
+        return await run_in_threadpool(analyze_pdf_fast, file.file.read())
+
     return await run_in_threadpool(analyze_pdf, file.file.read(), "")
 
 
@@ -42,12 +45,6 @@ async def analyze_and_save_xml(file: UploadFile = File(...), xml_file_name: str 
 @catch_exceptions
 async def get_xml_by_name(xml_file_name: str):
     return await run_in_threadpool(get_xml, xml_file_name)
-
-
-@app.post("/fast")
-@catch_exceptions
-async def run_fast(file: UploadFile = File(...)):
-    return await run_in_threadpool(analyze_pdf_fast, file.file.read())
 
 
 @app.post("/toc")

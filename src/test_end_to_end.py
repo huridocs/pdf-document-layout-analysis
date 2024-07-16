@@ -149,3 +149,32 @@ class TestEndToEnd(TestCase):
             results = requests.post(f"{self.service_url}", files=files, data=data)
 
             self.assertEqual(200, results.status_code)
+
+    def test_toc(self):
+        with open(f"{ROOT_PATH}/test_pdfs/toc-test.pdf", "rb") as stream:
+            files = {"file": stream}
+
+            response = requests.post(f"{self.service_url}/toc", files=files)
+
+            response_json = response.json()
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response_json), 5)
+            self.assertEqual(response_json[0]["label"], "TEST")
+            self.assertEqual(response_json[0]["indentation"], 0)
+            self.assertEqual(response_json[-1]["label"], "C. TITLE LONGER")
+            self.assertEqual(response_json[-1]["indentation"], 2)
+
+    def test_toc_fast(self):
+        with open(f"{ROOT_PATH}/test_pdfs/toc-test.pdf", "rb") as stream:
+            files = {"file": stream}
+            data = {"fast": "True"}
+
+            response = requests.post(f"{self.service_url}/toc", files=files, data=data)
+
+            response_json = response.json()
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response_json), 5)
+            self.assertEqual(response_json[0]["label"], "TEST")
+            self.assertEqual(response_json[0]["indentation"], 0)
+            self.assertEqual(response_json[-1]["label"], "C. TITLE LONGER")
+            self.assertEqual(response_json[-1]["indentation"], 2)
