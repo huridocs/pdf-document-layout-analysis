@@ -49,7 +49,7 @@ def predict_doclaynet():
     VGTTrainer.test(configuration, model)
 
 
-def analyze_pdf(file: AnyStr, xml_file_name: str = "") -> list[dict]:
+def analyze_pdf(file: AnyStr, xml_file_name: str) -> list[dict]:
     pdf_path = pdf_content_to_pdf_path(file)
     service_logger.info(f"Creating PDF images")
     pdf_images_list: list[PdfImages] = [PdfImages.from_pdf_path(pdf_path, "", xml_file_name)]
