@@ -178,3 +178,28 @@ class TestEndToEnd(TestCase):
             self.assertEqual(response_json[0]["indentation"], 0)
             self.assertEqual(response_json[-1]["label"], "C. TITLE LONGER")
             self.assertEqual(response_json[-1]["indentation"], 2)
+
+    def test_text_extraction(self):
+        with open(f"{ROOT_PATH}/test_pdfs/test.pdf", "rb") as stream:
+            files = {"file": stream}
+
+            response = requests.post(f"{self.service_url}/text", files=files)
+
+            response_json = response.json()
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response_json.split()[0], "Document")
+            self.assertEqual(response_json.split()[1], "Big")
+            self.assertEqual(response_json.split()[-1], "TEXT")
+
+    def test_text_extraction_fast(self):
+        with open(f"{ROOT_PATH}/test_pdfs/test.pdf", "rb") as stream:
+            files = {"file": stream}
+            data = {"fast": "True"}
+
+            response = requests.post(f"{self.service_url}/text", files=files, data=data)
+
+            response_json = response.json()
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response_json.split()[0], "Document")
+            self.assertEqual(response_json.split()[1], "Big")
+            self.assertEqual(response_json.split()[-1], "TEXT")
