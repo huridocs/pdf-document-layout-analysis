@@ -31,14 +31,16 @@ async def error():
 @catch_exceptions
 async def run(file: UploadFile = File(...), fast: bool = Form(False)):
     if fast:
-        return await run_in_threadpool(analyze_pdf_fast, file.file.read())
+        return await run_in_threadpool(analyze_pdf_fast, file.file.read(), "")
 
     return await run_in_threadpool(analyze_pdf, file.file.read(), "")
 
 
 @app.post("/save_xml/{xml_file_name}")
 @catch_exceptions
-async def analyze_and_save_xml(file: UploadFile = File(...), xml_file_name: str | None = None):
+async def analyze_and_save_xml(file: UploadFile = File(...), xml_file_name: str | None = None, fast: bool = Form(False)):
+    if fast:
+        return await run_in_threadpool(analyze_pdf_fast, file.file.read(), xml_file_name)
     return await run_in_threadpool(analyze_pdf, file.file.read(), xml_file_name)
 
 

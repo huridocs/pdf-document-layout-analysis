@@ -12,10 +12,10 @@ from configuration import ROOT_PATH, service_logger
 from data_model.SegmentBox import SegmentBox
 
 
-def analyze_pdf_fast(file: AnyStr):
+def analyze_pdf_fast(file: AnyStr, xml_file_name: str = "") -> list[dict]:
     pdf_path = pdf_content_to_pdf_path(file)
     service_logger.info("Creating Paragraph Tokens [fast]")
-    pdf_features = PdfFeatures.from_pdf_path(pdf_path)
+    pdf_features = PdfFeatures.from_pdf_path(pdf_path, xml_file_name)
     token_type_trainer = TokenTypeTrainer([pdf_features], ModelConfiguration())
     token_type_trainer.set_token_types(join(ROOT_PATH, "models", "token_type_lightgbm.model"))
     trainer = ParagraphExtractorTrainer(pdfs_features=[pdf_features], model_configuration=PARAGRAPH_EXTRACTION_CONFIGURATION)
