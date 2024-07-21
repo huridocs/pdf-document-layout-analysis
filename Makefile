@@ -24,7 +24,11 @@ remove_docker_images:
 	docker compose config --images | xargs docker rmi
 
 start:
+ifeq ($(OS), Windows_NT)
+	if not exist models mkdir models
+else
 	mkdir -p ./models
+endif
 ifeq ($(HAS_GPU), 1)
 	@echo "NVIDIA GPU detected, using docker-compose-gpu.yml"
 	docker compose -f docker-compose-gpu.yml up --build
