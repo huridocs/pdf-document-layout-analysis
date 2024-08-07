@@ -126,6 +126,17 @@ When the process is done, the output will include a list of SegmentBox elements 
             "type": Type of the segment (one of the categories mentioned above)
         }
 
+
+If you want to get the visualizations, you can use this command:
+
+    curl -X POST -F 'file=@/PATH/TO/PDF/pdf_name.pdf' localhost:5060/visualize -o ''file=@/PATH/TO/OUTPUT_PDF/pdf_name.pdf''
+
+Or with fast models:
+
+    curl -X POST -F 'file=@/PATH/TO/PDF/pdf_name.pdf' -F "fast=tru" localhost:5060/visualize -o ''file=@/PATH/TO/OUTPUT_PDF/pdf_name.pdf''
+
+
+
 And to stop the server, you can simply use this:
 
     make stop

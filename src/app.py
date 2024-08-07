@@ -11,6 +11,7 @@ from pdf_layout_analysis.run_pdf_layout_analysis import analyze_pdf
 from pdf_layout_analysis.run_pdf_layout_analysis_fast import analyze_pdf_fast
 from text_extraction.get_text_extraction import get_text_extraction
 from toc.get_toc import get_toc
+from visualization.get_visualization import get_visualization
 
 service_logger.info(f"Is PyTorch using GPU: {torch.cuda.is_available()}")
 
@@ -60,3 +61,9 @@ async def get_toc_endpoint(file: UploadFile = File(...), fast: bool = Form(False
 @catch_exceptions
 async def get_text_endpoint(file: UploadFile = File(...), fast: bool = Form(False), types: str = Form("all")):
     return await run_in_threadpool(get_text_extraction, file, fast, types)
+
+
+@app.post("/visualize")
+@catch_exceptions
+async def get_visualization_endpoint(file: UploadFile = File(...), fast: bool = Form(False)):
+    return await run_in_threadpool(get_visualization, file, fast)
