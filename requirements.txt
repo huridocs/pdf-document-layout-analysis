@@ -1,6 +1,6 @@
 fastapi==0.111.1
 python-multipart==0.0.9
-uvicorn==0.30.3
+uvicorn==0.30.6
 gunicorn==22.0.0
 requests==2.32.3
 torch==2.4.0
