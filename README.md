@@ -129,11 +129,11 @@ When the process is done, the output will include a list of SegmentBox elements 
 
 If you want to get the visualizations, you can use this command:
 
-    curl -X POST -F 'file=@/PATH/TO/PDF/pdf_name.pdf' localhost:5060/visualize -o ''file=@/PATH/TO/OUTPUT_PDF/pdf_name.pdf''
+    curl -X POST -F 'file=@/PATH/TO/PDF/pdf_name.pdf' localhost:5060/visualize -o '/PATH/TO/OUTPUT_PDF/pdf_name.pdf'
 
 Or with fast models:
 
-    curl -X POST -F 'file=@/PATH/TO/PDF/pdf_name.pdf' -F "fast=tru" localhost:5060/visualize -o ''file=@/PATH/TO/OUTPUT_PDF/pdf_name.pdf''
+    curl -X POST -F 'file=@/PATH/TO/PDF/pdf_name.pdf' -F "fast=true" localhost:5060/visualize -o '/PATH/TO/OUTPUT_PDF/pdf_name.pdf'
 
 
 
