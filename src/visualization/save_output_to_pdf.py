@@ -1,6 +1,5 @@
 from os import makedirs
 from os.path import join
-from pathlib import Path
 from pdf_annotate import PdfAnnotator, Location, Appearance
 from configuration import ROOT_PATH
 
@@ -59,7 +58,7 @@ def save_output(annotator: PdfAnnotator, output_pdf_path: str):
     annotator.write(output_pdf_path)
 
 
-def save_output_to_pdf(pdf_path: Path, segment_boxes: list[dict], output_pdf_path: str):
+def save_output_to_pdf(pdf_path: str, segment_boxes: list[dict]):
     pdf_outputs_path = join(ROOT_PATH, f"pdf_outputs")
     makedirs(pdf_outputs_path, exist_ok=True)
     annotator = PdfAnnotator(str(pdf_path))
@@ -72,4 +71,4 @@ def save_output_to_pdf(pdf_path: Path, segment_boxes: list[dict], output_pdf_pat
         page_height = int(segment_box["page_height"])
         add_prediction_annotation(annotator, segment_box, segment_index, page_height)
         segment_index += 1
-    save_output(annotator, output_pdf_path)
+    save_output(annotator, pdf_path)

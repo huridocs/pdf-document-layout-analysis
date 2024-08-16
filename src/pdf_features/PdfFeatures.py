@@ -10,6 +10,7 @@ from statistics import mode
 from lxml import etree
 from lxml.etree import ElementBase, XMLSyntaxError
 
+from configuration import service_logger
 from pdf_features.PdfFont import PdfFont
 from pdf_features.PdfModes import PdfModes
 from pdf_features.PdfPage import PdfPage
@@ -100,9 +101,17 @@ class PdfFeatures:
         return len(text_elements) > 0
 
     @staticmethod
+    def is_pdf_encrypted(pdf_path):
+        result = subprocess.run(["qpdf", "--show-encryption", pdf_path], capture_output=True, text=True, check=True)
+        return False if "File is not encrypted" in result.stdout else True
+
+    @staticmethod
     def from_pdf_path(pdf_path, xml_path: str = None):
         remove_xml = False if xml_path else True
         xml_path = xml_path if xml_path else join(tempfile.gettempdir(), "pdf_etree.xml")
+
+        if PdfFeatures.is_pdf_encrypted(pdf_path):
+            subprocess.run(["qpdf", "--decrypt", "--replace-input", pdf_path])
 
         subprocess.run(["pdftohtml", "-i", "-xml", "-zoom", "1.0", pdf_path, xml_path])
 
