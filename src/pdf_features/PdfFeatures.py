@@ -6,11 +6,9 @@ from collections import Counter
 from os.path import join, exists
 from pathlib import Path
 from statistics import mode
-
+from subprocess import CalledProcessError
 from lxml import etree
 from lxml.etree import ElementBase, XMLSyntaxError
-
-from configuration import service_logger
 from pdf_features.PdfFont import PdfFont
 from pdf_features.PdfModes import PdfModes
 from pdf_features.PdfPage import PdfPage
@@ -102,7 +100,10 @@ class PdfFeatures:
 
     @staticmethod
     def is_pdf_encrypted(pdf_path):
-        result = subprocess.run(["qpdf", "--show-encryption", pdf_path], capture_output=True, text=True, check=True)
+        try:
+            result = subprocess.run(["qpdf", "--show-encryption", pdf_path], capture_output=True, text=True, check=True)
+        except CalledProcessError:
+            return False
         return False if "File is not encrypted" in result.stdout else True
 
     @staticmethod
