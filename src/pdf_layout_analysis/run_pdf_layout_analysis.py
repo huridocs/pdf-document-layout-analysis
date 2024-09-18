@@ -5,6 +5,8 @@ from pathlib import Path
 from typing import AnyStr
 from data_model.SegmentBox import SegmentBox
 from ditod.VGTTrainer import VGTTrainer
+from extraction_formats.extract_formula_formats import extract_formula_format
+from extraction_formats.extract_table_formats import extract_table_format
 from vgt.get_json_annotations import get_annotations
 from vgt.get_model_configuration import get_model_configuration
 from vgt.get_most_probable_pdf_segments import get_most_probable_pdf_segments
@@ -49,7 +51,7 @@ def predict_doclaynet():
     VGTTrainer.test(configuration, model)
 
 
-def analyze_pdf(file: AnyStr, xml_file_name: str) -> list[dict]:
+def analyze_pdf(file: AnyStr, xml_file_name: str, extraction_format: str = "") -> list[dict]:
     pdf_path = pdf_content_to_pdf_path(file)
     service_logger.info(f"Creating PDF images")
     pdf_images_list: list[PdfImages] = [PdfImages.from_pdf_path(pdf_path, "", xml_file_name)]
@@ -59,6 +61,10 @@ def analyze_pdf(file: AnyStr, xml_file_name: str) -> list[dict]:
     remove_files()
     predicted_segments = get_most_probable_pdf_segments("doclaynet", pdf_images_list, False)
     predicted_segments = get_reading_orders(pdf_images_list, predicted_segments)
+    if extraction_format:
+        extract_table_format(pdf_images_list[0], predicted_segments, extraction_format)
+        extract_formula_format(pdf_images_list[0], predicted_segments)
+
     return [
         SegmentBox.from_pdf_segment(pdf_segment, pdf_images_list[0].pdf_features.pages).to_dict()
         for pdf_segment in predicted_segments
