@@ -3,7 +3,6 @@ import torch
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.responses import PlainTextResponse
 from starlette.concurrency import run_in_threadpool
-
 from catch_exceptions import catch_exceptions
 from configuration import service_logger
 from pdf_layout_analysis.get_xml import get_xml
@@ -30,19 +29,18 @@ async def error():
 
 @app.post("/")
 @catch_exceptions
-async def run(file: UploadFile = File(...), fast: bool = Form(False)):
+async def run(file: UploadFile = File(...), fast: bool = Form(False), extraction_format: str = Form("")):
     if fast:
-        return await run_in_threadpool(analyze_pdf_fast, file.file.read(), "")
-
-    return await run_in_threadpool(analyze_pdf, file.file.read(), "")
+        return await run_in_threadpool(analyze_pdf_fast, file.file.read(), "", extraction_format)
+    return await run_in_threadpool(analyze_pdf, file.file.read(), "", extraction_format)
 
 
 @app.post("/save_xml/{xml_file_name}")
 @catch_exceptions
 async def analyze_and_save_xml(file: UploadFile = File(...), xml_file_name: str | None = None, fast: bool = Form(False)):
     if fast:
-        return await run_in_threadpool(analyze_pdf_fast, file.file.read(), xml_file_name)
-    return await run_in_threadpool(analyze_pdf, file.file.read(), xml_file_name)
+        return await run_in_threadpool(analyze_pdf_fast, file.file.read(), xml_file_name, "")
+    return await run_in_threadpool(analyze_pdf, file.file.read(), xml_file_name, "")
 
 
 @app.get("/get_xml/{xml_file_name}", response_class=PlainTextResponse)
