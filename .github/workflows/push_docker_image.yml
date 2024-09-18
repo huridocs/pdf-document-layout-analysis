@@ -19,6 +19,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Free up space
+        run: make free_up_space
+
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:

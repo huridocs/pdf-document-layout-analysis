@@ -55,6 +55,22 @@ async def get_toc_endpoint(file: UploadFile = File(...), fast: bool = Form(False
     return await run_in_threadpool(get_toc, file, fast)
 
 
+@app.post("/toc_legacy_uwazi_compatible")
+@catch_exceptions
+async def toc_legacy_uwazi_compatible(file: UploadFile = File(...)):
+    toc = await run_in_threadpool(get_toc, file, True)
+    toc_compatible = []
+    for toc_item in toc:
+        toc_compatible.append(toc_item.copy())
+        toc_compatible[-1]["bounding_box"]["left"] = int(toc_item["bounding_box"]["left"] / 0.75)
+        toc_compatible[-1]["bounding_box"]["top"] = int(toc_item["bounding_box"]["top"] / 0.75)
+        toc_compatible[-1]["bounding_box"]["width"] = int(toc_item["bounding_box"]["width"] / 0.75)
+        toc_compatible[-1]["bounding_box"]["height"] = int(toc_item["bounding_box"]["height"] / 0.75)
+        toc_compatible[-1]["selectionRectangles"] = [toc_compatible[-1]["bounding_box"]]
+        del toc_compatible[-1]["bounding_box"]
+    return toc_compatible
+
+
 @app.post("/text")
 @catch_exceptions
 async def get_text_endpoint(file: UploadFile = File(...), fast: bool = Form(False), types: str = Form("all")):
