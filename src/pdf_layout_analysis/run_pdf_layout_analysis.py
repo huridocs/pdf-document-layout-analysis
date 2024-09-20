@@ -61,9 +61,9 @@ def analyze_pdf(file: AnyStr, xml_file_name: str, extraction_format: str = "") -
     remove_files()
     predicted_segments = get_most_probable_pdf_segments("doclaynet", pdf_images_list, False)
     predicted_segments = get_reading_orders(pdf_images_list, predicted_segments)
+    extract_formula_format(pdf_images_list[0], predicted_segments)
     if extraction_format:
         extract_table_format(pdf_images_list[0], predicted_segments, extraction_format)
-        extract_formula_format(pdf_images_list[0], predicted_segments)
 
     return [
         SegmentBox.from_pdf_segment(pdf_segment, pdf_images_list[0].pdf_features.pages).to_dict()

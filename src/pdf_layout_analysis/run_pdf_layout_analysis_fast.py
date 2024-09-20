@@ -31,7 +31,7 @@ def analyze_pdf_fast(file: AnyStr, xml_file_name: str = "", extraction_format: s
     token_type_trainer.set_token_types(join(ROOT_PATH, "models", "token_type_lightgbm.model"))
     trainer = ParagraphExtractorTrainer(pdfs_features=[pdf_features], model_configuration=PARAGRAPH_EXTRACTION_CONFIGURATION)
     segments = trainer.get_pdf_segments(join(ROOT_PATH, "models", "paragraph_extraction_lightgbm.model"))
+    extract_formula_format(pdf_images, segments)
     if extraction_format:
         extract_table_format(pdf_images, segments, extraction_format)
-        extract_formula_format(pdf_images, segments)
     return [SegmentBox.from_pdf_segment(pdf_segment, pdf_features.pages).to_dict() for pdf_segment in segments]
