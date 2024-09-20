@@ -159,6 +159,28 @@ we process them after sorting all segments with content. To determine their read
 using distance as a criterion.
 
 
+### Extracting Tables and Formulas
+
+Our service provides a way to extract your tables and formulas in different formats. 
+
+As default, formula segments' "text" property will include the formula in LaTeX format.
+
+You can also extract tables in different formats like "markdown", "latex", or "html" but this is not a default option.  
+To extract the tables like this, you should set "extraction_format" parameter. Some example usages shown below:
+
+```
+curl -X POST -F 'file=@/PATH/TO/PDF/pdf_name.pdf' localhost:5060 -F "extraction_format=latex"
+```
+```
+curl -X POST -F 'file=@/PATH/TO/PDF/pdf_name.pdf' localhost:5060/fast -F "extraction_format=markdown"
+```
+
+You should be aware that this additional extraction process can make the process much longer, especially if you have a large number of tables.
+
+(For table extraction, we are using [StructEqTable](https://github.com/UniModal4Reasoning/StructEqTable-Deploy) 
+and for formula extraction, we are using [RapidLaTeXOCR](https://github.com/RapidAI/RapidLaTeXOCR))
+
+
 ## Benchmarks
 
 ### Performance

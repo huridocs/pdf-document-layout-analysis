@@ -20,3 +20,6 @@ huggingface_hub==0.24.3
 setuptools==72.1.0
 roman==4.2
 hydra-core==1.3.2
+pypandoc==1.13
+rapid-latex-ocr==0.0.7
+git+https://github.com/UniModal4Reasoning/StructEqTable-Deploy.git@fd06078bfa9364849eb39330c075dd63cbed73ff
