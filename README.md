@@ -177,6 +177,8 @@ curl -X POST -F 'file=@/PATH/TO/PDF/pdf_name.pdf' localhost:5060/fast -F "extrac
 
 You should be aware that this additional extraction process can make the process much longer, especially if you have a large number of tables.
 
+(For table extraction, we are using [StructEqTable](https://github.com/UniModal4Reasoning/StructEqTable-Deploy) 
+and for formula extraction, we are using [RapidLaTeXOCR](https://github.com/RapidAI/RapidLaTeXOCR))
 
 
 ## Benchmarks
