@@ -30,12 +30,12 @@ Run the service:
 
 - With GPU support:
 ```    
-docker run --gpus '"device=0"' -p 5060:5060 --entrypoint ./start.sh huridocs/pdf-document-layout-analysis:v0.0.14
+docker run --rm --name pdf-document-layout-analysis --gpus '"device=0"' -p 5060:5060 --entrypoint ./start.sh huridocs/pdf-document-layout-analysis:v0.0.14
 ```
 
 - Without GPU support:
 ```
-docker run -p 5060:5060 --entrypoint ./start.sh huridocs/pdf-document-layout-analysis:v0.0.14
+docker run --rm --name pdf-document-layout-analysis -p 5060:5060 --entrypoint ./start.sh huridocs/pdf-document-layout-analysis:v0.0.14
 ```
 
 Get the segments from a PDF:
@@ -44,10 +44,11 @@ Get the segments from a PDF:
 
 To stop the server:
 
-    make stop
+    docker stop pdf-document-layout-analysis
 
 ## Contents
 - [Quick Start](#quick-start)
+- [Build From Source](#build-from-source)
 - [Dependencies](#dependencies)
 - [Requirements](#requirements)
 - [Models](#models)
