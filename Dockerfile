@@ -22,6 +22,7 @@ WORKDIR /app
 RUN cd src; git clone https://github.com/facebookresearch/detectron2;
 RUN cd src/detectron2; git checkout 70f454304e1a38378200459dd2dbca0f0f4a5ab4; python setup.py build develop
 
+COPY ./start.sh ./start.sh
 COPY ./src/. ./src
 COPY ./models/. ./models/
 RUN python src/download_models.py

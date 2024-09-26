@@ -26,9 +26,17 @@ pictures, tables and so on. Additionally, it determines the correct order of the
 
 
 ## Quick Start
-Start the service:
+Run the service:
 
-    make start
+- With GPU support:
+```    
+docker run --gpus '"device=0"' -p 5060:5060 --entrypoint ./start.sh huridocs/pdf-document-layout-analysis:v0.0.14
+```
+
+- Without GPU support:
+```
+docker run -p 5060:5060 --entrypoint ./start.sh huridocs/pdf-document-layout-analysis:v0.0.14
+```
 
 Get the segments from a PDF:
 
@@ -49,6 +57,21 @@ To stop the server:
   - [Performance](#performance)
   - [Speed](#speed)
 - [Related Services](#related-services)
+
+## Build From Source
+
+Start the service:
+
+    make start
+
+Get the segments from a PDF:
+
+    curl -X POST -F 'file=@/PATH/TO/PDF/pdf_name.pdf' localhost:5060
+
+To stop the server:
+
+    make stop
+
 
 ## Dependencies
 * Docker Desktop 4.25.0 [install link](https://www.docker.com/products/docker-desktop/)
