@@ -1,3 +1,4 @@
+
 <h3 align="center">PDF Document Layout Analysis</h3>
 <p align="center">A Docker-powered service for PDF document layout analysis</p>
 
@@ -24,18 +25,25 @@ pictures, tables and so on. Additionally, it determines the correct order of the
   </tr>
 </table>
 
+#### Project Links:
+
+- GitHub: [pdf-document-layout-analysis](https://github.com/huridocs/pdf-document-layout-analysis)
+- HuggingFace: [pdf-document-layout-analysis](https://huggingface.co/HURIDOCS/pdf-document-layout-analysis)
+- DockerHub: [pdf-document-layout-analysis](https://hub.docker.com/r/huridocs/pdf-document-layout-analysis/)
+
+---
 
 ## Quick Start
 Run the service:
 
 - With GPU support:
 ```    
-docker run --rm --name pdf-document-layout-analysis --gpus '"device=0"' -p 5060:5060 --entrypoint ./start.sh huridocs/pdf-document-layout-analysis:v0.0.14
+docker run --rm --name pdf-document-layout-analysis --gpus '"device=0"' -p 5060:5060 --entrypoint ./start.sh huridocs/pdf-document-layout-analysis:v0.0.14.1
 ```
 
 - Without GPU support:
 ```
-docker run --rm --name pdf-document-layout-analysis -p 5060:5060 --entrypoint ./start.sh huridocs/pdf-document-layout-analysis:v0.0.14
+docker run --rm --name pdf-document-layout-analysis -p 5060:5060 --entrypoint ./start.sh huridocs/pdf-document-layout-analysis:v0.0.14.1
 ```
 
 Get the segments from a PDF:
