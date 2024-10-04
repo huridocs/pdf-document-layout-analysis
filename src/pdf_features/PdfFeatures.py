@@ -107,9 +107,9 @@ class PdfFeatures:
         return False if "File is not encrypted" in result.stdout else True
 
     @staticmethod
-    def from_pdf_path(pdf_path, xml_path: str = None):
+    def from_pdf_path(pdf_path, xml_path: str | Path = None):
         remove_xml = False if xml_path else True
-        xml_path = xml_path if xml_path else join(tempfile.gettempdir(), "pdf_etree.xml")
+        xml_path = str(xml_path) if xml_path else join(tempfile.gettempdir(), "pdf_etree.xml")
 
         if PdfFeatures.is_pdf_encrypted(pdf_path):
             subprocess.run(["qpdf", "--decrypt", "--replace-input", pdf_path])

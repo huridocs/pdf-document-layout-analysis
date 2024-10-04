@@ -38,12 +38,12 @@ class PdfImages:
 
     @staticmethod
     def from_pdf_path(pdf_path: str | Path, pdf_name: str = "", xml_file_name: str = ""):
-        xml_path = Path(join(XMLS_PATH, xml_file_name)) if xml_file_name else None
+        xml_path = None if not xml_file_name else Path(XMLS_PATH, xml_file_name)
 
         if xml_path and not xml_path.parent.exists():
             os.makedirs(xml_path.parent, exist_ok=True)
 
-        pdf_features: PdfFeatures = PdfFeatures.from_pdf_path(pdf_path, str(xml_path) if xml_path else None)
+        pdf_features: PdfFeatures = PdfFeatures.from_pdf_path(pdf_path, xml_path)
 
         if pdf_name:
             pdf_features.file_name = pdf_name

@@ -1,3 +1,5 @@
+from time import sleep
+
 import requests
 from unittest import TestCase
 from configuration import ROOT_PATH
@@ -115,6 +117,28 @@ class TestEndToEnd(TestCase):
         self.assertEqual(595, results_dict[0]["page_width"])
         self.assertEqual(842, results_dict[0]["page_height"])
         self.assertEqual("Section header", results_dict[0]["type"])
+
+    def test_save_xml_fast(self):
+        xml_name = "test_fast.xml"
+        with open(f"{ROOT_PATH}/test_pdfs/regular.pdf", "rb") as stream:
+            files = {"file": stream}
+            data = {"fast": "True"}
+            requests.post(f"{self.service_url}/save_xml/{xml_name}", files=files, data=data)
+
+        result_xml = requests.get(f"{self.service_url}/get_xml/{xml_name}")
+        self.assertEqual(200, result_xml.status_code)
+        self.assertIsNotNone(result_xml.text)
+
+    def test_save_xml(self):
+        xml_name = "test.xml"
+        with open(f"{ROOT_PATH}/test_pdfs/regular.pdf", "rb") as stream:
+            files = {"file": stream}
+            data = {"fast": "False"}
+            requests.post(f"{self.service_url}/save_xml/{xml_name}", files=files, data=data)
+
+        result_xml = requests.get(f"{self.service_url}/get_xml/{xml_name}")
+        self.assertEqual(200, result_xml.status_code)
+        self.assertIsNotNone(result_xml.text)
 
     def test_korean(self):
         with open(f"{ROOT_PATH}/test_pdfs/korean.pdf", "rb") as stream:
