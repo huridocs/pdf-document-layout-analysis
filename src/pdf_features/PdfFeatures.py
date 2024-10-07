@@ -114,10 +114,10 @@ class PdfFeatures:
         if PdfFeatures.is_pdf_encrypted(pdf_path):
             subprocess.run(["qpdf", "--decrypt", "--replace-input", pdf_path])
 
-        subprocess.run(["pdftohtml", "-i", "-xml", "-zoom", "1.0", pdf_path, xml_path])
+        subprocess.run(["pdftohtml", "-nodrm", "-i", "-xml", "-zoom", "1.0", pdf_path, xml_path])
 
         if not PdfFeatures.contains_text(xml_path):
-            subprocess.run(["pdftohtml", "-i", "-hidden", "-xml", "-zoom", "1.0", pdf_path, xml_path])
+            subprocess.run(["pdftohtml", "-nodrm", "-i", "-hidden", "-xml", "-zoom", "1.0", pdf_path, xml_path])
 
         pdf_features = PdfFeatures.from_poppler_etree(xml_path, file_name=Path(pdf_path).name)
 
