@@ -13,7 +13,7 @@ setup(
     name=PROJECT_NAME,
     packages=["pdf_tokens_type_trainer", "pdf_features", "pdf_token_type_labels", "fast_trainer"],
     package_dir={"": "src"},
-    version="0.14",
+    version="0.15",
     url="https://github.com/huridocs/pdf-document-layout-analysis",
     author="HURIDOCS",
     description="This tool is for PDF document layout analysis",
