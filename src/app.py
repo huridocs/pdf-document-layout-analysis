@@ -38,6 +38,7 @@ async def run(file: UploadFile = File(...), fast: bool = Form(False), extraction
 @app.post("/save_xml/{xml_file_name}")
 @catch_exceptions
 async def analyze_and_save_xml(file: UploadFile = File(...), xml_file_name: str | None = None, fast: bool = Form(False)):
+    xml_file_name = xml_file_name if xml_file_name.endswith(".xml") else f"{xml_file_name}.xml"
     if fast:
         return await run_in_threadpool(analyze_pdf_fast, file.file.read(), xml_file_name, "")
     return await run_in_threadpool(analyze_pdf, file.file.read(), xml_file_name, "")
@@ -46,6 +47,7 @@ async def analyze_and_save_xml(file: UploadFile = File(...), xml_file_name: str 
 @app.get("/get_xml/{xml_file_name}", response_class=PlainTextResponse)
 @catch_exceptions
 async def get_xml_by_name(xml_file_name: str):
+    xml_file_name = xml_file_name if xml_file_name.endswith(".xml") else f"{xml_file_name}.xml"
     return await run_in_threadpool(get_xml, xml_file_name)
 
 
