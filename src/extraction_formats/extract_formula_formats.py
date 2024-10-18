@@ -30,6 +30,6 @@ def extract_formula_format(pdf_images: PdfImages, predicted_segments: list[PdfSe
         formula_image = page_image.crop((left, top, left + width, top + height))
         try:
             extracted_formula = get_latex_format(model, formula_image)
-        except RuntimeError:
+        except (ValueError, RuntimeError):
             continue
         predicted_segments[index].text_content = extracted_formula
