@@ -114,7 +114,7 @@ class BrosConfig(PretrainedConfig):
         pad_token_id=0,
         bbox_scale=100.0,
         pe_type="crel",
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             vocab_size=vocab_size,
