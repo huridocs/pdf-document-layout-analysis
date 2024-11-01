@@ -1,10 +1,10 @@
 [project]
 name = "pdf-document-layout-analysis"
-version = "2024.11.1.1002"
+version = "2024.11.1.1003"
 description = "This tool is for PDF document layout analysis"
 license = { file = "LICENSE" }
 authors = [{ name = "HURIDOCS" }]
-requires-python = ">= 3.11"
+requires-python = ">= 3.10"
 dependencies = [
     "fastapi==0.111.1",
     "python-multipart==0.0.9",
