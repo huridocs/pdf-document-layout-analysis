@@ -1,8 +1,8 @@
-from time import sleep
+from pathlib import Path
 
 import requests
 from unittest import TestCase
-from configuration import ROOT_PATH
+from configuration import ROOT_PATH, SRC_PATH
 
 
 class TestEndToEnd(TestCase):
@@ -48,18 +48,18 @@ class TestEndToEnd(TestCase):
 
             results = requests.post(f"{self.service_url}", files=files)
 
-            results_dict = results.json()
+            results_list = results.json()
             expected_content = "RESOLUCIÓN DE LA CORTE INTERAMERICANA DE DERECHOS HUMANOS DEL 29 DE JULIO DE 1991"
             self.assertEqual(200, results.status_code)
-            self.assertEqual(expected_content, results_dict[0]["text"])
-            self.assertEqual(157, results_dict[0]["left"])
-            self.assertEqual(105, results_dict[0]["top"])
-            self.assertEqual(283, results_dict[0]["width"])
-            self.assertEqual(36, results_dict[0]["height"])
-            self.assertEqual(1, results_dict[0]["page_number"])
-            self.assertEqual(595, results_dict[0]["page_width"])
-            self.assertEqual(842, results_dict[0]["page_height"])
-            self.assertEqual("Section header", results_dict[0]["type"])
+            self.assertEqual(expected_content, results_list[0]["text"])
+            self.assertEqual(157, results_list[0]["left"])
+            self.assertEqual(105, results_list[0]["top"])
+            self.assertEqual(283, results_list[0]["width"])
+            self.assertEqual(36, results_list[0]["height"])
+            self.assertEqual(1, results_list[0]["page_number"])
+            self.assertEqual(595, results_list[0]["page_width"])
+            self.assertEqual(842, results_list[0]["page_height"])
+            self.assertEqual("Section header", results_list[0]["type"])
 
     def test_error_file_fast(self):
         with open(f"{ROOT_PATH}/test_pdfs/error.pdf", "rb") as stream:
@@ -105,18 +105,19 @@ class TestEndToEnd(TestCase):
             files = {"file": stream}
             data = {"fast": "True"}
             results = requests.post(f"{self.service_url}", files=files, data=data)
-        results_dict = results.json()
+
+        results_list = results.json()
         expected_content = "RESOLUCIÓN DE LA CORTE INTERAMERICANA DE DERECHOS HUMANOS"
         self.assertEqual(200, results.status_code)
-        self.assertEqual(expected_content, results_dict[0]["text"])
-        self.assertEqual(157, results_dict[0]["left"])
-        self.assertEqual(106, results_dict[0]["top"])
-        self.assertEqual(284, results_dict[0]["width"])
-        self.assertEqual(24, results_dict[0]["height"])
-        self.assertEqual(1, results_dict[0]["page_number"])
-        self.assertEqual(595, results_dict[0]["page_width"])
-        self.assertEqual(842, results_dict[0]["page_height"])
-        self.assertEqual("Section header", results_dict[0]["type"])
+        self.assertEqual(expected_content, results_list[0]["text"])
+        self.assertEqual(157, results_list[0]["left"])
+        self.assertEqual(106, results_list[0]["top"])
+        self.assertEqual(284, results_list[0]["width"])
+        self.assertEqual(24, results_list[0]["height"])
+        self.assertEqual(1, results_list[0]["page_number"])
+        self.assertEqual(595, results_list[0]["page_width"])
+        self.assertEqual(842, results_list[0]["page_height"])
+        self.assertEqual("Section header", results_list[0]["type"])
 
     def test_save_xml_fast(self):
         xml_name = "test_fast.xml"
@@ -255,3 +256,45 @@ class TestEndToEnd(TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertIn("E_{_{v r i o r}}", formula_text)
             self.assertIn("-\\ \\Theta||", formula_text)
+
+    def test_ocr_english(self):
+        with open(Path(ROOT_PATH, "test_pdfs", "ocr-sample-english.pdf"), "rb") as stream:
+            files = {"file": stream}
+            result_ocr = requests.post(f"{self.service_url}/ocr", files=files)
+            files = {"file": result_ocr.content}
+            results = requests.post(f"{self.service_url}", files=files)
+
+        results_list = results.json()
+        self.assertEqual(200, results.status_code)
+        self.assertEqual(1, len(results_list))
+        self.assertEqual("Test  text  OCR", results_list[0]["text"])
+        self.assertEqual(248, results_list[0]["left"])
+        self.assertEqual(263, results_list[0]["top"])
+        self.assertEqual(313, results_list[0]["width"])
+        self.assertEqual(52, results_list[0]["height"])
+        self.assertEqual(1, results_list[0]["page_number"])
+        self.assertEqual(842, results_list[0]["page_width"])
+        self.assertEqual(595, results_list[0]["page_height"])
+        self.assertEqual("Section header", results_list[0]["type"])
+
+    def test_ocr_pdf_with_text(self):
+        with open(Path(ROOT_PATH, "test_pdfs", "ocr-sample-already-ocred.pdf"), "rb") as stream:
+            files = {"file": stream}
+            result_ocr = requests.post(f"{self.service_url}/ocr", files=files)
+            files = {"file": result_ocr.content}
+            results = requests.post(f"{self.service_url}", files=files)
+
+        results_list = results.json()
+        self.assertEqual(200, results.status_code)
+        self.assertEqual(2, len(results_list))
+        self.assertEqual("This  is  some  real  text", results_list[0]["text"])
+        self.assertEqual("Text", results_list[0]["type"])
+        self.assertEqual("This  is  some  text  in  an  image", results_list[1]["text"])
+        self.assertEqual("Text", results_list[1]["type"])
+
+    def test_ocr_failing(self):
+        with open(Path(ROOT_PATH, "test_pdfs", "not_a_pdf.pdf"), "rb") as stream:
+            files = {"file": stream}
+            result_ocr = requests.post(f"{self.service_url}/ocr", files=files)
+
+        self.assertEqual(500, result_ocr.status_code)

@@ -1,5 +1,4 @@
 import logging
-from os.path import join
 from pathlib import Path
 
 
@@ -11,12 +10,15 @@ logging.root.handlers = []
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s", handlers=handlers)
 service_logger = logging.getLogger(__name__)
 
-IMAGES_ROOT_PATH = Path(join(ROOT_PATH, "images"))
-WORD_GRIDS_PATH = Path(join(ROOT_PATH, "word_grids"))
-JSONS_ROOT_PATH = Path(join(ROOT_PATH, "jsons"))
-JSON_TEST_FILE_PATH = Path(join(JSONS_ROOT_PATH, "test.json"))
-MODELS_PATH = Path(join(ROOT_PATH, "models"))
-XMLS_PATH = Path(join(ROOT_PATH, "xmls"))
+IMAGES_ROOT_PATH = Path(ROOT_PATH, "images")
+WORD_GRIDS_PATH = Path(ROOT_PATH, "word_grids")
+JSONS_ROOT_PATH = Path(ROOT_PATH, "jsons")
+OCR_SOURCE = Path(ROOT_PATH, "ocr", "source")
+OCR_OUTPUT = Path(ROOT_PATH, "ocr", "output")
+OCR_FAILED = Path(ROOT_PATH, "ocr", "failed")
+JSON_TEST_FILE_PATH = Path(JSONS_ROOT_PATH, "test.json")
+MODELS_PATH = Path(ROOT_PATH, "models")
+XMLS_PATH = Path(ROOT_PATH, "xmls")
 
 DOCLAYNET_TYPE_BY_ID = {
     1: "Caption",

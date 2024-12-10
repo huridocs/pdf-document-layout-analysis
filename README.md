@@ -1,11 +1,12 @@
 
 <h3 align="center">PDF Document Layout Analysis</h3>
-<p align="center">A Docker-powered service for PDF document layout analysis</p>
+<p align="center">A Docker-powered service for PDF document layout analysis and PDF OCR</p>
 
 ---
-This project provides a powerful and flexible PDF analysis service. The service allows for 
-the segmentation and classification of different parts of PDF pages, identifying the elements such as texts, titles, 
-pictures, tables and so on. Additionally, it determines the correct order of these identified elements.
+This project provides a powerful and flexible PDF analysis service. The service enables OCR, 
+segmentation, and classification of different parts of PDF pages, 
+identifying elements such as texts, titles, pictures, tables, and so on. 
+Additionally, it determines the correct order of these identified elements.
 
 
 <table>
@@ -37,41 +38,19 @@ pictures, tables and so on. Additionally, it determines the correct order of the
 Run the service:
 
 - With GPU support:
-```    
-docker run --rm --name pdf-document-layout-analysis --gpus '"device=0"' -p 5060:5060 --entrypoint ./start.sh huridocs/pdf-document-layout-analysis:v0.0.20
-```
+  
+      make start
+
 
 - Without GPU support:
-```
-docker run --rm --name pdf-document-layout-analysis -p 5060:5060 --entrypoint ./start.sh huridocs/pdf-document-layout-analysis:v0.0.20
-```
 
-Get the segments from a PDF:
+      make start_no_gpu
 
-    curl -X POST -F 'file=@/PATH/TO/PDF/pdf_name.pdf' localhost:5060
 
-To stop the server:
+[OPTIONAL] OCR the PDF:
 
-    docker stop pdf-document-layout-analysis
+    curl -X POST -F 'language=en' -F 'file=@/PATH/TO/PDF/pdf_name.pdf' localhost:5060/ocr --output ocr_document.pdf
 
-## Contents
-- [Quick Start](#quick-start)
-- [Build From Source](#build-from-source)
-- [Dependencies](#dependencies)
-- [Requirements](#requirements)
-- [Models](#models)
-- [Data](#data)
-- [Usage](#usage)
-- [Benchmarks](#benchmarks)
-  - [Performance](#performance)
-  - [Speed](#speed)
-- [Related Services](#related-services)
-
-## Build From Source
-
-Start the service:
-
-    make start
 
 Get the segments from a PDF:
 
@@ -81,6 +60,18 @@ To stop the server:
 
     make stop
 
+
+## Contents
+- [Quick Start](#quick-start)
+- [Dependencies](#dependencies)
+- [Requirements](#requirements)
+- [Models](#models)
+- [Data](#data)
+- [Usage](#usage)
+- [Benchmarks](#benchmarks)
+  - [Performance](#performance)
+  - [Speed](#speed)
+- [Related Services](#related-services)
 
 ## Dependencies
 * Docker Desktop 4.25.0 [install link](https://www.docker.com/products/docker-desktop/)
@@ -106,6 +97,8 @@ By combining both, we are segmenting the pages alongside with the type of the co
 Even though the visual model using more resources than the others, generally it's giving better performance since it 
 "sees" the whole page and has an idea about all the context. On the other hand, LightGBM models are performing slightly worse
 but they are much faster and more resource-friendly. It will only require your CPU power.
+
+The service converts PDFs to text-searchable PDFs using [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) and [ocrmypdf](https://ocrmypdf.readthedocs.io/en/latest/index.html).
 
 ## Data
 

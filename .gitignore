@@ -164,3 +164,4 @@ cython_debug/
 /model_output/
 /pdf_outputs/
 /detectron2/
+/ocr/

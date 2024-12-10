@@ -1,10 +1,18 @@
+import os
+import subprocess
 import sys
+from pathlib import Path
+
 import torch
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.responses import PlainTextResponse
 from starlette.concurrency import run_in_threadpool
+from starlette.responses import FileResponse
+
 from catch_exceptions import catch_exceptions
-from configuration import service_logger
+from configuration import service_logger, OCR_SOURCE
+from ocr.languages import supported_languages
+from ocr.ocr_pdf import ocr_pdf
 from pdf_layout_analysis.get_xml import get_xml
 from pdf_layout_analysis.run_pdf_layout_analysis import analyze_pdf
 from pdf_layout_analysis.run_pdf_layout_analysis_fast import analyze_pdf_fast
@@ -18,8 +26,18 @@ app = FastAPI()
 
 
 @app.get("/")
-async def info():
+async def root():
     return sys.version + " Using GPU: " + str(torch.cuda.is_available())
+
+
+@app.get("/info")
+async def info():
+    return {
+        "sys": sys.version,
+        "tesseract_version": subprocess.run("tesseract --version", shell=True, text=True, capture_output=True).stdout,
+        "ocrmypdf_version": subprocess.run("ocrmypdf --version", shell=True, text=True, capture_output=True).stdout,
+        "supported_languages": supported_languages(),
+    }
 
 
 @app.get("/error")
@@ -83,3 +101,14 @@ async def get_text_endpoint(file: UploadFile = File(...), fast: bool = Form(Fals
 @catch_exceptions
 async def get_visualization_endpoint(file: UploadFile = File(...), fast: bool = Form(False)):
     return await run_in_threadpool(get_visualization, file, fast)
+
+
+@app.post("/ocr")
+@catch_exceptions
+async def ocr_pdf_sync(file: UploadFile = File(...), language: str = Form("en")):
+    namespace = "sync_pdfs"
+    path = Path(OCR_SOURCE, namespace, file.filename)
+    os.makedirs(path.parent, exist_ok=True)
+    path.write_bytes(file.file.read())
+    processed_pdf_filepath = ocr_pdf(file.filename, namespace, language)
+    return FileResponse(path=processed_pdf_filepath, media_type="application/pdf")
