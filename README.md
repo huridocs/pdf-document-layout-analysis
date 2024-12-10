@@ -47,7 +47,7 @@ Run the service:
       make start_no_gpu
 
 
-[OPTIONAL] OCR the PDF:
+[OPTIONAL] OCR the PDF. Check supported languages (curl localhost:5060/info):
 
     curl -X POST -F 'language=en' -F 'file=@/PATH/TO/PDF/pdf_name.pdf' localhost:5060/ocr --output ocr_document.pdf
 
