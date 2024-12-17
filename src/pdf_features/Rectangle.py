@@ -25,6 +25,9 @@ class Rectangle:
         x_max = x_min + int(tag.attrib["width"])
         y_max = y_min + int(tag.attrib["height"])
 
+        if len(content) <= 1:
+            return Rectangle(x_min, y_min, x_max, y_max)
+
         one_character_length = max(int((x_max - x_min) / len(content)), 2)
         if content[0] == " ":
             x_min += one_character_length
