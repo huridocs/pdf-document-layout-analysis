@@ -44,11 +44,11 @@ class PdfToken:
         else:
             tag_id = "tag"
 
-        content = "".join(xml_tag.itertext()).strip()
         reading_order_no = int(xml_tag.attrib["reading_order_no"]) if "reading_order_no" in xml_tag.attrib else -1
         bounding_box = Rectangle.from_poppler_tag_etree(xml_tag)
         token_type = TokenType.TEXT
 
+        content = "".join(xml_tag.itertext()).strip()
         return PdfToken(page_number, tag_id, content, pdf_font, reading_order_no, bounding_box, token_type)
 
     def get_label_intersection_percentage(self, label: Label):
