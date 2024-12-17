@@ -60,6 +60,11 @@ class Rectangle:
 
         return bottom - top
 
+    def get_horizontal_intersection(self, rectangle: "Rectangle") -> float:
+        left = max(self.left, rectangle.left)
+        right = min(self.right, rectangle.right)
+
+        return right - left
 
     def area(self):
         return self.width * self.height
