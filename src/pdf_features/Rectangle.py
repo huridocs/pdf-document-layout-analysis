@@ -73,7 +73,7 @@ class Rectangle:
         left = max(self.left, rectangle.left)
         right = min(self.right, rectangle.right)
 
-        return right - left
+        return left - right
 
     def area(self):
         return self.width * self.height
