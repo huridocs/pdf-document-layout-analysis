@@ -60,7 +60,7 @@ class Rectangle:
 
         return bottom - top
 
-    def get_horizontal_intersection(self, rectangle: "Rectangle") -> float:
+    def get_horizontal_distance(self, rectangle: "Rectangle") -> float:
         left = max(self.left, rectangle.left)
         right = min(self.right, rectangle.right)
 
