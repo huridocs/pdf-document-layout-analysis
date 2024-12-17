@@ -51,6 +51,16 @@ class Rectangle:
 
         return 100 * (x2 - x1) * (y2 - y1) / self.area()
 
+    def get_vertical_intersection(self, rectangle: "Rectangle") -> float:
+        top = max(self.top, rectangle.top)
+        bottom = min(self.bottom, rectangle.bottom)
+
+        if bottom <= top:
+            return 0
+
+        return bottom - top
+
+
     def area(self):
         return self.width * self.height
 
