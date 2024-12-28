@@ -1,5 +1,4 @@
 import math
-from fileinput import filename
 from os import makedirs
 from os.path import join, exists
 from pathlib import Path
