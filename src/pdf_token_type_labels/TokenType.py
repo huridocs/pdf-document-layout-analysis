@@ -17,7 +17,7 @@ class TokenType(Enum):
     @staticmethod
     def from_text(text: str):
         try:
-            return TokenType[text.upper()]
+            return TokenType[text.replace(" ", "_").upper()]
         except KeyError:
             return TokenType.TEXT
 
