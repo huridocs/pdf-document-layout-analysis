@@ -64,7 +64,7 @@ class PdfTrainer:
             page_number,
             "pad_token",
             "",
-            PdfFont("pad_font_id", False, False, 0.0, "#000000"),
+            PdfFont(font_id="pad_font_id", font_size=0, bold=False, italics=False, color="black"),
             segment_number,
             Rectangle.from_coordinates(0, 0, 0, 0),
             TokenType.TEXT,
