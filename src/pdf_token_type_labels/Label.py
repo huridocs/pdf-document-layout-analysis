@@ -13,7 +13,7 @@ class Label(BaseModel):
     metadata: str = ""
 
     def intersection_percentage(self, token_bounding_box: Rectangle):
-        label_bounding_box = Rectangle(
+        label_bounding_box = Rectangle.from_coordinates(
             left=self.left, top=self.top, right=self.left + self.width, bottom=self.top + self.height
         )
         return label_bounding_box.get_intersection_percentage(token_bounding_box)

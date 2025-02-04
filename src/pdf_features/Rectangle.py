@@ -2,19 +2,18 @@ import os
 import sys
 
 from lxml.etree import ElementBase
+from pydantic import BaseModel
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 
-class Rectangle:
-    def __init__(self, left: int, top: int, right: int, bottom: int):
-        self.left = left
-        self.top = top
-        self.right = right
-        self.bottom = bottom
-        self.fix_wrong_areas()
-        self.width = self.right - self.left
-        self.height = self.bottom - self.top
+class Rectangle(BaseModel):
+    left: int
+    top: int
+    right: int
+    bottom: int
+    width: int
+    height: int
 
     @staticmethod
     def from_poppler_tag_etree(tag: ElementBase) -> "Rectangle":
@@ -26,7 +25,7 @@ class Rectangle:
         y_max = y_min + int(tag.attrib["height"])
 
         if len(content) <= 1:
-            return Rectangle(x_min, y_min, x_max, y_max)
+            return Rectangle.from_coordinates(x_min, y_min, x_max, y_max)
 
         one_character_length = max(int((x_max - x_min) / len(content)), 2)
         if content[0] == " ":
@@ -35,22 +34,7 @@ class Rectangle:
         if content[-1] == " ":
             x_max -= one_character_length
 
-        return Rectangle(x_min, y_min, x_max, y_max)
-
-    def fix_wrong_areas(self):
-        if self.right == self.left:
-            self.left -= 1
-            self.right += 1
-
-        if self.top == self.bottom:
-            self.top -= 1
-            self.bottom += 1
-
-        if self.right < self.left:
-            self.right, self.left = self.left, self.right
-
-        if self.bottom < self.top:
-            self.top, self.bottom = self.bottom, self.top
+        return Rectangle.from_coordinates(x_min, y_min, x_max, y_max)
 
     def get_intersection_percentage(self, rectangle: "Rectangle") -> float:
         x1 = max(self.left, rectangle.left)
@@ -91,8 +75,33 @@ class Rectangle:
         right = max([rectangle.right for rectangle in rectangles])
         bottom = max([rectangle.bottom for rectangle in rectangles])
 
-        return Rectangle(left, top, right, bottom)
+        return Rectangle.from_coordinates(left, top, right, bottom)
 
     @staticmethod
     def from_width_height(left: int, top: int, width: int, height: int):
-        return Rectangle(left, top, left + width, top + height)
+        return Rectangle.from_coordinates(left, top, left + width, top + height)
+
+    @staticmethod
+    def from_coordinates(left: float, top: float, right: float, bottom: float):
+        left, top, right, bottom = Rectangle.fix_wrong_areas(left, top, right, bottom)
+        width = right - left
+        height = bottom - top
+        return Rectangle(left=left, top=top, right=right, bottom=bottom, width=width, height=height)
+
+    @staticmethod
+    def fix_wrong_areas(left: float, top: float, right: float, bottom: float):
+        if right == left:
+            left -= 1
+            right += 1
+
+        if top == bottom:
+            top -= 1
+            bottom += 1
+
+        if right < left:
+            right, left = left, right
+
+        if bottom < top:
+            top, bottom = bottom, top
+
+        return int(left), int(top), int(right), int(bottom)

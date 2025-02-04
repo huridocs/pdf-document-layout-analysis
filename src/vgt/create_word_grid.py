@@ -24,14 +24,14 @@ def get_words_positions(text: str, rectangle: Rectangle):
 
     width_per_letter = rectangle.width / text_len
 
-    words_bboxes = [Rectangle(rectangle.left, rectangle.top, rectangle.left + 5, rectangle.bottom)]
+    words_bboxes = [Rectangle.from_coordinates(rectangle.left, rectangle.top, rectangle.left + 5, rectangle.bottom)]
     words_bboxes[-1].width = 0
     words_bboxes[-1].right = words_bboxes[-1].left
 
     for letter in text:
         if letter == " ":
             left = words_bboxes[-1].right + width_per_letter
-            words_bboxes.append(Rectangle(left, words_bboxes[-1].top, left + 5, words_bboxes[-1].bottom))
+            words_bboxes.append(Rectangle.from_coordinates(left, words_bboxes[-1].top, left + 5, words_bboxes[-1].bottom))
             words_bboxes[-1].width = 0
             words_bboxes[-1].right = words_bboxes[-1].left
         else:
@@ -52,11 +52,11 @@ def get_subwords_positions(word: str, rectangle: Rectangle):
     ids = [x[-2] for x in tokenizer(word_tokens)["input_ids"]]
 
     right = rectangle.left + len(word_tokens[0]) * width_per_letter
-    bboxes = [Rectangle(rectangle.left, rectangle.top, right, rectangle.bottom)]
+    bboxes = [Rectangle.from_coordinates(rectangle.left, rectangle.top, right, rectangle.bottom)]
 
     for subword in word_tokens[1:]:
         right = bboxes[-1].right + len(subword) * width_per_letter
-        bboxes.append(Rectangle(bboxes[-1].right, rectangle.top, right, rectangle.bottom))
+        bboxes.append(Rectangle.from_coordinates(bboxes[-1].right, rectangle.top, right, rectangle.bottom))
 
     return ids, bboxes
 

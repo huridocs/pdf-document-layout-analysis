@@ -66,7 +66,7 @@ class PdfTrainer:
             "",
             PdfFont("pad_font_id", False, False, 0.0, "#000000"),
             segment_number,
-            Rectangle(0, 0, 0, 0),
+            Rectangle.from_coordinates(0, 0, 0, 0),
             TokenType.TEXT,
         )
 
