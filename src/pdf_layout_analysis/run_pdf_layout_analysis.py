@@ -18,7 +18,6 @@ from detectron2.checkpoint import DetectionCheckpointer
 from detectron2.data.datasets import register_coco_instances
 from detectron2.data import DatasetCatalog
 
-
 configuration = get_model_configuration()
 model = VGTTrainer.build_model(configuration)
 DetectionCheckpointer(model, save_dir=configuration.OUTPUT_DIR).resume_or_load(configuration.MODEL.WEIGHTS, resume=True)
@@ -51,7 +50,7 @@ def predict_doclaynet():
     VGTTrainer.test(configuration, model)
 
 
-def analyze_pdf(file: AnyStr, xml_file_name: str, extraction_format: str = "") -> list[dict]:
+def analyze_pdf(file: AnyStr, xml_file_name: str, extraction_format: str = "", keep_pdf: bool = False) -> list[dict]:
     pdf_path = pdf_content_to_pdf_path(file)
     service_logger.info(f"Creating PDF images")
     pdf_images_list: list[PdfImages] = [PdfImages.from_pdf_path(pdf_path, "", xml_file_name)]
@@ -64,6 +63,9 @@ def analyze_pdf(file: AnyStr, xml_file_name: str, extraction_format: str = "") -
     extract_formula_format(pdf_images_list[0], predicted_segments)
     if extraction_format:
         extract_table_format(pdf_images_list[0], predicted_segments, extraction_format)
+
+    if not keep_pdf:
+        pdf_path.unlink(missing_ok=True)
 
     return [
         SegmentBox.from_pdf_segment(pdf_segment, pdf_images_list[0].pdf_features.pages).to_dict()

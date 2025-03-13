@@ -11,7 +11,10 @@ from os.path import getctime, join
 
 def get_visualization(file: UploadFile, fast: bool):
     file_content = file.file.read()
-    segment_boxes: list[dict] = analyze_pdf_fast(file_content) if fast else analyze_pdf(file_content, "")
+    if fast:
+        segment_boxes = analyze_pdf_fast(file_content, "", "", True)
+    else:
+        segment_boxes = analyze_pdf(file_content, "", "", True)
     pdf_path = max(glob(join(gettempdir(), "*.pdf")), key=getctime)
     save_output_to_pdf(pdf_path, segment_boxes)
     file_response = FileResponse(pdf_path, media_type="application/pdf", filename=Path(pdf_path).name)

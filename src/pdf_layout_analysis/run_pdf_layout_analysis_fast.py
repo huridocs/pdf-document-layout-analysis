@@ -14,7 +14,9 @@ from configuration import ROOT_PATH, service_logger
 from data_model.SegmentBox import SegmentBox
 
 
-def analyze_pdf_fast(file: AnyStr, xml_file_name: str = "", extraction_format: str = "") -> list[dict]:
+def analyze_pdf_fast(
+    file: AnyStr, xml_file_name: str = "", extraction_format: str = "", keep_pdf: bool = False
+) -> list[dict]:
     pdf_path = pdf_content_to_pdf_path(file)
     service_logger.info("Creating Paragraph Tokens [fast]")
 
@@ -33,4 +35,6 @@ def analyze_pdf_fast(file: AnyStr, xml_file_name: str = "", extraction_format: s
         extract_table_format(pdf_images, segments, extraction_format)
 
     pdf_images.remove_images()
+    if not keep_pdf:
+        pdf_path.unlink(missing_ok=True)
     return [SegmentBox.from_pdf_segment(pdf_segment, pdf_images.pdf_features.pages).to_dict() for pdf_segment in segments]
