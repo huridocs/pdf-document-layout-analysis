@@ -1,16 +1,16 @@
 from lxml.etree import ElementBase
+from pydantic import BaseModel
 
 from pdf_features.PdfFont import PdfFont
 from pdf_features.PdfToken import PdfToken
 
 
-class PdfPage:
-    def __init__(self, page_number: int, page_width: int, page_height: int, tokens: list[PdfToken], pdf_name: str):
-        self.page_number = page_number
-        self.page_width = page_width
-        self.page_height = page_height
-        self.tokens = tokens
-        self.pdf_name = pdf_name
+class PdfPage(BaseModel):
+    page_number: int
+    page_width: int
+    page_height: int
+    tokens: list[PdfToken]
+    pdf_name: str
 
     @staticmethod
     def from_poppler_etree(xml_page: ElementBase, fonts_by_font_id: dict[str, PdfFont], pdf_name: str):
@@ -22,4 +22,10 @@ class PdfPage:
         tokens = [token for token in tokens if token.content.strip()]
         width = int(xml_page.attrib["width"])
         height = int(xml_page.attrib["height"])
-        return PdfPage(page_number, width, height, tokens, pdf_name)
+        return PdfPage(
+            page_number=page_number,
+            page_width=width,
+            page_height=height,
+            tokens=tokens,
+            pdf_name=pdf_name,
+        )

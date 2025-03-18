@@ -1,6 +1,6 @@
 [project]
 name = "pdf-document-layout-analysis"
-version = "2025.03.13.01"
+version = "2025.03.18.01"
 description = "This tool is for PDF document layout analysis"
 license = { file = "LICENSE" }
 authors = [{ name = "HURIDOCS" }]

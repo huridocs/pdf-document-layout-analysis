@@ -61,13 +61,13 @@ class PdfTrainer:
     @staticmethod
     def get_padding_token(segment_number: int, page_number: int):
         return PdfToken(
-            page_number,
-            "pad_token",
-            "",
-            PdfFont(font_id="pad_font_id", font_size=0, bold=False, italics=False, color="black"),
-            segment_number,
-            Rectangle.from_coordinates(0, 0, 0, 0),
-            TokenType.TEXT,
+            page_number=page_number,
+            id="pad_token",
+            content="",
+            font=PdfFont(font_id="pad_font_id", font_size=0, bold=False, italics=False, color="black"),
+            reading_order_no=segment_number,
+            bounding_box=Rectangle.from_coordinates(0, 0, 0, 0),
+            token_type=TokenType.TEXT,
         )
 
     def predict(self, model_path: str | Path = None):

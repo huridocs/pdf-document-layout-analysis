@@ -70,5 +70,9 @@ start_detached:
 	mkdir -p ./models
 	docker compose up --build -d
 
+start_detached_gpu:
+	mkdir -p ./models
+	docker compose -f docker-compose-gpu.yml up --build -d
+
 upgrade:
 	. .venv/bin/activate; pip-upgrade

@@ -9,6 +9,8 @@ from statistics import mode
 from subprocess import CalledProcessError
 from lxml import etree
 from lxml.etree import ElementBase, XMLSyntaxError
+from pydantic import BaseModel
+
 from pdf_features.PdfFont import PdfFont
 from pdf_features.PdfModes import PdfModes
 from pdf_features.PdfPage import PdfPage
@@ -22,19 +24,14 @@ from pdf_tokens_type_trainer.config import (
 )
 
 
-class PdfFeatures:
-    def __init__(
-        self,
-        pages: list[PdfPage],
-        fonts: list[PdfFont],
-        file_name="",
-        file_type: str = "",
-    ):
-        self.pages = pages
-        self.fonts = fonts
-        self.file_name = file_name
-        self.file_type = file_type
-        self.pdf_modes: PdfModes = PdfModes()
+class PdfFeatures(BaseModel):
+    pages: list[PdfPage]
+    fonts: list[PdfFont]
+    file_name: str
+    file_type: str
+    pdf_modes: PdfModes = PdfModes()
+
+    def model_post_init(self, ctx):
         self.get_modes()
         self.get_mode_font()
         self.get_tokens_context()
@@ -85,7 +82,12 @@ class PdfFeatures:
         file_type: str = file_path.split("/")[-2] if not dataset else dataset
         file_name: str = Path(file_path).name if not file_name else file_name
 
-        return PdfFeatures(pages, fonts, file_name, file_type)
+        return PdfFeatures(
+            pages=pages,
+            fonts=fonts,
+            file_name=file_name,
+            file_type=file_type,
+        )
 
     @staticmethod
     def contains_text(xml_path: str):
@@ -190,4 +192,9 @@ class PdfFeatures:
 
     @staticmethod
     def get_empty():
-        return PdfFeatures([], [])
+        return PdfFeatures(
+            pages=[],
+            fonts=[],
+            file_name="",
+            file_type="",
+        )
