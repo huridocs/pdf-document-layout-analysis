@@ -15,6 +15,9 @@ class Rectangle(BaseModel):
     width: int
     height: int
 
+    def __hash__(self):
+        return hash((self.left, self.top, self.right, self.bottom))
+
     @staticmethod
     def from_poppler_tag_etree(tag: ElementBase) -> "Rectangle":
         content = "".join(tag.itertext())
