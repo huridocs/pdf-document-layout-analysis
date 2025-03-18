@@ -1,3 +1,5 @@
+from typing import Optional
+
 from lxml.etree import ElementBase
 from pydantic import BaseModel
 
@@ -10,7 +12,7 @@ class PdfPage(BaseModel):
     page_width: int
     page_height: int
     tokens: list[PdfToken]
-    pdf_name: str
+    pdf_name: Optional[str]
 
     @staticmethod
     def from_poppler_etree(xml_page: ElementBase, fonts_by_font_id: dict[str, PdfFont], pdf_name: str):
