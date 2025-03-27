@@ -11,7 +11,7 @@ from starlette.responses import FileResponse
 
 from catch_exceptions import catch_exceptions
 from configuration import service_logger, OCR_SOURCE
-from ocr.languages import supported_languages
+from ocr.languages import supported_languages, install_language
 from ocr.ocr_pdf import ocr_pdf
 from pdf_layout_analysis.get_xml import get_xml
 from pdf_layout_analysis.run_pdf_layout_analysis import analyze_pdf
@@ -112,3 +112,10 @@ async def ocr_pdf_sync(file: UploadFile = File(...), language: str = Form("en"))
     path.write_bytes(file.file.read())
     processed_pdf_filepath = ocr_pdf(file.filename, namespace, language)
     return FileResponse(path=processed_pdf_filepath, media_type="application/pdf")
+
+@app.post("/ocr_add_language")
+@catch_exceptions
+async def ocr_add_support(language: str):
+    if install_language(language):
+        return {"status": "success"}
+    return {"status": "failed"}
