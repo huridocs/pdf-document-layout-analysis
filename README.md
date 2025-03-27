@@ -47,7 +47,7 @@ Run the service:
       make start_no_gpu
 
 
-[OPTIONAL] OCR the PDF. Check supported languages (curl localhost:5060/info):
+[OPTIONAL] OCR the PDF. Check supported languages (curl localhost:5060/info) or [install more languages for OCR](#installation-of-more-languages-for-ocr):
 
     curl -X POST -F 'language=en' -F 'file=@/PATH/TO/PDF/pdf_name.pdf' localhost:5060/ocr --output ocr_document.pdf
 
@@ -261,6 +261,20 @@ For 15 pages academic paper document:
 </table>
 
 
+## Installation of More Languages for OCR
+
+OCR is made by using Tesseract OCR, which is supporting +150 languages, however, the docker image is built with only a few languages (to prevent increasing the image size even more). 
+
+More languages can be used by installing them in the docker container or installing them in your local machine (if you are running the service locally).
+
+To install more languages in the docker container, you can use the following command after the container is running:
+
+    docker exec -it --user root {CONTAINER_ID} /bin/bash
+    apt-get install tesseract-ocr-[LANGCODES]
+
+> Tesseract LANGCODES can be found in the values of the [iso_to_tesseract dict](https://github.com/huridocs/pdf-document-layout-analysis/blob/main/src/ocr/languages.py).
+
+After installing the languages into your container you should be able to see them in the response of the */info* endpoint.
 
 
 
