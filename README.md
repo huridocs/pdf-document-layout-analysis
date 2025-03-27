@@ -51,12 +51,6 @@ Run the service:
 
     curl -X POST -F 'language=en' -F 'file=@/PATH/TO/PDF/pdf_name.pdf' localhost:5060/ocr --output ocr_document.pdf
 
-You can also install new languages with:
-
-    curl -X POST -F 'language={ISO}' localhost:5060/ocr_add_language
-
->  The language code should be in ISO 639-1 format. All languages and scripts supported by Tesseract OCR can be found [here](https://tesseract-ocr.github.io/tessdoc/Data-Files-in-different-versions.html). The possible values are stored in the keys of the [iso_to_tessarct dict](https://github.com/huridocs/pdf-document-layout-analysis/blob/main/src/ocr/languages.py)
-
 
 Get the segments from a PDF:
 
