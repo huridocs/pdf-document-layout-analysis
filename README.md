@@ -263,7 +263,7 @@ For 15 pages academic paper document:
 
 ## Installation of More Languages for OCR
 
-OCR is made by using Tesseract OCR, which is supporting +150 languages, however, the docker image is built with only a few languages (to prevent increasing the image size even more). 
+OCR is made by using Tesseract OCR, which is supporting +150 languages, however, the docker image is built with only a few languages (image size purposes). 
 
 More languages can be used by installing them in the docker container or installing them in your local machine (if you are running the service locally).
 
