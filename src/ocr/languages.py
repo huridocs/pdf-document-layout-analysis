@@ -171,9 +171,4 @@ def supported_languages():
     sp = subprocess.Popen(["/bin/bash", "-c", cmd], stdout=subprocess.PIPE)
     tesseract_langs = [line.strip().decode("utf-8") for line in sp.stdout.readlines()]
     inverted_iso_dict = {v: k for k, v in iso_to_tesseract.items()}
-    return list(
-        {
-            tesseract_key: inverted_iso_dict[tesseract_key]
-            for tesseract_key in tesseract_langs
-        }.values()
-    )
+    return list({tesseract_key: inverted_iso_dict[tesseract_key] for tesseract_key in tesseract_langs}.values())

@@ -71,6 +71,7 @@ To stop the server:
 - [Benchmarks](#benchmarks)
   - [Performance](#performance)
   - [Speed](#speed)
+- [Installation of More Languages for OCR](#installation-of-more-languages-for-ocr)
 - [Related Services](#related-services)
 
 ## Dependencies
@@ -269,13 +270,16 @@ More languages can be used by installing them in the docker container or install
 
 To install more languages in the docker container, you can use the following command after the container is running:
 
-    docker exec -it --user root {CONTAINER_ID} /bin/bash
+    docker exec -it --user root pdf-document-layout-analysis /bin/bash
     apt-get install tesseract-ocr-[LANGCODES]
 
 > Tesseract LANGCODES can be found in the values of the [iso_to_tesseract dict](https://github.com/huridocs/pdf-document-layout-analysis/blob/main/src/ocr/languages.py).
 
-After installing the languages into your container you should be able to see them in the response of the */info* endpoint.
+After installing the languages into your container you should be able to see them by running:
 
+```
+curl localhost:5060/info
+```
 
 
 ## Related Services
