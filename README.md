@@ -273,9 +273,16 @@ To install more languages in the docker container, you can use the following com
     docker exec -it --user root pdf-document-layout-analysis /bin/bash
     apt-get install tesseract-ocr-[LANGCODES]
 
-> Tesseract LANGCODES can be found in the values of the [iso_to_tesseract dict](https://github.com/huridocs/pdf-document-layout-analysis/blob/main/src/ocr/languages.py).
+Tesseract `LANGCODES` can be found in here: [iso_to_tesseract dict](https://github.com/huridocs/pdf-document-layout-analysis/blob/main/src/ocr/languages.py).
 
-After installing the languages into your container you should be able to see them by running:
+For example, to install "Korean" support, you can run:
+
+```
+docker exec -it --user root pdf-document-layout-analysis /bin/bash
+apt-get install tesseract-ocr-kor
+```
+
+After installing the languages you can confirm it by running:
 
 ```
 curl localhost:5060/info
