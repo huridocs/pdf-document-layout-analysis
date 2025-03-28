@@ -47,7 +47,7 @@ Run the service:
       make start_no_gpu
 
 
-[OPTIONAL] OCR the PDF. Check supported languages (curl localhost:5060/info):
+[OPTIONAL] OCR the PDF. Check supported languages (curl localhost:5060/info) or [install more languages for OCR](#installation-of-more-languages-for-ocr):
 
     curl -X POST -F 'language=en' -F 'file=@/PATH/TO/PDF/pdf_name.pdf' localhost:5060/ocr --output ocr_document.pdf
 
@@ -71,6 +71,7 @@ To stop the server:
 - [Benchmarks](#benchmarks)
   - [Performance](#performance)
   - [Speed](#speed)
+- [Installation of More Languages for OCR](#installation-of-more-languages-for-ocr)
 - [Related Services](#related-services)
 
 ## Dependencies
@@ -261,7 +262,31 @@ For 15 pages academic paper document:
 </table>
 
 
+## Installation of More Languages for OCR
 
+OCR is made by using Tesseract OCR, which is supporting +150 languages, however, the docker image is built with only a few languages (image size purposes). 
+
+More languages can be used by installing them in the docker container or installing them in your local machine (if you are running the service locally).
+
+To install more languages in the docker container, you can use the following command after the container is running:
+
+    docker exec -it --user root pdf-document-layout-analysis /bin/bash
+    apt-get install tesseract-ocr-[LANGCODES]
+
+Tesseract `LANGCODES` can be found in here: [iso_to_tesseract dict](https://github.com/huridocs/pdf-document-layout-analysis/blob/main/src/ocr/languages.py).
+
+For example, to install "Korean" support, you can run:
+
+```
+docker exec -it --user root pdf-document-layout-analysis /bin/bash
+apt-get install tesseract-ocr-kor
+```
+
+After installing the languages you can confirm it by running:
+
+```
+curl localhost:5060/info
+```
 
 
 ## Related Services
