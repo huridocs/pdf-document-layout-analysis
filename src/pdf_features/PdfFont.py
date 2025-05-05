@@ -11,8 +11,8 @@ class PdfFont(BaseModel):
 
     @staticmethod
     def from_poppler_etree(xml_text_style_tag: ElementBase):
-        bold: bool = "Bold" in xml_text_style_tag.attrib["family"]
-        italics: bool = "Italic" in xml_text_style_tag.attrib["family"]
+        bold: bool = any(x in xml_text_style_tag.attrib["family"] for x in ["Bold", "bold"])
+        italics: bool = any(x in xml_text_style_tag.attrib["family"] for x in ["Italic", "italic", "Ital", "ital", "Ita"])
         font_size: float = float(xml_text_style_tag.attrib["size"])
         color: str = "#000000" if "color" not in xml_text_style_tag.attrib else xml_text_style_tag.attrib["color"]
         font_id = xml_text_style_tag.attrib["id"]

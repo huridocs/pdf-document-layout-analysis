@@ -2,6 +2,7 @@ from lxml.etree import ElementBase
 from pydantic import BaseModel
 
 from pdf_features.PdfFont import PdfFont
+from pdf_features.PdfTokenStyle import PdfTokenStyle
 from pdf_features.PdfTokenContext import PdfTokenContext
 from pdf_features.Rectangle import Rectangle
 from pdf_token_type_labels.Label import Label
@@ -16,6 +17,7 @@ class PdfToken(BaseModel):
     reading_order_no: int
     bounding_box: Rectangle
     token_type: TokenType
+    token_style: PdfTokenStyle
     pdf_token_context: PdfTokenContext = PdfTokenContext()
     prediction: int = 0
 
@@ -40,6 +42,8 @@ class PdfToken(BaseModel):
         token_type = TokenType.TEXT
 
         content = "".join(xml_tag.itertext()).strip()
+        token_style = PdfTokenStyle.from_xml_tag(xml_tag=xml_tag, content=content, pdf_font=pdf_font)
+
         return PdfToken(
             page_number=page_number,
             id=tag_id,
@@ -48,6 +52,7 @@ class PdfToken(BaseModel):
             reading_order_no=reading_order_no,
             bounding_box=bounding_box,
             token_type=token_type,
+            token_style=token_style,
         )
 
     def get_label_intersection_percentage(self, label: Label):
