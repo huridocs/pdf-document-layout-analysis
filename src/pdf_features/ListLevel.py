@@ -22,13 +22,13 @@ class ListLevel(IntEnum):
             return ListLevel.LEVEL_0
 
     @staticmethod
-    def get_styled_content_markdown(token) -> str:
-        indentation = "\t" * token.token_style.list_style
-        return f"{indentation}- {token.content}"
+    def get_styled_content_markdown(content: str, list_level: "ListLevel") -> str:
+        indentation = "\t" * list_level
+        return f"{indentation}- {content}"
 
     @staticmethod
-    def get_styled_content_html(token) -> str:
-        html = token.content
-        for _ in range(token.token_style.list_style):
+    def get_styled_content_html(content: str, list_level: "ListLevel") -> str:
+        html = content
+        for _ in range(list_level):
             html = f"<ul><li>{html}</li></ul>"
         return html

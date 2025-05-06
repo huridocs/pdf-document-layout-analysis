@@ -30,6 +30,7 @@ class PdfFeatures(BaseModel):
     file_name: str
     file_type: str
     pdf_modes: PdfModes = PdfModes()
+    common_text_height: int = -1
 
     def model_post_init(self, ctx):
         self.get_modes()
@@ -47,6 +48,23 @@ class PdfFeatures(BaseModel):
 
         for page, token in self.loop_tokens():
             token.token_type = TokenType.from_index(labels.get_label_type(token.page_number, token.bounding_box))
+
+    def set_common_text_height(self):
+        if self.common_text_height == -1:
+            self.common_text_height = mode(
+                [
+                    t.bounding_box.height
+                    for _, t in self.loop_tokens()
+                    if t.token_type in {TokenType.TEXT, TokenType.LIST_ITEM}
+                ]
+            )
+
+    def set_token_styles(self):
+        self.set_common_text_height()
+        for page, token in self.loop_tokens():
+            token.token_style.set_title_style(token.bounding_box.height, self.common_text_height, token.token_type)
+            page_boxes = [t.bounding_box for t in page.tokens]
+            token.token_style.set_script_style(self.common_text_height, token.content, token.bounding_box, page_boxes)
 
     @staticmethod
     def from_poppler_etree(file_path: str | Path, file_name: str | None = None, dataset: str | None = None):
