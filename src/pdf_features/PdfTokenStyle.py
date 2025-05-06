@@ -2,6 +2,7 @@ from lxml import etree
 from lxml.etree import ElementBase
 from pydantic import BaseModel
 
+from pdf_features.HyperlinkStyle import HyperlinkStyle
 from pdf_features.ListLevel import ListLevel
 from pdf_features.PdfFont import PdfFont
 from pdf_features.Rectangle import Rectangle
@@ -12,7 +13,7 @@ from pdf_token_type_labels.TokenType import TokenType
 
 class PdfTokenStyle(BaseModel):
     font: PdfFont
-    href: str = ""
+    hyperlink_style: HyperlinkStyle = HyperlinkStyle()
     is_bold_markup: bool = False
     is_italic_markup: bool = False
     script_type: ScriptType = ScriptType.REGULAR
@@ -25,15 +26,10 @@ class PdfTokenStyle(BaseModel):
         html = etree.tostring(xml_tag, encoding="unicode", method="xml")
         is_bold_markup = "</b>" in html
         is_italic_markup = "</i>" in html
-        links = xml_tag.findall(".//a")
-
-        href = ""
-        if links and links[0].attrib.get("href", "").startswith("http"):
-            link_element = links[0]
-            link_text = "".join(link_element.itertext()).strip()
-            if link_text == content:
-                href = link_element.attrib["href"]
-        return PdfTokenStyle(font=pdf_font, href=href, is_bold_markup=is_bold_markup, is_italic_markup=is_italic_markup)
+        hyperlink_style: HyperlinkStyle = HyperlinkStyle.from_xml_tag(xml_tag, content)
+        return PdfTokenStyle(
+            font=pdf_font, hyperlink_style=hyperlink_style, is_bold_markup=is_bold_markup, is_italic_markup=is_italic_markup
+        )
 
     @property
     def is_bold(self) -> bool:
