@@ -16,7 +16,7 @@ class PdfTokenStyle(BaseModel):
     script_type: ScriptType = ScriptType.REGULAR
     is_code: bool = False
     title_type: TitleType = TitleType.NO_TITLE
-    list_level: ListLevel = ListLevel.LEVEL_0
+    list_level: ListLevel = ListLevel.NO_LEVEL
 
     @staticmethod
     def from_xml_tag(xml_tag: ElementBase, content: str, pdf_font: PdfFont) -> "PdfTokenStyle":
@@ -46,5 +46,5 @@ class PdfTokenStyle(BaseModel):
     def set_script_style(self, common_text_height: int, content: str, token_box: Rectangle, page_boxes: list[Rectangle]):
         self.script_type = ScriptType.from_text_height(common_text_height, content, token_box, page_boxes)
 
-    def set_list_level(self, content: str):
-        self.list_level = ListLevel.from_content(content)
+    def set_list_level(self, level: ListLevel):
+        self.list_level = level

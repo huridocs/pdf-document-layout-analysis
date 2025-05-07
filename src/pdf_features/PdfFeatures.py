@@ -3,6 +3,7 @@ import os
 import subprocess
 import tempfile
 from collections import Counter
+from itertools import groupby
 from os.path import join, exists
 from pathlib import Path
 from statistics import mode
@@ -11,6 +12,7 @@ from lxml import etree
 from lxml.etree import ElementBase, XMLSyntaxError
 from pydantic import BaseModel
 
+from pdf_features.ListLevel import ListLevel
 from pdf_features.PdfFont import PdfFont
 from pdf_features.PdfModes import PdfModes
 from pdf_features.PdfPage import PdfPage
@@ -30,7 +32,6 @@ class PdfFeatures(BaseModel):
     file_name: str
     file_type: str
     pdf_modes: PdfModes = PdfModes()
-    common_text_height: int = -1
 
     def model_post_init(self, ctx):
         self.get_modes()
@@ -50,21 +51,32 @@ class PdfFeatures(BaseModel):
             token.token_type = TokenType.from_index(labels.get_label_type(token.page_number, token.bounding_box))
 
     def set_common_text_height(self):
-        if self.common_text_height == -1:
-            self.common_text_height = mode(
-                [
-                    t.bounding_box.height
-                    for _, t in self.loop_tokens()
-                    if t.token_type in {TokenType.TEXT, TokenType.LIST_ITEM}
-                ]
-            )
+        self.pdf_modes.common_text_height = mode(
+            [t.bounding_box.height for _, t in self.loop_tokens() if t.token_type in {TokenType.TEXT, TokenType.LIST_ITEM}]
+        )
 
     def set_token_styles(self):
         self.set_common_text_height()
-        for page, token in self.loop_tokens():
-            token.token_style.set_title_style(token.bounding_box.height, self.common_text_height, token.token_type)
+        common_text_height = self.pdf_modes.common_text_height
+
+        for page in self.pages:
             page_boxes = [t.bounding_box for t in page.tokens]
-            token.token_style.set_script_style(self.common_text_height, token.content, token.bounding_box, page_boxes)
+
+            for token in page.tokens:
+                token.token_style.set_title_type(token.bounding_box.height, common_text_height, token.token_type)
+                token.token_style.set_script_style(common_text_height, token.content, token.bounding_box, page_boxes)
+
+            list_item_groups: list[list[PdfToken]] = [
+                list(group)
+                for is_list_item, group in groupby(page.tokens, key=lambda t: t.token_type == TokenType.LIST_ITEM)
+                if is_list_item
+            ]
+
+            for list_item_group in list_item_groups:
+                contents = [t.content for t in list_item_group]
+                list_levels: list[ListLevel] = ListLevel.from_list_contents(contents)
+                for token, level in zip(list_item_group, list_levels):
+                    token.token_style.set_list_level(level)
 
     @staticmethod
     def from_poppler_etree(file_path: str | Path, file_name: str | None = None, dataset: str | None = None):
