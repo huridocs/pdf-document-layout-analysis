@@ -55,6 +55,24 @@ class PdfToken(BaseModel):
             token_style=token_style,
         )
 
+    @property
+    def content_markdown(self) -> str:
+        markdown_content = self.content
+        markdown_content = self.token_style.get_styled_content_markdown(markdown_content)
+        markdown_content = self.token_style.title_type.get_styled_content_markdown(markdown_content)
+        markdown_content = self.token_style.script_type.get_styled_content(markdown_content)
+        markdown_content = self.token_style.list_level.get_styled_content_markdown(markdown_content)
+        return markdown_content
+
+    @property
+    def content_html(self) -> str:
+        html_content = self.content
+        html_content = self.token_style.get_styled_content_html(html_content)
+        html_content = self.token_style.title_type.get_styled_content_html(html_content)
+        html_content = self.token_style.script_type.get_styled_content(html_content)
+        html_content = self.token_style.list_level.get_styled_content_html(html_content)
+        return html_content
+
     def get_label_intersection_percentage(self, label: Label):
         label_bounding_box = Rectangle.from_width_height(
             left=label.left, top=label.top, width=label.width, height=label.height
