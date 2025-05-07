@@ -10,7 +10,9 @@ class ScriptType(StrEnum):
     @staticmethod
     def _get_same_line_boxes(token_box: Rectangle, page_boxes: list[Rectangle]) -> list[Rectangle]:
         top, bottom = token_box.top, token_box.bottom
-        same_line_boxes = [each_box for each_box in page_boxes if not (each_box.bottom < top or bottom < each_box.top)]
+        same_line_boxes = [
+            each_box for each_box in page_boxes if not (each_box.bottom < top + 5 or bottom - 5 < each_box.top)
+        ]
         return same_line_boxes
 
     @classmethod
