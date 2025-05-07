@@ -90,7 +90,7 @@ class PdfFeatures(BaseModel):
         if root is None or not len(root):
             return PdfFeatures.get_empty()
 
-        fonts: list[PdfFont] = [PdfFont.from_poppler_etree(style_tag) for style_tag in root.findall(".//fontspec")]
+        fonts: list[PdfFont] = PdfFont.from_poppler_etree(root)
         fonts_by_font_id: dict[str, PdfFont] = {font.font_id: font for font in fonts}
         tree_pages: list[ElementBase] = [tree_page for tree_page in root.findall(".//page")]
         pages: list[PdfPage] = [
