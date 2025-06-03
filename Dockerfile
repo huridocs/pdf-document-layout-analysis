@@ -1,4 +1,5 @@
 FROM pytorch/pytorch:2.4.0-cuda11.8-cudnn9-runtime
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 RUN apt-get update
 RUN apt-get install --fix-missing -y -q --no-install-recommends libgomp1 ffmpeg libsm6 libxext6 pdftohtml git ninja-build g++ qpdf pandoc
@@ -28,8 +29,8 @@ RUN python -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 COPY requirements.txt requirements.txt
-RUN pip install --upgrade pip
-RUN pip --default-timeout=1000 install -r requirements.txt
+RUN uv pip install --upgrade pip
+RUN uv pip install -r requirements.txt
 
 WORKDIR /app
 RUN cd src; git clone https://github.com/facebookresearch/detectron2;
