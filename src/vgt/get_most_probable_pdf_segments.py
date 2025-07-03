@@ -93,7 +93,33 @@ def merge_colliding_predictions(predictions: list[Prediction]):
 def get_pdf_segments_for_page(page, pdf_name, page_pdf_name, vgt_predictions_dict):
     most_probable_pdf_segments_for_page: list[PdfSegment] = []
     most_probable_tokens_by_predictions: dict[Prediction, list[PdfToken]] = {}
-    vgt_predictions_dict[page_pdf_name] = merge_colliding_predictions(vgt_predictions_dict[page_pdf_name])
+    
+    # Store original predictions before merging
+    original_predictions = vgt_predictions_dict[page_pdf_name].copy()
+    
+    # Create a mapping from merged predictions to their original constituent predictions
+    merged_to_original_mapping = {}
+    
+    # Merge predictions and track which original predictions went into each merged one
+    merged_predictions = merge_colliding_predictions(vgt_predictions_dict[page_pdf_name])
+    
+    # Build mapping by checking which original predictions intersect with merged ones
+    for merged_pred in merged_predictions:
+        original_elements = []
+        for orig_pred in original_predictions:
+            if merged_pred.bounding_box.get_intersection_percentage(orig_pred.bounding_box) > 0:
+                original_elements.append({
+                    "left": orig_pred.bounding_box.left,
+                    "top": orig_pred.bounding_box.top,
+                    "width": orig_pred.bounding_box.width,
+                    "height": orig_pred.bounding_box.height,
+                    "type": DOCLAYNET_TYPE_BY_ID[orig_pred.category_id],
+                    "score": orig_pred.score
+                })
+        if len(original_elements) > 1:  # Only store if there were actually multiple elements merged
+            merged_to_original_mapping[merged_pred] = original_elements
+    
+    vgt_predictions_dict[page_pdf_name] = merged_predictions
 
     for token in page.tokens:
         find_best_prediction_for_token(page_pdf_name, token, vgt_predictions_dict, most_probable_tokens_by_predictions)
@@ -102,6 +128,11 @@ def get_pdf_segments_for_page(page, pdf_name, page_pdf_name, vgt_predictions_dic
         new_segment = PdfSegment.from_pdf_tokens(tokens, pdf_name)
         new_segment.bounding_box = prediction.bounding_box
         new_segment.segment_type = TokenType.from_text(DOCLAYNET_TYPE_BY_ID[prediction.category_id])
+        
+        # Store original elements if this prediction was merged
+        if prediction in merged_to_original_mapping:
+            new_segment.sub_element_positions = merged_to_original_mapping[prediction]
+        
         most_probable_pdf_segments_for_page.append(new_segment)
 
     no_token_predictions = [
@@ -114,6 +145,11 @@ def get_pdf_segments_for_page(page, pdf_name, page_pdf_name, vgt_predictions_dic
         segment_type = TokenType.from_text(DOCLAYNET_TYPE_BY_ID[prediction.category_id])
         page_number = page.page_number
         new_segment = PdfSegment(page_number, prediction.bounding_box, "", segment_type, pdf_name)
+        
+        # Store original elements if this prediction was merged
+        if prediction in merged_to_original_mapping:
+            new_segment.sub_elements_positions = merged_to_original_mapping[prediction]
+        
         most_probable_pdf_segments_for_page.append(new_segment)
 
     return most_probable_pdf_segments_for_page

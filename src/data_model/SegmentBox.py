@@ -2,6 +2,7 @@ from fast_trainer.PdfSegment import PdfSegment
 from pdf_features.PdfPage import PdfPage
 from pdf_token_type_labels.TokenType import TokenType
 from pydantic import BaseModel
+from typing import List, Optional, Dict, Any
 
 
 class SegmentBox(BaseModel):
@@ -14,9 +15,10 @@ class SegmentBox(BaseModel):
     page_height: int
     text: str = ""
     type: TokenType = TokenType.TEXT
+    sub_element_positions: Optional[List[Dict[str, Any]]] = None
 
     def to_dict(self):
-        return {
+        result = {
             "left": self.left,
             "top": self.top,
             "width": self.width,
@@ -27,9 +29,12 @@ class SegmentBox(BaseModel):
             "text": self.text,
             "type": self.type.value,
         }
+        if self.sub_elements_positions is not None:
+            result["sub_elements_positions"] = self.sub_elements_positions
+        return result
 
     @staticmethod
-    def from_pdf_segment(pdf_segment: PdfSegment, pdf_pages: list[PdfPage]):
+    def from_pdf_segment(pdf_segment: PdfSegment, pdf_pages: list[PdfPage], sub_elements: Optional[List[Dict[str, Any]]] = None):
         return SegmentBox(
             left=pdf_segment.bounding_box.left,
             top=pdf_segment.bounding_box.top,
@@ -40,6 +45,7 @@ class SegmentBox(BaseModel):
             page_height=pdf_pages[pdf_segment.page_number - 1].page_height,
             text=pdf_segment.text_content,
             type=pdf_segment.segment_type,
+            sub_elements_positions=sub_elements,
         )
 
 

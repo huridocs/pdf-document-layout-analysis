@@ -157,7 +157,7 @@ class TitleFeatures:
         return TOCItem(
             indentation=indentation,
             label=self.text_content,
-            selection_rectangle=SegmentBox.from_pdf_segment(self.pdf_segment, self.pdf_features.pages),
+            selection_rectangle=SegmentBox.from_pdf_segment(self.pdf_segment, self.pdf_features.pages, self.pdf_segment.sub_element_positions),
         )
 
     def append(self, other_title_features: "TitleFeatures"):
