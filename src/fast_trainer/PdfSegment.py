@@ -2,6 +2,7 @@ from statistics import mode
 from pdf_features.PdfToken import PdfToken
 from pdf_features.Rectangle import Rectangle
 from pdf_token_type_labels.TokenType import TokenType
+from typing import List, Dict, Any, Optional
 
 
 class PdfSegment:
@@ -13,6 +14,7 @@ class PdfSegment:
         self.text_content = text_content
         self.segment_type = segment_type
         self.pdf_name = pdf_name
+        self.sub_element_positions: Optional[List[Dict[str, Any]]] = None
 
     @staticmethod
     def from_pdf_tokens(pdf_tokens: list[PdfToken], pdf_name: str = ""):

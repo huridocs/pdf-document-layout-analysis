@@ -37,4 +37,4 @@ def analyze_pdf_fast(
     pdf_images.remove_images()
     if not keep_pdf:
         pdf_path.unlink(missing_ok=True)
-    return [SegmentBox.from_pdf_segment(pdf_segment, pdf_images.pdf_features.pages).to_dict() for pdf_segment in segments]
+    return [SegmentBox.from_pdf_segment(pdf_segment, pdf_images.pdf_features.pages, pdf_segment.sub_element_positions).to_dict() for pdf_segment in segments]

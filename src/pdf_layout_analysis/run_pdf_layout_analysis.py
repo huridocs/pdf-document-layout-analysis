@@ -68,7 +68,7 @@ def analyze_pdf(file: AnyStr, xml_file_name: str, extraction_format: str = "", k
         pdf_path.unlink(missing_ok=True)
 
     return [
-        SegmentBox.from_pdf_segment(pdf_segment, pdf_images_list[0].pdf_features.pages).to_dict()
+        SegmentBox.from_pdf_segment(pdf_segment, pdf_images_list[0].pdf_features.pages, pdf_segment.sub_element_positions).to_dict()
         for pdf_segment in predicted_segments
     ]
 
