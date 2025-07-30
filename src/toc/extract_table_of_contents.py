@@ -3,10 +3,10 @@ import uuid
 from os.path import join
 from pathlib import Path
 from typing import AnyStr
-from fast_trainer.PdfSegment import PdfSegment
-from pdf_features.PdfFeatures import PdfFeatures
-from pdf_features.Rectangle import Rectangle
-from pdf_token_type_labels.TokenType import TokenType
+from domain.PdfSegment import PdfSegment
+from pdf_features import PdfFeatures
+from pdf_features import Rectangle
+from pdf_token_type_labels import TokenType
 from toc.TOCExtractor import TOCExtractor
 from configuration import service_logger
 from toc.PdfSegmentation import PdfSegmentation

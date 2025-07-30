@@ -1,5 +1,5 @@
 from configuration import service_logger
-from pdf_token_type_labels.TokenType import TokenType
+from pdf_token_type_labels import TokenType
 
 
 def extract_text(segment_boxes: list[dict], types: list[TokenType]):

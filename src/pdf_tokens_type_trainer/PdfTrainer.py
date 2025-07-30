@@ -5,11 +5,11 @@ from pathlib import Path
 import lightgbm as lgb
 import numpy as np
 
-from pdf_features.PdfFeatures import PdfFeatures
-from pdf_features.PdfFont import PdfFont
-from pdf_features.PdfToken import PdfToken
-from pdf_features.Rectangle import Rectangle
-from pdf_token_type_labels.TokenType import TokenType
+from pdf_features import PdfFeatures
+from pdf_features import PdfFont
+from pdf_features import PdfToken
+from pdf_features import Rectangle
+from pdf_token_type_labels import TokenType
 from pdf_tokens_type_trainer.ModelConfiguration import ModelConfiguration
 from pdf_tokens_type_trainer.download_models import pdf_tokens_type_model
 
@@ -33,7 +33,7 @@ class PdfTrainer:
         return x
 
     def train(self, model_path: str | Path, labels: list[int]):
-        print(f"Getting model input")
+        print("Getting model input")
         x_train = self.get_model_input()
 
         if not x_train.any():
@@ -42,7 +42,7 @@ class PdfTrainer:
 
         lgb_train = lgb.Dataset(x_train, labels)
         lgb_eval = lgb.Dataset(x_train, labels, reference=lgb_train)
-        print(f"Training")
+        print("Training")
 
         if self.model_configuration.resume_training and exists(model_path):
             model = lgb.Booster(model_file=model_path)
@@ -50,7 +50,7 @@ class PdfTrainer:
         else:
             gbm = lgb.train(params=self.model_configuration.dict(), train_set=lgb_train, valid_sets=[lgb_eval])
 
-        print(f"Saving")
+        print("Saving")
         gbm.save_model(model_path, num_iteration=gbm.best_iteration)
 
     def loop_tokens(self):

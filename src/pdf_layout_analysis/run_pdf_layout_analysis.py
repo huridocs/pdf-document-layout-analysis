@@ -3,7 +3,7 @@ import uuid
 from os.path import join
 from pathlib import Path
 from typing import AnyStr
-from data_model.SegmentBox import SegmentBox
+from domain.SegmentBox import SegmentBox
 from ditod.VGTTrainer import VGTTrainer
 from extraction_formats.extract_formula_formats import extract_formula_format
 from extraction_formats.extract_table_formats import extract_table_format
@@ -11,7 +11,7 @@ from vgt.get_json_annotations import get_annotations
 from vgt.get_model_configuration import get_model_configuration
 from vgt.get_most_probable_pdf_segments import get_most_probable_pdf_segments
 from vgt.get_reading_orders import get_reading_orders
-from data_model.PdfImages import PdfImages
+from domain.PdfImages import PdfImages
 from src.configuration import service_logger, JSON_TEST_FILE_PATH, IMAGES_ROOT_PATH
 from vgt.create_word_grid import create_word_grid, remove_word_grids
 from detectron2.checkpoint import DetectionCheckpointer

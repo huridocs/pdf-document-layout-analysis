@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from data_model.SegmentBox import SegmentBox
+from domain.SegmentBox import SegmentBox
 
 
 class TOCItem(BaseModel):

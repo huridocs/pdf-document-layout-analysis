@@ -1,6 +1,6 @@
-from fast_trainer.PdfSegment import PdfSegment
-from pdf_features.PdfFeatures import PdfFeatures
-from pdf_features.PdfToken import PdfToken
+from domain.PdfSegment import PdfSegment
+from pdf_features import PdfFeatures
+from pdf_features import PdfToken
 
 
 class PdfSegmentation:

@@ -1,7 +1,7 @@
 from os.path import join
 from typing import AnyStr
 
-from data_model.PdfImages import PdfImages
+from domain.PdfImages import PdfImages
 from extraction_formats.extract_formula_formats import extract_formula_format
 from extraction_formats.extract_table_formats import extract_table_format
 from fast_trainer.ParagraphExtractorTrainer import ParagraphExtractorTrainer
@@ -11,7 +11,7 @@ from pdf_tokens_type_trainer.TokenTypeTrainer import TokenTypeTrainer
 from pdf_tokens_type_trainer.ModelConfiguration import ModelConfiguration
 
 from configuration import ROOT_PATH, service_logger
-from data_model.SegmentBox import SegmentBox
+from domain.SegmentBox import SegmentBox
 
 
 def analyze_pdf_fast(

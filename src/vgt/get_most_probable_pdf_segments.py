@@ -4,14 +4,14 @@ from os.path import join
 from pathlib import Path
 from statistics import mode
 
-from fast_trainer.PdfSegment import PdfSegment
-from pdf_features.PdfFeatures import PdfFeatures
-from pdf_features.PdfToken import PdfToken
-from pdf_features.Rectangle import Rectangle
-from pdf_token_type_labels.TokenType import TokenType
-from data_model.PdfImages import PdfImages
+from domain.PdfSegment import PdfSegment
+from pdf_features import PdfFeatures
+from pdf_features import PdfToken
+from pdf_features import Rectangle
+from pdf_token_type_labels import TokenType
+from domain.PdfImages import PdfImages
 from configuration import ROOT_PATH, DOCLAYNET_TYPE_BY_ID
-from data_model.Prediction import Prediction
+from domain.Prediction import Prediction
 
 
 def get_prediction_from_annotation(annotation, images_names, vgt_predictions_dict):

@@ -1,6 +1,6 @@
 from dataclasses import dataclass, asdict
 
-from pdf_token_type_labels.TokenType import TokenType
+from pdf_token_type_labels import TokenType
 
 
 @dataclass

@@ -1,7 +1,7 @@
 import json
 from os import makedirs
-from pdf_features.PdfToken import PdfToken
-from data_model.PdfImages import PdfImages
+from pdf_features import PdfToken
+from domain.PdfImages import PdfImages
 from configuration import DOCLAYNET_TYPE_BY_ID
 from configuration import JSONS_ROOT_PATH, JSON_TEST_FILE_PATH
 

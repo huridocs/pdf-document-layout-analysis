@@ -1,4 +1,4 @@
-from pdf_features.Rectangle import Rectangle
+from pdf_features import Rectangle
 
 
 class Prediction:

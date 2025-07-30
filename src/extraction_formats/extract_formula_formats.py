@@ -1,9 +1,9 @@
 import io
 from PIL.Image import Image
 from rapid_latex_ocr import LaTeXOCR
-from data_model.PdfImages import PdfImages
-from fast_trainer.PdfSegment import PdfSegment
-from pdf_token_type_labels.TokenType import TokenType
+from domain.PdfImages import PdfImages
+from domain.PdfSegment import PdfSegment
+from pdf_token_type_labels import TokenType
 
 
 def has_arabic(text: str) -> bool:

@@ -8,7 +8,7 @@ from os.path import join
 from pathlib import Path
 from PIL import Image
 from pdf2image import convert_from_path
-from pdf_features.PdfFeatures import PdfFeatures
+from pdf_features import PdfFeatures
 
 from src.configuration import IMAGES_ROOT_PATH, XMLS_PATH
 

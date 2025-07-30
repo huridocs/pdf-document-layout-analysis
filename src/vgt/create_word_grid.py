@@ -4,9 +4,9 @@ import shutil
 import numpy as np
 from os import makedirs
 from os.path import join, exists
-from pdf_features.PdfToken import PdfToken
-from pdf_features.Rectangle import Rectangle
-from pdf_features.PdfFeatures import PdfFeatures
+from pdf_features import PdfToken
+from pdf_features import Rectangle
+from pdf_features import PdfFeatures
 
 from bros.tokenization_bros import BrosTokenizer
 from configuration import WORD_GRIDS_PATH

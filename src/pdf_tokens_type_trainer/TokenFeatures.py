@@ -1,8 +1,8 @@
 import string
 import unicodedata
 
-from pdf_features.PdfFeatures import PdfFeatures
-from pdf_features.PdfToken import PdfToken
+from pdf_features import PdfFeatures
+from pdf_features import PdfToken
 from pdf_tokens_type_trainer.config import CHARACTER_TYPE
 
 

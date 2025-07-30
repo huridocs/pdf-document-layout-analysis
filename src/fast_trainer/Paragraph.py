@@ -1,4 +1,4 @@
-from pdf_features.PdfToken import PdfToken
+from pdf_features import PdfToken
 
 
 class Paragraph:

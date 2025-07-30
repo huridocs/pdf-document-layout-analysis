@@ -1,5 +1,5 @@
 from fastapi import UploadFile
-from pdf_token_type_labels.TokenType import TokenType
+from pdf_token_type_labels import TokenType
 from pdf_layout_analysis.run_pdf_layout_analysis import analyze_pdf
 from pdf_layout_analysis.run_pdf_layout_analysis_fast import analyze_pdf_fast
 from text_extraction.extract_text import extract_text

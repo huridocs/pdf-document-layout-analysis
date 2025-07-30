@@ -1,9 +1,9 @@
 from pathlib import Path
 
 from fast_trainer.Paragraph import Paragraph
-from fast_trainer.PdfSegment import PdfSegment
-from pdf_features.PdfToken import PdfToken
-from pdf_token_type_labels.TokenType import TokenType
+from domain.PdfSegment import PdfSegment
+from pdf_features import PdfToken
+from pdf_token_type_labels import TokenType
 from pdf_tokens_type_trainer.TokenFeatures import TokenFeatures
 from pdf_tokens_type_trainer.TokenTypeTrainer import TokenTypeTrainer
 

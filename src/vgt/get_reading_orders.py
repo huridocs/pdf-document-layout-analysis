@@ -1,9 +1,9 @@
-from fast_trainer.PdfSegment import PdfSegment
-from pdf_features.PdfPage import PdfPage
-from pdf_features.PdfToken import PdfToken
-from pdf_token_type_labels.TokenType import TokenType
+from domain.PdfSegment import PdfSegment
+from pdf_features import PdfPage
+from pdf_features import PdfToken
+from pdf_token_type_labels import TokenType
 
-from data_model.PdfImages import PdfImages
+from domain.PdfImages import PdfImages
 
 
 def find_segment_for_token(token: PdfToken, segments: list[PdfSegment], tokens_by_segments):

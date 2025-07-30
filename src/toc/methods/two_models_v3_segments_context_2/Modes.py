@@ -2,7 +2,7 @@ import dataclasses
 import hashlib
 from statistics import mode
 
-from pdf_features.PdfFeatures import PdfFeatures
+from pdf_features import PdfFeatures
 
 
 @dataclasses.dataclass
