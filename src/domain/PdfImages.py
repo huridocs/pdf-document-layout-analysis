@@ -14,9 +14,10 @@ from src.configuration import IMAGES_ROOT_PATH, XMLS_PATH
 
 
 class PdfImages:
-    def __init__(self, pdf_features: PdfFeatures, pdf_images: list[Image]):
+    def __init__(self, pdf_features: PdfFeatures, pdf_images: list[Image], dpi: int = 72):
         self.pdf_features: PdfFeatures = pdf_features
         self.pdf_images: list[Image] = pdf_images
+        self.dpi: int = dpi
         self.save_images()
 
     def show_images(self, next_image_delay: int = 2):
@@ -37,7 +38,7 @@ class PdfImages:
         shutil.rmtree(IMAGES_ROOT_PATH)
 
     @staticmethod
-    def from_pdf_path(pdf_path: str | Path, pdf_name: str = "", xml_file_name: str = ""):
+    def from_pdf_path(pdf_path: str | Path, pdf_name: str = "", xml_file_name: str = "", dpi: int = 72):
         xml_path = None if not xml_file_name else Path(XMLS_PATH, xml_file_name)
 
         if xml_path and not xml_path.parent.exists():
@@ -50,5 +51,5 @@ class PdfImages:
         else:
             pdf_name = Path(pdf_path).parent.name if Path(pdf_path).name == "document.pdf" else Path(pdf_path).stem
             pdf_features.file_name = pdf_name
-        pdf_images = convert_from_path(pdf_path, dpi=72)
-        return PdfImages(pdf_features, pdf_images)
+        pdf_images = convert_from_path(pdf_path, dpi=dpi)
+        return PdfImages(pdf_features, pdf_images, dpi)

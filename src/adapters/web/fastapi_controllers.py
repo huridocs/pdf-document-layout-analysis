@@ -1,12 +1,15 @@
 import sys
 import subprocess
 from fastapi import UploadFile, File, Form
+from typing import Optional, Union
+from starlette.responses import Response
 from starlette.concurrency import run_in_threadpool
 from use_cases.pdf_analysis.analyze_pdf_use_case import AnalyzePDFUseCase
 from use_cases.text_extraction.extract_text_use_case import ExtractTextUseCase
 from use_cases.toc_extraction.extract_toc_use_case import ExtractTOCUseCase
 from use_cases.visualization.create_visualization_use_case import CreateVisualizationUseCase
 from use_cases.ocr.process_ocr_use_case import ProcessOCRUseCase
+from use_cases.markdown_conversion.convert_to_markdown_use_case import ConvertToMarkdownUseCase
 from adapters.storage.file_system_repository import FileSystemRepository
 
 
@@ -18,6 +21,7 @@ class FastAPIControllers:
         extract_toc_use_case: ExtractTOCUseCase,
         create_visualization_use_case: CreateVisualizationUseCase,
         process_ocr_use_case: ProcessOCRUseCase,
+        convert_to_markdown_use_case: ConvertToMarkdownUseCase,
         file_repository: FileSystemRepository,
     ):
         self.analyze_pdf_use_case = analyze_pdf_use_case
@@ -25,6 +29,7 @@ class FastAPIControllers:
         self.extract_toc_use_case = extract_toc_use_case
         self.create_visualization_use_case = create_visualization_use_case
         self.process_ocr_use_case = process_ocr_use_case
+        self.convert_to_markdown_use_case = convert_to_markdown_use_case
         self.file_repository = file_repository
 
     async def root(self):
@@ -43,10 +48,8 @@ class FastAPIControllers:
     async def error(self):
         raise FileNotFoundError("This is a test error from the error endpoint")
 
-    async def analyze_pdf(self, file: UploadFile = File(...), fast: bool = Form(False), extraction_format: str = Form("")):
-        return await run_in_threadpool(
-            self.analyze_pdf_use_case.execute, file.file.read(), "", extraction_format, fast, False
-        )
+    async def analyze_pdf(self, file: UploadFile = File(...), fast: bool = Form(False), ocr_tables: bool = Form(False)):
+        return await run_in_threadpool(self.analyze_pdf_use_case.execute, file.file.read(), "", ocr_tables, fast, False)
 
     async def analyze_and_save_xml(
         self, file: UploadFile = File(...), xml_file_name: str | None = None, fast: bool = Form(False)
@@ -74,3 +77,15 @@ class FastAPIControllers:
 
     async def ocr_pdf_sync(self, file: UploadFile = File(...), language: str = Form("en")):
         return await run_in_threadpool(self.process_ocr_use_case.execute, file, language)
+
+    async def convert_to_markdown_endpoint(
+        self,
+        file: UploadFile = File(...),
+        fast: bool = Form(False),
+        extract_toc: bool = Form(False),
+        dpi: int = Form(120),
+        output_file: Optional[str] = Form(None),
+    ) -> Union[str, Response]:
+        return await run_in_threadpool(
+            self.convert_to_markdown_use_case.execute, file.file.read(), fast, extract_toc, dpi, output_file
+        )

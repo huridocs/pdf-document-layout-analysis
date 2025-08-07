@@ -30,6 +30,8 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 COPY requirements.txt requirements.txt
 RUN uv pip install --upgrade pip
+RUN uv pip install timm==1.0.8
+RUN uv pip install --no-deps pix2tex==0.1.4
 RUN uv pip install -r requirements.txt
 
 WORKDIR /app

@@ -14,6 +14,23 @@ class SegmentBox(BaseModel):
     page_height: int
     text: str = ""
     type: TokenType = TokenType.TEXT
+    id: str = ""
+
+    def __hash__(self):
+        return hash(
+            (
+                self.left,
+                self.top,
+                self.width,
+                self.height,
+                self.page_number,
+                self.page_width,
+                self.page_height,
+                self.text,
+                self.type,
+                self.id,
+            )
+        )
 
     def to_dict(self):
         return {

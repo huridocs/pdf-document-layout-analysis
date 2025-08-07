@@ -24,6 +24,7 @@ def create_app(controllers: FastAPIControllers) -> FastAPI:
 
     app.post("/text")(catch_exceptions(controllers.get_text_endpoint))
     app.post("/visualize")(catch_exceptions(controllers.get_visualization_endpoint))
+    app.post("/markdown", response_model=None)(catch_exceptions(controllers.convert_to_markdown_endpoint))
     app.post("/ocr")(catch_exceptions(controllers.ocr_pdf_sync))
 
     return app

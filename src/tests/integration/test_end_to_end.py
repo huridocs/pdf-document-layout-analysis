@@ -235,17 +235,28 @@ class TestEndToEnd(TestCase):
     def test_table_extraction(self):
         with open(f"{ROOT_PATH}/test_pdfs/table.pdf", "rb") as stream:
             files = {"file": stream}
-            data = {"extraction_format": "markdown"}
+            data = {"ocr_tables": "true"}
 
             response = requests.post(f"{self.service_url}", files=files, data=data)
 
             response_json = response.json()
-            table_text = response_json[0]["text"]
+            table_html = response_json[0]["text"]
+
+            parts = table_html.split("<td>")
+            values = []
+            for part in parts[1:]:
+                value = part.split("</td>")[0]
+                values.append(value)
+
+            col1, col2, data_1a, data_1b, data_2a, data_2b = values
+
             self.assertEqual(response.status_code, 200)
-            self.assertIn("**Column 1**", table_text.split("\n")[0])
-            self.assertIn("**Column 2**", table_text.split("\n")[0])
-            self.assertIn("Data 1A", table_text.split("\n")[2])
-            self.assertIn("Data 2B", table_text.split("\n")[3])
+            self.assertIn("Column 1", col1)
+            self.assertIn("Column 2", col2)
+            self.assertIn("Data 1A", data_1a)
+            self.assertIn("Data 1B", data_1b)
+            self.assertIn("Data 2A", data_2a)
+            self.assertIn("Data 2B", data_2b)
 
     def test_formula_extraction(self):
         with open(f"{ROOT_PATH}/test_pdfs/formula.pdf", "rb") as stream:
@@ -257,8 +268,8 @@ class TestEndToEnd(TestCase):
             response_json = response.json()
             formula_text = response_json[1]["text"]
             self.assertEqual(response.status_code, 200)
-            self.assertIn("E_{_{v r i o r}}", formula_text)
-            self.assertIn("-\\ \\Theta||", formula_text)
+            self.assertIn("E_{p r i o r}", formula_text)
+            self.assertIn("(\\Theta)\\", formula_text)
 
     def test_ocr_english(self):
         with open(Path(ROOT_PATH, "test_pdfs", "ocr-sample-english.pdf"), "rb") as stream:

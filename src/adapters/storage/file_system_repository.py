@@ -49,3 +49,8 @@ class FileSystemRepository(FileRepository):
         target_path.parent.mkdir(parents=True, exist_ok=True)
         target_path.write_bytes(content)
         return target_path
+
+    def save_markdown(self, content: str, filepath: Path) -> Path:
+        filepath.parent.mkdir(parents=True, exist_ok=True)
+        filepath.write_text(content, encoding="utf-8")
+        return filepath

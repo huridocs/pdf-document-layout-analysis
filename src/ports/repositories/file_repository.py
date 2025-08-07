@@ -27,3 +27,7 @@ class FileRepository(ABC):
     @abstractmethod
     def save_pdf_to_directory(self, content: AnyStr, filename: str, directory: Path, namespace: str = "") -> Path:
         pass
+
+    @abstractmethod
+    def save_markdown(self, content: str, filepath: Path) -> Path:
+        pass
