@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import List
 from ports.services.ocr_service import OCRService
 from configuration import OCR_SOURCE, OCR_OUTPUT, OCR_FAILED
-from adapters.external_services.ocr.languages import iso_to_tesseract, supported_languages
+from adapters.infrastructure.ocr.languages import iso_to_tesseract, supported_languages
 
 
 class OCRServiceAdapter(OCRService):

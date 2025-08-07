@@ -1,5 +1,4 @@
 from os.path import join
-from typing import List
 from domain.PdfImages import PdfImages
 from domain.PdfSegment import PdfSegment
 from ports.services.ml_model_service import MLModelService
@@ -11,10 +10,10 @@ from configuration import ROOT_PATH, service_logger
 
 
 class FastTrainerAdapter(MLModelService):
-    def predict_document_layout(self, pdf_images: List[PdfImages]) -> List[PdfSegment]:
+    def predict_document_layout(self, pdf_images: list[PdfImages]) -> list[PdfSegment]:
         return self.predict_layout_fast(pdf_images)
 
-    def predict_layout_fast(self, pdf_images: List[PdfImages]) -> List[PdfSegment]:
+    def predict_layout_fast(self, pdf_images: list[PdfImages]) -> list[PdfSegment]:
         service_logger.info("Creating Paragraph Tokens [fast]")
 
         pdf_images_obj = pdf_images[0]

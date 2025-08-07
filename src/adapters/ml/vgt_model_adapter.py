@@ -1,8 +1,7 @@
-from typing import List
 from domain.PdfImages import PdfImages
 from domain.PdfSegment import PdfSegment
 from ports.services.ml_model_service import MLModelService
-from ditod.VGTTrainer import VGTTrainer
+from adapters.ml.vgt.ditod import VGTTrainer
 from adapters.ml.vgt.get_model_configuration import get_model_configuration
 from adapters.ml.vgt.get_most_probable_pdf_segments import get_most_probable_pdf_segments
 from adapters.ml.vgt.get_reading_orders import get_reading_orders
@@ -28,7 +27,7 @@ class VGTModelAdapter(MLModelService):
 
         register_coco_instances("predict_data", {}, JSON_TEST_FILE_PATH, IMAGES_ROOT_PATH)
 
-    def predict_document_layout(self, pdf_images: List[PdfImages]) -> List[PdfSegment]:
+    def predict_document_layout(self, pdf_images: list[PdfImages]) -> list[PdfSegment]:
         create_word_grid([pdf_images_obj.pdf_features for pdf_images_obj in pdf_images])
         get_annotations(pdf_images)
 
@@ -42,5 +41,5 @@ class VGTModelAdapter(MLModelService):
 
         return get_reading_orders(pdf_images, predicted_segments)
 
-    def predict_layout_fast(self, pdf_images: List[PdfImages]) -> List[PdfSegment]:
+    def predict_layout_fast(self, pdf_images: list[PdfImages]) -> list[PdfSegment]:
         raise NotImplementedError("Fast prediction should be handled by FastTrainerAdapter")

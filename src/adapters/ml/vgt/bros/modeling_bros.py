@@ -1108,7 +1108,7 @@ class BrosForPreTraining(BrosPreTrainedModel):
 
         Example::
 
-            >>> from bros import BrosTokenizer, BrosForPreTraining
+            >>> from adapters.ml.vgt.bros import BrosTokenizer, BrosForPreTraining
             >>> import torch
 
             >>> tokenizer = BrosTokenizer.from_pretrained('naver-clova-ocr/bros-base-uncased')
@@ -1230,7 +1230,7 @@ class BrosLMHeadModel(BrosPreTrainedModel):
 
         Example::
 
-            >>> from bros import BrosTokenizer, BrosLMHeadModel, BrosConfig
+            >>> from adapters.ml.vgt.bros import BrosTokenizer, BrosLMHeadModel, BrosConfig
             >>> import torch
 
             >>> tokenizer = BrosTokenizer.from_pretrained("naver-clova-ocr/bert-base-cased")

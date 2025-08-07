@@ -8,7 +8,7 @@ from pdf_features import PdfToken
 from pdf_features import Rectangle
 from pdf_features import PdfFeatures
 
-from bros.tokenization_bros import BrosTokenizer
+from adapters.ml.vgt.bros.tokenization_bros import BrosTokenizer
 from configuration import WORD_GRIDS_PATH
 
 tokenizer = BrosTokenizer.from_pretrained("naver-clova-ocr/bros-base-uncased")

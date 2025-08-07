@@ -5,9 +5,9 @@ from domain.PdfSegment import PdfSegment
 from pdf_features import PdfToken
 from pdf_features import Rectangle
 from domain.SegmentBox import SegmentBox
-from adapters.external_services.toc.data.TOCItem import TOCItem
-from adapters.external_services.toc.methods.two_models_v3_segments_context_2.Modes import Modes
-from adapters.external_services.toc.PdfSegmentation import PdfSegmentation
+from adapters.infrastructure.toc.data.TOCItem import TOCItem
+from adapters.infrastructure.toc.methods.two_models_v3_segments_context_2.Modes import Modes
+from adapters.infrastructure.toc.PdfSegmentation import PdfSegmentation
 
 
 class TitleFeatures:

@@ -1,5 +1,5 @@
-from adapters.external_services.toc.TitleFeatures import TitleFeatures
-from adapters.external_services.toc.PdfSegmentation import PdfSegmentation
+from adapters.infrastructure.toc.TitleFeatures import TitleFeatures
+from adapters.infrastructure.toc.PdfSegmentation import PdfSegmentation
 
 
 class MergeTwoSegmentsTitles:

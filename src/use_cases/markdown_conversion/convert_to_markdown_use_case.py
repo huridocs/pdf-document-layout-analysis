@@ -22,30 +22,14 @@ class ConvertToMarkdownUseCase:
         dpi: int = 120,
         output_file: Optional[str] = None,
     ) -> Union[str, Response]:
-        """
-        Convert PDF to markdown format.
-
-        Args:
-            pdf_content: The PDF file content as bytes
-            use_fast_mode: Whether to use fast analysis mode
-            dpi: DPI for image extraction (default: 120)
-            output_file: Optional filename for the markdown file. When provided, returns a ZIP file.
-
-        Returns:
-            If output_file is None: The generated markdown content as a string
-            If output_file is provided: A ZIP file Response containing markdown file and images
-        """
-        # First, analyze the PDF to get layout segments
         if use_fast_mode:
             analysis_result = self.pdf_analysis_service.analyze_pdf_layout_fast(pdf_content, "", True, False)
         else:
             analysis_result = self.pdf_analysis_service.analyze_pdf_layout(pdf_content, "", True, False)
 
-        # Convert analysis result to SegmentBox objects
         segments: List[SegmentBox] = []
         for item in analysis_result:
             if isinstance(item, dict):
-                # Convert dict to SegmentBox if needed
                 segment = SegmentBox(
                     left=item.get("left", 0),
                     top=item.get("top", 0),
@@ -61,5 +45,4 @@ class ConvertToMarkdownUseCase:
             elif isinstance(item, SegmentBox):
                 segments.append(item)
 
-        # Convert to markdown
         return self.markdown_conversion_service.convert_to_markdown(pdf_content, segments, extract_toc, dpi, output_file)

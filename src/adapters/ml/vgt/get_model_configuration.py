@@ -3,7 +3,7 @@ from os.path import join
 from detectron2.config import get_cfg
 from detectron2.engine import default_setup, default_argument_parser
 from configuration import service_logger, SRC_PATH, ROOT_PATH
-from ditod import add_vit_config
+from adapters.ml.vgt.ditod import add_vit_config
 
 
 def is_gpu_available():

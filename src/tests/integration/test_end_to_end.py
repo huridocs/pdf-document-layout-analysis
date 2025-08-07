@@ -1,9 +1,7 @@
 from pathlib import Path
-
 import requests
 from unittest import TestCase
 from configuration import ROOT_PATH
-from pathlib import Path
 
 SRC_PATH = Path(__file__).parent.parent.parent
 

@@ -83,7 +83,7 @@ class BrosConfig(PretrainedConfig):
 
     Examples::
 
-        >>> from bros import BrosModel, BrosConfig
+        >>> from adapters.ml.vgt.bros import BrosModel, BrosConfig
 
         >>> # Initializing a BROS naver-clova-ocr/bros-base-uncased style configuration
         >>> configuration = BrosConfig()

@@ -8,8 +8,8 @@ from pdf_features import PdfFeatures, Rectangle
 from pdf_token_type_labels import TokenType
 from ports.services.toc_service import TOCService
 from configuration import service_logger
-from adapters.external_services.toc.TOCExtractor import TOCExtractor
-from adapters.external_services.toc.PdfSegmentation import PdfSegmentation
+from adapters.infrastructure.toc.TOCExtractor import TOCExtractor
+from adapters.infrastructure.toc.PdfSegmentation import PdfSegmentation
 
 TITLE_TYPES = {TokenType.TITLE, TokenType.SECTION_HEADER}
 SKIP_TYPES = {TokenType.TITLE, TokenType.SECTION_HEADER, TokenType.PAGE_HEADER, TokenType.PICTURE}

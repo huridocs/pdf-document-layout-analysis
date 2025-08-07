@@ -2,8 +2,8 @@ from typing import List
 from domain.PdfImages import PdfImages
 from domain.PdfSegment import PdfSegment
 from ports.services.format_conversion_service import FormatConversionService
-from adapters.external_services.format_converters.convert_table_to_html import extract_table_format
-from adapters.external_services.format_converters.convert_formula_to_latex import extract_formula_format
+from adapters.infrastructure.format_converters.convert_table_to_html import extract_table_format
+from adapters.infrastructure.format_converters.convert_formula_to_latex import extract_formula_format
 
 
 class FormatConversionServiceAdapter(FormatConversionService):
