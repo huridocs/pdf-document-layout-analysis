@@ -4,10 +4,10 @@ from starlette.responses import Response
 from domain.SegmentBox import SegmentBox
 
 
-class MarkdownConversionService(ABC):
+class HtmlConversionService(ABC):
 
     @abstractmethod
-    def convert_to_markdown(
+    def convert_to_html(
         self,
         pdf_content: bytes,
         segments: list[SegmentBox],

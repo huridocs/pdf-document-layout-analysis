@@ -10,6 +10,7 @@ from use_cases.toc_extraction.extract_toc_use_case import ExtractTOCUseCase
 from use_cases.visualization.create_visualization_use_case import CreateVisualizationUseCase
 from use_cases.ocr.process_ocr_use_case import ProcessOCRUseCase
 from use_cases.markdown_conversion.convert_to_markdown_use_case import ConvertToMarkdownUseCase
+from use_cases.html_conversion.convert_to_html_use_case import ConvertToHtmlUseCase
 from adapters.storage.file_system_repository import FileSystemRepository
 
 
@@ -22,6 +23,7 @@ class FastAPIControllers:
         create_visualization_use_case: CreateVisualizationUseCase,
         process_ocr_use_case: ProcessOCRUseCase,
         convert_to_markdown_use_case: ConvertToMarkdownUseCase,
+        convert_to_html_use_case: ConvertToHtmlUseCase,
         file_repository: FileSystemRepository,
     ):
         self.analyze_pdf_use_case = analyze_pdf_use_case
@@ -30,6 +32,7 @@ class FastAPIControllers:
         self.create_visualization_use_case = create_visualization_use_case
         self.process_ocr_use_case = process_ocr_use_case
         self.convert_to_markdown_use_case = convert_to_markdown_use_case
+        self.convert_to_html_use_case = convert_to_html_use_case
         self.file_repository = file_repository
 
     async def root(self):
@@ -88,4 +91,16 @@ class FastAPIControllers:
     ) -> Union[str, Response]:
         return await run_in_threadpool(
             self.convert_to_markdown_use_case.execute, file.file.read(), fast, extract_toc, dpi, output_file
+        )
+
+    async def convert_to_html_endpoint(
+        self,
+        file: UploadFile = File(...),
+        fast: bool = Form(False),
+        extract_toc: bool = Form(False),
+        dpi: int = Form(120),
+        output_file: Optional[str] = Form(None),
+    ) -> Union[str, Response]:
+        return await run_in_threadpool(
+            self.convert_to_html_use_case.execute, file.file.read(), fast, extract_toc, dpi, output_file
         )

@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import List
 
 
 class OCRService(ABC):
@@ -9,5 +8,5 @@ class OCRService(ABC):
         pass
 
     @abstractmethod
-    def get_supported_languages(self) -> List[str]:
+    def get_supported_languages(self) -> list[str]:
         pass

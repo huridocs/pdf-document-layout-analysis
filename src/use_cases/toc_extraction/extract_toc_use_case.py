@@ -1,4 +1,3 @@
-from typing import List
 from fastapi import UploadFile
 from ports.services.pdf_analysis_service import PDFAnalysisService
 from ports.services.toc_service import TOCService
@@ -9,7 +8,7 @@ class ExtractTOCUseCase:
         self.pdf_analysis_service = pdf_analysis_service
         self.toc_service = toc_service
 
-    def execute(self, file: UploadFile, use_fast_mode: bool = False) -> List[dict]:
+    def execute(self, file: UploadFile, use_fast_mode: bool = False) -> list[dict]:
         file_content = file.file.read()
 
         if use_fast_mode:
@@ -19,6 +18,6 @@ class ExtractTOCUseCase:
 
         return self.toc_service.extract_table_of_contents(file_content, segment_boxes)
 
-    def execute_uwazi_compatible(self, file: UploadFile) -> List[dict]:
+    def execute_uwazi_compatible(self, file: UploadFile) -> list[dict]:
         toc_items = self.execute(file, use_fast_mode=True)
         return self.toc_service.format_toc_for_uwazi(toc_items)

@@ -1,18 +1,18 @@
 from typing import Optional, Union
 from starlette.responses import Response
-from ports.services.markdown_conversion_service import MarkdownConversionService
+from ports.services.html_conversion_service import HtmlConversionService
 from ports.services.pdf_analysis_service import PDFAnalysisService
 from domain.SegmentBox import SegmentBox
 
 
-class ConvertToMarkdownUseCase:
+class ConvertToHtmlUseCase:
     def __init__(
         self,
         pdf_analysis_service: PDFAnalysisService,
-        markdown_conversion_service: MarkdownConversionService,
+        html_conversion_service: HtmlConversionService,
     ):
         self.pdf_analysis_service = pdf_analysis_service
-        self.markdown_conversion_service = markdown_conversion_service
+        self.html_conversion_service = html_conversion_service
 
     def execute(
         self,
@@ -45,4 +45,4 @@ class ConvertToMarkdownUseCase:
             elif isinstance(item, SegmentBox):
                 segments.append(item)
 
-        return self.markdown_conversion_service.convert_to_markdown(pdf_content, segments, extract_toc, dpi, output_file)
+        return self.html_conversion_service.convert_to_html(pdf_content, segments, extract_toc, dpi, output_file)

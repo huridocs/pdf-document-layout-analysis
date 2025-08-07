@@ -8,6 +8,7 @@ from adapters.infrastructure.visualization_service_adapter import VisualizationS
 from adapters.infrastructure.ocr_service_adapter import OCRServiceAdapter
 from adapters.infrastructure.format_conversion_service_adapter import FormatConversionServiceAdapter
 from adapters.infrastructure.markdown_conversion_service_adapter import MarkdownConversionServiceAdapter
+from adapters.infrastructure.html_conversion_service_adapter import HtmlConversionServiceAdapter
 from adapters.web.fastapi_controllers import FastAPIControllers
 from use_cases.pdf_analysis.analyze_pdf_use_case import AnalyzePDFUseCase
 from use_cases.text_extraction.extract_text_use_case import ExtractTextUseCase
@@ -15,6 +16,7 @@ from use_cases.toc_extraction.extract_toc_use_case import ExtractTOCUseCase
 from use_cases.visualization.create_visualization_use_case import CreateVisualizationUseCase
 from use_cases.ocr.process_ocr_use_case import ProcessOCRUseCase
 from use_cases.markdown_conversion.convert_to_markdown_use_case import ConvertToMarkdownUseCase
+from use_cases.html_conversion.convert_to_html_use_case import ConvertToHtmlUseCase
 
 
 def setup_dependencies():
@@ -25,6 +27,7 @@ def setup_dependencies():
 
     format_conversion_service = FormatConversionServiceAdapter()
     markdown_conversion_service = MarkdownConversionServiceAdapter()
+    html_conversion_service = HtmlConversionServiceAdapter()
     text_extraction_service = TextExtractionAdapter()
     toc_service = TOCServiceAdapter()
     visualization_service = VisualizationServiceAdapter()
@@ -55,6 +58,10 @@ def setup_dependencies():
         pdf_analysis_service=pdf_analysis_service, markdown_conversion_service=markdown_conversion_service
     )
 
+    convert_to_html_use_case = ConvertToHtmlUseCase(
+        pdf_analysis_service=pdf_analysis_service, html_conversion_service=html_conversion_service
+    )
+
     controllers = FastAPIControllers(
         analyze_pdf_use_case=analyze_pdf_use_case,
         extract_text_use_case=extract_text_use_case,
@@ -62,6 +69,7 @@ def setup_dependencies():
         create_visualization_use_case=create_visualization_use_case,
         process_ocr_use_case=process_ocr_use_case,
         convert_to_markdown_use_case=convert_to_markdown_use_case,
+        convert_to_html_use_case=convert_to_html_use_case,
         file_repository=file_repository,
     )
 

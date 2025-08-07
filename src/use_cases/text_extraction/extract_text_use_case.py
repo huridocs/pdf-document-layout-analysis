@@ -1,4 +1,3 @@
-from typing import List
 from fastapi import UploadFile
 from pdf_token_type_labels import TokenType
 from ports.services.pdf_analysis_service import PDFAnalysisService
@@ -14,7 +13,7 @@ class ExtractTextUseCase:
         file_content = file.file.read()
 
         if types == "all":
-            token_types: List[TokenType] = [t for t in TokenType]
+            token_types: list[TokenType] = [t for t in TokenType]
         else:
             token_types = list(set([TokenType.from_text(t.strip().replace(" ", "_")) for t in types.split(",")]))
 

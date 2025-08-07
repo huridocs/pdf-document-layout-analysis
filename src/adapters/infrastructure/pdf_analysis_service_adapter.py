@@ -1,4 +1,4 @@
-from typing import AnyStr, List
+from typing import AnyStr
 from domain.PdfImages import PdfImages
 from domain.SegmentBox import SegmentBox
 from ports.services.pdf_analysis_service import PDFAnalysisService
@@ -23,11 +23,11 @@ class PDFAnalysisServiceAdapter(PDFAnalysisService):
 
     def analyze_pdf_layout(
         self, pdf_content: AnyStr, xml_filename: str = "", ocr_tables: bool = False, keep_pdf: bool = False
-    ) -> List[dict]:
+    ) -> list[dict]:
         pdf_path = self.file_repository.save_pdf(pdf_content)
         service_logger.info("Creating PDF images")
 
-        pdf_images_list: List[PdfImages] = [PdfImages.from_pdf_path(pdf_path, "", xml_filename)]
+        pdf_images_list: list[PdfImages] = [PdfImages.from_pdf_path(pdf_path, "", xml_filename)]
 
         predicted_segments = self.vgt_model_service.predict_document_layout(pdf_images_list)
 
@@ -46,11 +46,11 @@ class PDFAnalysisServiceAdapter(PDFAnalysisService):
 
     def analyze_pdf_layout_fast(
         self, pdf_content: AnyStr, xml_filename: str = "", ocr_tables: bool = False, keep_pdf: bool = False
-    ) -> List[dict]:
+    ) -> list[dict]:
         pdf_path = self.file_repository.save_pdf(pdf_content)
         service_logger.info("Creating PDF images for fast analysis")
 
-        pdf_images_list: List[PdfImages] = [PdfImages.from_pdf_path(pdf_path, "", xml_filename)]
+        pdf_images_list: list[PdfImages] = [PdfImages.from_pdf_path(pdf_path, "", xml_filename)]
 
         predicted_segments = self.fast_model_service.predict_layout_fast(pdf_images_list)
 

@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import List
 from os import makedirs
 from os.path import join
 from pdf_annotate import PdfAnnotator, Location, Appearance
@@ -23,7 +22,7 @@ DOCLAYNET_COLOR_BY_TYPE = {
 
 
 class VisualizationServiceAdapter(VisualizationService):
-    def create_pdf_visualization(self, pdf_path: Path, segment_boxes: List[dict]) -> Path:
+    def create_pdf_visualization(self, pdf_path: Path, segment_boxes: list[dict]) -> Path:
         pdf_outputs_path = join(ROOT_PATH, "pdf_outputs")
         makedirs(pdf_outputs_path, exist_ok=True)
         annotator = PdfAnnotator(str(pdf_path))

@@ -2,7 +2,6 @@ import os
 import shutil
 import subprocess
 from pathlib import Path
-from typing import List
 from ports.services.ocr_service import OCRService
 from configuration import OCR_SOURCE, OCR_OUTPUT, OCR_FAILED
 from adapters.infrastructure.ocr.languages import iso_to_tesseract, supported_languages
@@ -31,7 +30,7 @@ class OCRServiceAdapter(OCRService):
         shutil.move(source_pdf_filepath, failed_pdf_filepath)
         return False
 
-    def get_supported_languages(self) -> List[str]:
+    def get_supported_languages(self) -> list[str]:
         return supported_languages()
 
     def _get_paths(self, namespace: str, pdf_file_name: str) -> tuple[Path, Path, Path]:

@@ -2,7 +2,7 @@ import tempfile
 import uuid
 from os.path import join
 from pathlib import Path
-from typing import AnyStr, List
+from typing import AnyStr
 from domain.PdfSegment import PdfSegment
 from pdf_features import PdfFeatures, Rectangle
 from pdf_token_type_labels import TokenType
@@ -18,12 +18,12 @@ SKIP_TYPES = {TokenType.TITLE, TokenType.SECTION_HEADER, TokenType.PAGE_HEADER, 
 class TOCServiceAdapter(TOCService):
 
     def extract_table_of_contents(
-        self, pdf_content: AnyStr, segment_boxes: List[dict], skip_document_name=False
-    ) -> List[dict]:
+        self, pdf_content: AnyStr, segment_boxes: list[dict], skip_document_name=False
+    ) -> list[dict]:
         service_logger.info("Getting TOC")
         pdf_path = self._pdf_content_to_pdf_path(pdf_content)
         pdf_features: PdfFeatures = PdfFeatures.from_pdf_path(pdf_path)
-        pdf_segments: List[PdfSegment] = self._get_pdf_segments_from_segment_boxes(pdf_features, segment_boxes)
+        pdf_segments: list[PdfSegment] = self._get_pdf_segments_from_segment_boxes(pdf_features, segment_boxes)
         title_segments = [segment for segment in pdf_segments if segment.segment_type in TITLE_TYPES]
         if skip_document_name:
             self._skip_name_of_the_document(pdf_segments, title_segments)
@@ -31,7 +31,7 @@ class TOCServiceAdapter(TOCService):
         toc_instance: TOCExtractor = TOCExtractor(pdf_segmentation)
         return toc_instance.to_dict()
 
-    def format_toc_for_uwazi(self, toc_items: List[dict]) -> List[dict]:
+    def format_toc_for_uwazi(self, toc_items: list[dict]) -> list[dict]:
         toc_compatible = []
         for toc_item in toc_items:
             toc_compatible.append(toc_item.copy())
@@ -52,7 +52,7 @@ class TOCServiceAdapter(TOCService):
         pdf_path.write_bytes(file_content)
         return pdf_path
 
-    def _skip_name_of_the_document(self, pdf_segments: List[PdfSegment], title_segments: List[PdfSegment]) -> None:
+    def _skip_name_of_the_document(self, pdf_segments: list[PdfSegment], title_segments: list[PdfSegment]) -> None:
         segments_to_remove = []
         last_segment = None
         for segment in pdf_segments:
@@ -71,8 +71,8 @@ class TOCServiceAdapter(TOCService):
         for segment in segments_to_remove:
             title_segments.remove(segment)
 
-    def _get_pdf_segments_from_segment_boxes(self, pdf_features: PdfFeatures, segment_boxes: List[dict]) -> List[PdfSegment]:
-        pdf_segments: List[PdfSegment] = []
+    def _get_pdf_segments_from_segment_boxes(self, pdf_features: PdfFeatures, segment_boxes: list[dict]) -> list[PdfSegment]:
+        pdf_segments: list[PdfSegment] = []
         for segment_box in segment_boxes:
             left, top, width, height = segment_box["left"], segment_box["top"], segment_box["width"], segment_box["height"]
             bounding_box = Rectangle.from_width_height(left, top, width, height)
