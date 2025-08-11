@@ -233,19 +233,24 @@ class PdfToMarkupServiceAdapter:
         if self.output_format == OutputFormat.HTML:
             styled = token.token_style.get_styled_content_html(content)
             styled = token.token_style.script_type.get_styled_content(styled)
-            return token.token_style.list_level.get_styled_content_html(styled)
+            styled = token.token_style.list_level.get_styled_content_html(styled)
+            return token.token_style.hyperlink_style.get_styled_content_html(styled)
         else:
             styled = token.token_style.get_styled_content_markdown(content)
             styled = token.token_style.script_type.get_styled_content(styled)
-            return token.token_style.list_level.get_styled_content_markdown(styled)
+            styled = token.token_style.list_level.get_styled_content_markdown(styled)
+            return token.token_style.hyperlink_style.get_styled_content_markdown(styled)
 
     def _process_title_segment(self, tokens: list[PdfToken], segment: SegmentBox) -> str:
         if not tokens:
             return ""
-        content = self._get_token_content(tokens[0])
-        for token in tokens[1:]:
-            styled = self._get_styled_content(token, token.content)
-            content += " " + styled
+
+        title_type = tokens[0].token_style.title_type
+        content = " ".join([self._get_styled_content(token, token.content) for token in tokens])
+        if self.output_format == OutputFormat.HTML:
+            content = title_type.get_styled_content_html(content)
+        else:
+            content = title_type.get_styled_content_markdown(content)
         anchor = f"<span id='{segment.id}'></span>\n"
         return anchor + content + "\n\n"
 
