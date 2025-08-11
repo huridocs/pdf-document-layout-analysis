@@ -108,21 +108,21 @@ make stop
 
 ## 📋 Table of Contents
 
-- [🚀 Quick Start](#quick-start)
-- [⚙️ Dependencies](#dependencies)
-- [📋 Requirements](#requirements)
-- [📚 API Reference](#api-reference)
-- [💡 Usage Examples](#usage-examples)
-- [🏗️ Architecture](#architecture)
-- [🤖 Models](#models)
-- [📊 Data](#data)
-- [🔧 Development](#development)
-- [📈 Benchmarks](#benchmarks)
+- [🚀 Quick Start](#-quick-start)
+- [⚙️ Dependencies](#-dependencies)
+- [📋 Requirements](#-requirements)
+- [📚 API Reference](#-api-reference)
+- [💡 Usage Examples](#-usage-examples)
+- [🏗️ Architecture](#-architecture)
+- [🤖 Models](#-models)
+- [📊 Data](#-data)
+- [🔧 Development](#-development)
+- [📈 Benchmarks](#-benchmarks)
   - [Performance](#performance)
   - [Speed](#speed)
-- [🌐 Installation of More Languages for OCR](#installation-of-more-languages-for-ocr)
-- [🔗 Related Services](#related-services)
-- [🤝 Contributing](#contributing)
+- [🌐 Installation of More Languages for OCR](#-installation-of-more-languages-for-ocr)
+- [🔗 Related Services](#-related-services)
+- [🤝 Contributing](#-contributing)
 
 
 
