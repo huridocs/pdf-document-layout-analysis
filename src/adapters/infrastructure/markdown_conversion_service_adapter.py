@@ -1,0 +1,24 @@
+from typing import Optional, Union
+from starlette.responses import Response
+
+from domain.SegmentBox import SegmentBox
+from ports.services.markdown_conversion_service import MarkdownConversionService
+from adapters.infrastructure.markup_conversion.pdf_to_markup_service_adapter import PdfToMarkupServiceAdapter
+from adapters.infrastructure.markup_conversion.OutputFormat import OutputFormat
+
+
+class MarkdownConversionServiceAdapter(MarkdownConversionService, PdfToMarkupServiceAdapter):
+
+    def __init__(self):
+        PdfToMarkupServiceAdapter.__init__(self, OutputFormat.MARKDOWN)
+
+    def convert_to_markdown(
+        self,
+        pdf_content: bytes,
+        segments: list[SegmentBox],
+        extract_toc: bool = False,
+        dpi: int = 120,
+        output_file: Optional[str] = None,
+        include_segmentation: bool = False,
+    ) -> Union[str, Response]:
+        return self.convert_to_format(pdf_content, segments, extract_toc, dpi, output_file, include_segmentation)
