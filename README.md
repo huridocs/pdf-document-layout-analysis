@@ -108,21 +108,21 @@ make stop
 
 ## 📋 Table of Contents
 
-- [🚀 Quick Start](#🚀-quick-start)
-- [⚙️ Dependencies](#️⚙️-dependencies)
-- [📋 Requirements](#📋-requirements)
-- [📚 API Reference](#📚-api-reference)
-- [💡 Usage Examples](#💡-usage-examples)
-- [🏗️ Architecture](#️🏗️-architecture)
-- [🤖 Models](#🤖-models)
-- [📊 Data](#📊-data)
-- [🔧 Development](#🔧-development)
-- [📈 Benchmarks](#📈-benchmarks)
+- [🚀 Quick Start](#quick-start)
+- [⚙️ Dependencies](#dependencies)
+- [📋 Requirements](#requirements)
+- [📚 API Reference](#api-reference)
+- [💡 Usage Examples](#usage-examples)
+- [🏗️ Architecture](#architecture)
+- [🤖 Models](#models)
+- [📊 Data](#data)
+- [🔧 Development](#development)
+- [📈 Benchmarks](#benchmarks)
   - [Performance](#performance)
   - [Speed](#speed)
-- [🌐 Installation of More Languages for OCR](#🌐-installation-of-more-languages-for-ocr)
-- [🔗 Related Services](#🔗-related-services)
-- [🤝 Contributing](#🤝-contributing)
+- [🌐 Installation of More Languages for OCR](#installation-of-more-languages-for-ocr)
+- [🔗 Related Services](#related-services)
+- [🤝 Contributing](#contributing)
 
 
 
@@ -171,8 +171,8 @@ The service provides a comprehensive RESTful API with the following endpoints:
 
 | Endpoint | Method | Description | Parameters |
 |----------|--------|-------------|------------|
-| `/markdown` | POST | Convert PDF to Markdown | `file`, `fast`, `extract_toc`, `dpi`, `output_file`, `include_segmentation` |
-| `/html` | POST | Convert PDF to HTML | `file`, `fast`, `extract_toc`, `dpi`, `output_file`, `include_segmentation` |
+| `/markdown` | POST | Convert PDF to Markdown (includes segmentation data in zip) | `file`, `fast`, `extract_toc`, `dpi`, `output_file` |
+| `/html` | POST | Convert PDF to HTML (includes segmentation data in zip) | `file`, `fast`, `extract_toc`, `dpi`, `output_file` |
 | `/visualize` | POST | Visualize segmentation results on the PDF | `file`, `fast` |
 
 ### OCR & Utility Endpoints
@@ -193,7 +193,6 @@ The service provides a comprehensive RESTful API with the following endpoints:
 - **`types`**: Comma-separated content types to extract (string, default: "all")
 - **`extract_toc`**: Include table of contents at the beginning of the output (boolean, default: false)
 - **`dpi`**: Image resolution for conversion (integer, default: 120)
-- **`include_segmentation`**: Include segmentation data in zip output (boolean, default: false)
 
 ## 💡 Usage Examples
 
@@ -256,31 +255,11 @@ curl -X POST http://localhost:5060/markdown \
 curl -X POST http://localhost:5060/html \
   -F 'file=@document.pdf' \
   -F 'extract_toc=true' \
-  -F 'output_file=document.md' \
+  -F 'output_file=document.html' \
   --output 'document.zip'
 ```
 
-**Convert to Markdown with segmentation data:**
-```bash
-curl -X POST http://localhost:5060/markdown \
-  -F 'file=@document.pdf' \
-  -F 'extract_toc=true' \
-  -F 'output_file=document.md' \
-  -F 'include_segmentation=true' \
-  --output 'document.zip'
-```
-
-**Convert to HTML with segmentation data:**
-```bash
-curl -X POST http://localhost:5060/html \
-  -F 'file=@document.pdf' \
-  -F 'extract_toc=true' \
-  -F 'output_file=document.md' \
-  -F 'include_segmentation=true' \
-  --output 'document.zip'
-```
-
-> **📋 Segmentation Data**: When `include_segmentation=true` is used with format conversion endpoints, the resulting zip file will contain an additional `{filename}_segmentation.json` file with detailed information about each detected document segment including:
+> **📋 Segmentation Data**: Format conversion endpoints automatically include detailed segmentation data in the zip output. The resulting zip file contains a `{filename}_segmentation.json` file with information about each detected document segment including:
 > - **Coordinates**: `left`, `top`, `width`, `height`
 > - **Page information**: `page_number`, `page_width`, `page_height` 
 > - **Content**: `text` content and segment `type` (e.g., "Title", "Text", "Table", "Picture")
