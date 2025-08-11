@@ -19,5 +19,6 @@ class MarkdownConversionServiceAdapter(MarkdownConversionService, PdfToMarkupSer
         extract_toc: bool = False,
         dpi: int = 120,
         output_file: Optional[str] = None,
+        include_segmentation: bool = False,
     ) -> Union[str, Response]:
-        return self.convert_to_format(pdf_content, segments, extract_toc, dpi, output_file)
+        return self.convert_to_format(pdf_content, segments, extract_toc, dpi, output_file, include_segmentation)

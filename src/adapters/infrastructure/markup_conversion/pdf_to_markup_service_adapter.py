@@ -2,6 +2,7 @@ import fitz
 import tempfile
 import zipfile
 import io
+import json
 from fitz import Page
 from pathlib import Path
 from typing import Optional, Union
@@ -34,6 +35,7 @@ class PdfToMarkupServiceAdapter:
         extract_toc: bool = False,
         dpi: int = 120,
         output_file: Optional[str] = None,
+        include_segmentation: bool = False,
     ) -> Union[str, Response]:
         with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as temp_file:
             temp_file.write(pdf_content)
@@ -46,14 +48,22 @@ class PdfToMarkupServiceAdapter:
             content = self._generate_content(temp_pdf_path, segments, extract_toc, dpi, extracted_images, user_base_name)
 
             if output_file:
-                return self._create_zip_response(content, extracted_images, output_file)
+                return self._create_zip_response(
+                    content, extracted_images, output_file, segments if include_segmentation else None
+                )
 
             return content
         finally:
             if temp_pdf_path.exists():
                 temp_pdf_path.unlink()
 
-    def _create_zip_response(self, content: str, extracted_images: list[ExtractedImage], output_filename: str) -> Response:
+    def _create_zip_response(
+        self,
+        content: str,
+        extracted_images: list[ExtractedImage],
+        output_filename: str,
+        segments: Optional[list[SegmentBox]] = None,
+    ) -> Response:
         zip_buffer = io.BytesIO()
 
         with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
@@ -66,6 +76,12 @@ class PdfToMarkupServiceAdapter:
                 for image in extracted_images:
                     zip_file.writestr(f"{pictures_dir}{image.filename}", image.image_data)
 
+            if segments:
+                base_name = Path(output_filename).stem
+                segmentation_filename = f"{base_name}_segmentation.json"
+                segmentation_data = self._create_segmentation_json(segments)
+                zip_file.writestr(segmentation_filename, segmentation_data)
+
         zip_buffer.seek(0)
 
         zip_filename = f"{Path(output_filename).stem}.zip"
@@ -74,6 +90,12 @@ class PdfToMarkupServiceAdapter:
             media_type="application/zip",
             headers={"Content-Disposition": f"attachment; filename={zip_filename}"},
         )
+
+    def _create_segmentation_json(self, segments: list[SegmentBox]) -> str:
+        segmentation_data = []
+        for segment in segments:
+            segmentation_data.append(segment.to_dict())
+        return json.dumps(segmentation_data, indent=4, ensure_ascii=False)
 
     def _create_pdf_labels_from_segments(self, vgt_segments: list[SegmentBox]) -> PdfLabels:
         page_numbers = sorted(set(segment.page_number for segment in vgt_segments))
