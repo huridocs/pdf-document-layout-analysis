@@ -14,6 +14,5 @@ class MarkdownConversionService(ABC):
         extract_toc: bool = False,
         dpi: int = 120,
         output_file: Optional[str] = None,
-        include_segmentation: bool = False,
     ) -> Union[str, Response]:
         pass

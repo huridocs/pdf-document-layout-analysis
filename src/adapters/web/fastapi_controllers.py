@@ -88,7 +88,6 @@ class FastAPIControllers:
         extract_toc: bool = Form(False),
         dpi: int = Form(120),
         output_file: Optional[str] = Form(None),
-        include_segmentation: bool = Form(False),
     ) -> Union[str, Response]:
         return await run_in_threadpool(
             self.convert_to_markdown_use_case.execute,
@@ -97,7 +96,6 @@ class FastAPIControllers:
             extract_toc,
             dpi,
             output_file,
-            include_segmentation,
         )
 
     async def convert_to_html_endpoint(
@@ -107,7 +105,6 @@ class FastAPIControllers:
         extract_toc: bool = Form(False),
         dpi: int = Form(120),
         output_file: Optional[str] = Form(None),
-        include_segmentation: bool = Form(False),
     ) -> Union[str, Response]:
         return await run_in_threadpool(
             self.convert_to_html_use_case.execute,
@@ -116,5 +113,4 @@ class FastAPIControllers:
             extract_toc,
             dpi,
             output_file,
-            include_segmentation,
         )

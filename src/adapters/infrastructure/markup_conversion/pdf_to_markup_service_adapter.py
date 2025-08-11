@@ -35,7 +35,6 @@ class PdfToMarkupServiceAdapter:
         extract_toc: bool = False,
         dpi: int = 120,
         output_file: Optional[str] = None,
-        include_segmentation: bool = False,
     ) -> Union[str, Response]:
         with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as temp_file:
             temp_file.write(pdf_content)
@@ -48,9 +47,7 @@ class PdfToMarkupServiceAdapter:
             content = self._generate_content(temp_pdf_path, segments, extract_toc, dpi, extracted_images, user_base_name)
 
             if output_file:
-                return self._create_zip_response(
-                    content, extracted_images, output_file, segments if include_segmentation else None
-                )
+                return self._create_zip_response(content, extracted_images, output_file, segments)
 
             return content
         finally:
@@ -62,7 +59,7 @@ class PdfToMarkupServiceAdapter:
         content: str,
         extracted_images: list[ExtractedImage],
         output_filename: str,
-        segments: Optional[list[SegmentBox]] = None,
+        segments: list[SegmentBox],
     ) -> Response:
         zip_buffer = io.BytesIO()
 
@@ -76,11 +73,10 @@ class PdfToMarkupServiceAdapter:
                 for image in extracted_images:
                     zip_file.writestr(f"{pictures_dir}{image.filename}", image.image_data)
 
-            if segments:
-                base_name = Path(output_filename).stem
-                segmentation_filename = f"{base_name}_segmentation.json"
-                segmentation_data = self._create_segmentation_json(segments)
-                zip_file.writestr(segmentation_filename, segmentation_data)
+            base_name = Path(output_filename).stem
+            segmentation_filename = f"{base_name}_segmentation.json"
+            segmentation_data = self._create_segmentation_json(segments)
+            zip_file.writestr(segmentation_filename, segmentation_data)
 
         zip_buffer.seek(0)
 
