@@ -259,9 +259,8 @@ class TestEndToEnd(TestCase):
     def test_formula_extraction(self):
         with open(f"{ROOT_PATH}/test_pdfs/formula.pdf", "rb") as stream:
             files = {"file": stream}
-            data = {"extraction_format": "latex"}
 
-            response = requests.post(f"{self.service_url}", files=files, data=data)
+            response = requests.post(f"{self.service_url}", files=files)
 
             response_json = response.json()
             formula_text = response_json[1]["text"]
@@ -310,3 +309,87 @@ class TestEndToEnd(TestCase):
             result_ocr = requests.post(f"{self.service_url}/ocr", files=files)
 
         self.assertEqual(500, result_ocr.status_code)
+
+    def test_html_extraction(self):
+        with open(f"{ROOT_PATH}/test_pdfs/regular.pdf", "rb") as stream:
+            files = {"file": stream}
+
+            results = requests.post(f"{self.service_url}/html", files=files)
+
+        result = results.json()
+
+        span_elements = [
+            "<span id='page-1-0'></span>",
+            "<span id='page-1-1'></span>",
+            "<span id='page-1-2'></span>",
+            "<span id='page-1-3'></span>",
+            "<span id='page-1-4'></span>",
+            "<span id='page-1-8'></span>",
+            "<span id='page-1-11'></span>",
+            "<span id='page-1-12'></span>",
+            "<span id='page-1-13'></span>",
+        ]
+
+        heading_elements = [
+            "<h4><b>RESOLUCIÓN DE LA</b> <b>CORTE INTERAMERICANA DE DERECHOS HUMANOS</b> <b>DEL 29 DE JULIO DE 1991</b></h4>",
+            "<h4><b>MEDIDAS PROVISIONALES SOLICITADAS POR LA COMISIÓN</b> <b>INTERAMERICANA DE DERECHOS HUMANOS</b> <b>RESPECTO DE GUATEMALA</b></h4>",
+            "<h4><b>CASO CHUNIMA</b></h4>",
+            "<h4><b>LA CORTE INTERAMERICANA DE DERECHOS HUMANOS,</b></h4>",
+            "<h4><b>VISTOS:</b></h4>",
+            "<h4><b>CONSIDERANDO:</b></h4>",
+            "<h4><b>POR TANTO:</b></h4>",
+            "<h4><b>LA CORTE INTERAMERICANA DE DERECHOS HUMANOS,</b></h4>",
+            "<h4><b>RESUELVE:</b></h4>",
+        ]
+
+        bold_elements = [
+            "<b>RESOLUCIÓN DE LA</b>",
+            "<b>CORTE INTERAMERICANA DE DERECHOS HUMANOS</b>",
+            "<b>DEL 29 DE JULIO DE 1991</b>",
+            "<b>MEDIDAS PROVISIONALES SOLICITADAS POR LA COMISIÓN</b>",
+            "<b>INTERAMERICANA DE DERECHOS HUMANOS</b>",
+            "<b>RESPECTO DE GUATEMALA</b>",
+            "<b>CASO CHUNIMA</b>",
+            "<b>LA CORTE INTERAMERICANA DE DERECHOS HUMANOS,</b>",
+            "<b>VISTOS:</b>",
+            "<b>CONSIDERANDO:</b>",
+            "<b>POR TANTO:</b>",
+            "<b>LA CORTE INTERAMERICANA DE DERECHOS HUMANOS,</b>",
+            "<b>RESUELVE:</b>",
+        ]
+
+        self.assertEqual(200, results.status_code)
+
+        for span_element in span_elements:
+            self.assertIn(span_element, result)
+
+        for heading_element in heading_elements:
+            self.assertIn(heading_element, result)
+
+        for bold_element in bold_elements:
+            self.assertIn(bold_element, result)
+
+    def test_markdown_extraction(self):
+        with open(f"{ROOT_PATH}/test_pdfs/regular.pdf", "rb") as stream:
+            files = {"file": stream}
+
+            results = requests.post(f"{self.service_url}/markdown", files=files)
+
+        heading_elements = [
+            "#### **RESOLUCIÓN DE LA** **CORTE INTERAMERICANA DE DERECHOS HUMANOS** **DEL 29 DE JULIO DE 1991**\n\n",
+            "#### **MEDIDAS PROVISIONALES SOLICITADAS POR LA COMISIÓN** **INTERAMERICANA DE DERECHOS HUMANOS** **RESPECTO DE GUATEMALA**\n\n",
+            "#### **CASO CHUNIMA**\n\n",
+            "#### **LA CORTE INTERAMERICANA DE DERECHOS HUMANOS,**\n\n",
+            "#### **VISTOS:**\n\n",
+            "#### **CONSIDERANDO:**\n\n",
+            "#### **POR TANTO:**\n\n",
+            "#### **LA CORTE INTERAMERICANA DE DERECHOS HUMANOS,**\n\n",
+            "#### **RESUELVE:**\n\n",
+        ]
+
+        result = results.json()
+
+        self.assertEqual(200, results.status_code)
+
+        for heading_element in heading_elements:
+            self.assertIn(heading_element, result)
