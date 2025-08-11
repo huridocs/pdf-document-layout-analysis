@@ -171,8 +171,8 @@ The service provides a comprehensive RESTful API with the following endpoints:
 
 | Endpoint | Method | Description | Parameters |
 |----------|--------|-------------|------------|
-| `/markdown` | POST | Convert PDF to Markdown | `file`, `fast`, `extract_toc`, `dpi`, `output_file` |
-| `/html` | POST | Convert PDF to HTML | `file`, `fast`, `extract_toc`, `dpi`, `output_file` |
+| `/markdown` | POST | Convert PDF to Markdown | `file`, `fast`, `extract_toc`, `dpi`, `output_file`, `include_segmentation` |
+| `/html` | POST | Convert PDF to HTML | `file`, `fast`, `extract_toc`, `dpi`, `output_file`, `include_segmentation` |
 | `/visualize` | POST | Visualize segmentation results on the PDF | `file`, `fast` |
 
 ### OCR & Utility Endpoints
@@ -193,6 +193,7 @@ The service provides a comprehensive RESTful API with the following endpoints:
 - **`types`**: Comma-separated content types to extract (string, default: "all")
 - **`extract_toc`**: Include table of contents at the beginning of the output (boolean, default: false)
 - **`dpi`**: Image resolution for conversion (integer, default: 120)
+- **`include_segmentation`**: Include segmentation data in zip output (boolean, default: false)
 
 ## 💡 Usage Examples
 
@@ -258,6 +259,32 @@ curl -X POST http://localhost:5060/html \
   -F 'output_file=document.md' \
   --output 'document.zip'
 ```
+
+**Convert to Markdown with segmentation data:**
+```bash
+curl -X POST http://localhost:5060/markdown \
+  -F 'file=@document.pdf' \
+  -F 'extract_toc=true' \
+  -F 'output_file=document.md' \
+  -F 'include_segmentation=true' \
+  --output 'document.zip'
+```
+
+**Convert to HTML with segmentation data:**
+```bash
+curl -X POST http://localhost:5060/html \
+  -F 'file=@document.pdf' \
+  -F 'extract_toc=true' \
+  -F 'output_file=document.md' \
+  -F 'include_segmentation=true' \
+  --output 'document.zip'
+```
+
+> **📋 Segmentation Data**: When `include_segmentation=true` is used with format conversion endpoints, the resulting zip file will contain an additional `{filename}_segmentation.json` file with detailed information about each detected document segment including:
+> - **Coordinates**: `left`, `top`, `width`, `height`
+> - **Page information**: `page_number`, `page_width`, `page_height` 
+> - **Content**: `text` content and segment `type` (e.g., "Title", "Text", "Table", "Picture")
+
 
 ### OCR Processing
 
