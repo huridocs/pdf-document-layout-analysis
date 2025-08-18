@@ -69,7 +69,7 @@ iso_to_tesseract = {
     "ky": "kir",  # Kyrgyz
     "kmr": "kmr",  # Northern Kurdish
     "ko": "kor",  # Korean
-    "kor-vert": "kor-vert",  # Korean vertical
+    "kor-vert": "kor_vert",  # Korean vertical
     "lo": "lao",  # Lao
     "la": "lat",  # Latin
     "lv": "lav",  # Latvian

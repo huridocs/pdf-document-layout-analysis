@@ -18,6 +18,9 @@ RUN apt-get install -y tesseract-ocr-tur
 RUN apt-get install -y tesseract-ocr-ukr
 RUN apt-get install -y tesseract-ocr-ell
 RUN apt-get install -y tesseract-ocr-rus
+RUN apt-get install -y tesseract-ocr-kor
+RUN apt-get install -y tesseract-ocr-kor-vert
+
 
 RUN mkdir -p /app/src
 RUN mkdir -p /app/models

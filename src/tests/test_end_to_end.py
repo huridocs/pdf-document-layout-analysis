@@ -9,6 +9,14 @@ SRC_PATH = Path(__file__).parent.parent.parent
 class TestEndToEnd(TestCase):
     service_url = "http://localhost:5060"
 
+    def test_info(self):
+        results = requests.get(f"{self.service_url}/info")
+
+        self.assertEqual(200, results.status_code)
+        self.assertIn("version", results.json())
+        self.assertIn("commit", results.json())
+        self.assertIn("date", results.json())
+
     def test_error_file(self):
         with open(f"{ROOT_PATH}/test_pdfs/error.pdf", "rb") as stream:
             files = {"file": stream}
