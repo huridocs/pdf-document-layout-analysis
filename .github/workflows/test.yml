@@ -21,20 +21,20 @@ jobs:
       with:
         python-version: '3.11'
 
-    - name: Free up space
-      run: make free_up_space
+    - name: Install dependencies
+      run: sudo apt-get update; sudo apt-get install -y pdftohtml qpdf just
 
-    - name: Install pdftohtml
-      run: sudo apt-get update; sudo apt-get install -y pdftohtml qpdf
+    - name: Free up space
+      run: just free_up_space
 
     - name: Install venv
-      run: make install_venv
+      run: just install_venv
 
     - name: Lint with black
-      run: make check_format
+      run: just check_format
 
     - name: Start service
-      run: make start_detached
+      run: just start_detached
 
     - name: Check API ready
       uses: emilioschepis/wait-for-endpoint@v1.0.3
@@ -46,4 +46,4 @@ jobs:
         interval: 500
 
     - name: Test with unittest
-      run: make test
+      run: just test
