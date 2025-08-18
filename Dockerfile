@@ -17,6 +17,7 @@ RUN apt-get install -y tesseract-ocr-chi-sim
 RUN apt-get install -y tesseract-ocr-tur
 RUN apt-get install -y tesseract-ocr-ukr
 RUN apt-get install -y tesseract-ocr-ell
+RUN apt-get install -y tesseract-ocr-rus
 
 RUN mkdir -p /app/src
 RUN mkdir -p /app/models
