@@ -13,9 +13,10 @@ class TestEndToEnd(TestCase):
         results = requests.get(f"{self.service_url}/info")
 
         self.assertEqual(200, results.status_code)
-        self.assertIn("version", results.json())
-        self.assertIn("commit", results.json())
-        self.assertIn("date", results.json())
+        self.assertIn("ko", results.json()["supported_languages"])
+        self.assertIn("kor-vert", results.json()["supported_languages"])
+        self.assertIn("ru", results.json()["supported_languages"])
+        self.assertIn("el", results.json()["supported_languages"])
 
     def test_error_file(self):
         with open(f"{ROOT_PATH}/test_pdfs/error.pdf", "rb") as stream:
