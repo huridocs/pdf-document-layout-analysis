@@ -66,7 +66,7 @@ start_detached:
 
 start_detached_gpu:
 	mkdir -p ./models
-	docker compose -f docker-compose-gpu.yml up --build -d -e RESTART_IF_NO_GPU=true
+	RESTART_IF_NO_GPU=true docker compose -f docker-compose-gpu.yml up --build -d
 
 upgrade:
 	. .venv/bin/activate; pip-upgrade

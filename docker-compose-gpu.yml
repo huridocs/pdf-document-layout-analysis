@@ -10,3 +10,5 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [ gpu ]
+    environment:
+      - RESTART_IF_NO_GPU=$RESTART_IF_NO_GPU
