@@ -1,7 +1,7 @@
 services:
   pdf-document-layout-analysis:
     container_name: pdf-document-layout-analysis
-    entrypoint: [ "gunicorn", "-k", "uvicorn.workers.UvicornWorker", "--chdir", "./src", "app:app", "--bind", "0.0.0.0:5060", "--timeout", "10000"]
+    entrypoint: [ "gunicorn", "-k", "uvicorn.workers.UvicornWorker", "--chdir", "./src", "app:app", "--bind", "0.0.0.0:5060", "--timeout-keep-alive", "10000"]
     init: true
     restart: unless-stopped
     build:

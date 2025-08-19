@@ -2,7 +2,18 @@ FROM pytorch/pytorch:2.4.0-cuda11.8-cudnn9-runtime
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 RUN apt-get update
-RUN apt-get install --fix-missing -y -q --no-install-recommends libgomp1 ffmpeg libsm6 libxext6 pdftohtml git ninja-build g++ qpdf pandoc
+RUN apt-get install --fix-missing -y -q --no-install-recommends libgomp1 ffmpeg libsm6 libxext6 git ninja-build g++ qpdf pandoc
+
+WORKDIR /tmp
+RUN wget https://poppler.freedesktop.org/poppler-24.02.0.tar.xz \
+    && tar -xf poppler-24.02.0.tar.xz \
+    && cd poppler-24.02.0 \
+    && mkdir build \
+    && cd build \
+    && cmake .. -DCMAKE_BUILD_TYPE=Release -DENABLE_UNSTABLE_API_ABI_HEADERS=ON -DENABLE_NSS3=OFF -DENABLE_GPGME=OFF -DENABLE_QT6=OFF \
+    && make -j$(nproc) \
+    && make install \
+    && ldconfig
 
 RUN apt-get install -y ocrmypdf
 RUN apt-get install -y tesseract-ocr-fra
@@ -38,6 +49,7 @@ RUN uv pip install --upgrade pip
 RUN uv pip install -r requirements.txt
 
 WORKDIR /app
+
 RUN cd src; git clone https://github.com/facebookresearch/detectron2;
 RUN cd src/detectron2; git checkout 70f454304e1a38378200459dd2dbca0f0f4a5ab4; python setup.py build develop
 RUN uv pip install pycocotools==2.0.8
