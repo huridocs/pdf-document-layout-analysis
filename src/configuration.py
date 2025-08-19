@@ -1,4 +1,5 @@
 import logging
+import os
 from pathlib import Path
 
 
@@ -10,6 +11,7 @@ logging.root.handlers = []
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s", handlers=handlers)
 service_logger = logging.getLogger(__name__)
 
+RESTART_IF_NO_GPU = os.environ.get("RESTART_IF_NO_GPU", "false").lower().strip() == "true"
 IMAGES_ROOT_PATH = Path(ROOT_PATH, "images")
 WORD_GRIDS_PATH = Path(ROOT_PATH, "word_grids")
 JSONS_ROOT_PATH = Path(ROOT_PATH, "jsons")
