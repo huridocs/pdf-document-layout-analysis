@@ -22,7 +22,7 @@ class PDFAnalysisServiceAdapter(PDFAnalysisService):
         self.file_repository = file_repository
 
     def analyze_pdf_layout(
-        self, pdf_content: AnyStr, xml_filename: str = "", ocr_tables: bool = False, keep_pdf: bool = False
+        self, pdf_content: AnyStr, xml_filename: str = "", parse_tables_and_math: bool = False, keep_pdf: bool = False
     ) -> list[dict]:
         pdf_path = self.file_repository.save_pdf(pdf_content)
         service_logger.info("Creating PDF images")
@@ -31,9 +31,9 @@ class PDFAnalysisServiceAdapter(PDFAnalysisService):
 
         predicted_segments = self.vgt_model_service.predict_document_layout(pdf_images_list)
 
-        pdf_images_200_dpi = PdfImages.from_pdf_path(pdf_path, "", xml_filename, dpi=200)
-        self.format_conversion_service.convert_formula_to_latex(pdf_images_200_dpi, predicted_segments)
-        if ocr_tables:
+        if parse_tables_and_math:
+            pdf_images_200_dpi = PdfImages.from_pdf_path(pdf_path, "", xml_filename, dpi=200)
+            self.format_conversion_service.convert_formula_to_latex(pdf_images_200_dpi, predicted_segments)
             self.format_conversion_service.convert_table_to_html(pdf_images_200_dpi, predicted_segments)
 
         if not keep_pdf:
@@ -45,7 +45,7 @@ class PDFAnalysisServiceAdapter(PDFAnalysisService):
         ]
 
     def analyze_pdf_layout_fast(
-        self, pdf_content: AnyStr, xml_filename: str = "", ocr_tables: bool = False, keep_pdf: bool = False
+        self, pdf_content: AnyStr, xml_filename: str = "", parse_tables_and_math: bool = False, keep_pdf: bool = False
     ) -> list[dict]:
         pdf_path = self.file_repository.save_pdf(pdf_content)
         service_logger.info("Creating PDF images for fast analysis")
@@ -54,9 +54,9 @@ class PDFAnalysisServiceAdapter(PDFAnalysisService):
 
         predicted_segments = self.fast_model_service.predict_layout_fast(pdf_images_list)
 
-        pdf_images_200_dpi = PdfImages.from_pdf_path(pdf_path, "", xml_filename, dpi=200)
-        self.format_conversion_service.convert_formula_to_latex(pdf_images_200_dpi, predicted_segments)
-        if ocr_tables:
+        if parse_tables_and_math:
+            pdf_images_200_dpi = PdfImages.from_pdf_path(pdf_path, "", xml_filename, dpi=200)
+            self.format_conversion_service.convert_formula_to_latex(pdf_images_200_dpi, predicted_segments)
             self.format_conversion_service.convert_table_to_html(pdf_images_list[0], predicted_segments)
 
         if not keep_pdf:

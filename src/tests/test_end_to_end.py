@@ -242,7 +242,7 @@ class TestEndToEnd(TestCase):
     def test_table_extraction(self):
         with open(f"{ROOT_PATH}/test_pdfs/table.pdf", "rb") as stream:
             files = {"file": stream}
-            data = {"ocr_tables": "true"}
+            data = {"parse_tables_and_math": "true"}
 
             response = requests.post(f"{self.service_url}", files=files, data=data)
 
@@ -268,8 +268,9 @@ class TestEndToEnd(TestCase):
     def test_formula_extraction(self):
         with open(f"{ROOT_PATH}/test_pdfs/formula.pdf", "rb") as stream:
             files = {"file": stream}
+            data = {"parse_tables_and_math": "true"}
 
-            response = requests.post(f"{self.service_url}", files=files)
+            response = requests.post(f"{self.service_url}", files=files, data=data)
 
             response_json = response.json()
             formula_text = response_json[1]["text"]

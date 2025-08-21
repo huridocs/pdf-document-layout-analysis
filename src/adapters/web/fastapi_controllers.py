@@ -51,8 +51,12 @@ class FastAPIControllers:
     async def error(self):
         raise FileNotFoundError("This is a test error from the error endpoint")
 
-    async def analyze_pdf(self, file: UploadFile = File(...), fast: bool = Form(False), ocr_tables: bool = Form(False)):
-        return await run_in_threadpool(self.analyze_pdf_use_case.execute, file.file.read(), "", ocr_tables, fast, False)
+    async def analyze_pdf(
+        self, file: UploadFile = File(...), fast: bool = Form(False), parse_tables_and_math: bool = Form(False)
+    ):
+        return await run_in_threadpool(
+            self.analyze_pdf_use_case.execute, file.file.read(), "", parse_tables_and_math, fast, False
+        )
 
     async def analyze_and_save_xml(
         self, file: UploadFile = File(...), xml_file_name: str | None = None, fast: bool = Form(False)

@@ -1,4 +1,3 @@
-
 <h1 align="center">PDF Document Layout Analysis</h1>
 <p align="center">A Docker-powered microservice for intelligent PDF document layout analysis, OCR, and content extraction</p>
 
@@ -155,7 +154,7 @@ The service provides a comprehensive RESTful API with the following endpoints:
 
 | Endpoint | Method | Description | Parameters |
 |----------|--------|-------------|------------|
-| `/` | POST | Analyze PDF layout and extract segments | `file`, `fast`, `ocr_tables` |
+| `/` | POST | Analyze PDF layout and extract segments | `file`, `fast`, `parse_tables_and_math` |
 | `/save_xml/{filename}` | POST | Analyze PDF and save XML output | `file`, `xml_file_name`, `fast` |
 | `/get_xml/{filename}` | GET | Retrieve saved XML analysis | `xml_file_name` |
 
@@ -188,7 +187,7 @@ The service provides a comprehensive RESTful API with the following endpoints:
 
 - **`file`**: PDF file to process (multipart/form-data)
 - **`fast`**: Use LightGBM models instead of VGT (boolean, default: false)
-- **`ocr_tables`**: Apply OCR to table regions (boolean, default: false)
+- **`parse_tables_and_math`**: Apply OCR to table regions (boolean, default: false) and convert formulas to LaTeX
 - **`language`**: OCR language code (string, default: "en")
 - **`types`**: Comma-separated content types to extract (string, default: "all")
 - **`extract_toc`**: Include table of contents at the beginning of the output (boolean, default: false)
@@ -213,11 +212,11 @@ curl -X POST \
   http://localhost:5060
 ```
 
-**Analysis with table OCR:**
+**Analysis with table and math parsing:**
 ```bash
 curl -X POST \
   -F 'file=@document.pdf' \
-  -F 'ocr_tables=true' \
+  -F 'parse_tables_and_math=true' \
   http://localhost:5060
 ```
 
@@ -680,10 +679,10 @@ For segments without text (e.g., images):
 
 #### Enhanced Table Extraction
 
-OCR tables and extract them in HTML format by setting `ocr_tables=true`:
+Parse tables and extract them in HTML format by setting `parse_tables_and_math=true`:
 
 ```bash
-curl -X POST -F 'file=@document.pdf' -F 'ocr_tables=true' http://localhost:5060
+curl -X POST -F 'file=@document.pdf' -F 'parse_tables_and_math=true' http://localhost:5060
 ```
 
 
@@ -909,4 +908,3 @@ We welcome contributions to improve the PDF Document Layout Analysis service!
 ### License
 
 This project is licensed under the terms specified in the [LICENSE](LICENSE) file.
-
