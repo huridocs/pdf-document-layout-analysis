@@ -2,7 +2,7 @@ FROM pytorch/pytorch:2.4.0-cuda11.8-cudnn9-runtime
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 RUN apt-get update
-RUN apt-get install --fix-missing -y -q --no-install-recommends libgomp1 ffmpeg libsm6 pdftohtml libxext6 git ninja-build g++ qpdf pandoc
+RUN apt-get install --fix-missing -y -q --no-install-recommends libgomp1 ffmpeg libsm6 pdftohtml libxext6 git ninja-build g++ qpdf pandoc curl
 
 
 RUN apt-get install -y ocrmypdf
@@ -22,6 +22,8 @@ RUN apt-get install -y tesseract-ocr-rus
 RUN apt-get install -y tesseract-ocr-kor
 RUN apt-get install -y tesseract-ocr-kor-vert
 
+
+RUN curl -fsSL https://ollama.com/install.sh | sh
 
 RUN mkdir -p /app/src
 RUN mkdir -p /app/models

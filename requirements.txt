@@ -24,4 +24,5 @@ rapidocr==3.2.0
 pix2tex==0.1.4
 latex2mathml==3.78.0
 PyMuPDF==1.25.5
+ollama==0.6.0
 git+https://github.com/huridocs/pdf-features.git@2025.9.25.1

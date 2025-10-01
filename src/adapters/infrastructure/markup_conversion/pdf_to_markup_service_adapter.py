@@ -22,6 +22,8 @@ from pdf_token_type_labels.TokenType import TokenType
 from adapters.infrastructure.markup_conversion.OutputFormat import OutputFormat
 from adapters.infrastructure.markup_conversion.Link import Link
 from adapters.infrastructure.markup_conversion.ExtractedImage import ExtractedImage
+from adapters.infrastructure.translation.download_translation_model import ensure_ollama_model
+from adapters.infrastructure.translation.translate_markup_document import translate_markup
 
 
 class PdfToMarkupServiceAdapter:
@@ -35,6 +37,8 @@ class PdfToMarkupServiceAdapter:
         extract_toc: bool = False,
         dpi: int = 120,
         output_file: Optional[str] = None,
+        target_languages: Optional[list[str]] = None,
+        translation_model: str = "gpt-oss",
     ) -> Union[str, Response]:
         with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as temp_file:
             temp_file.write(pdf_content)
@@ -44,10 +48,19 @@ class PdfToMarkupServiceAdapter:
             extracted_images: list[ExtractedImage] = [] if output_file else None
             user_base_name = Path(output_file).stem if output_file else None
 
-            content = self._generate_content(temp_pdf_path, segments, extract_toc, dpi, extracted_images, user_base_name)
+            content_parts = self._get_styled_content_parts(
+                temp_pdf_path, segments, extract_toc, dpi, extracted_images, user_base_name
+            )
+            content = "".join(content_parts)
 
             if output_file:
-                return self._create_zip_response(content, extracted_images, output_file, segments)
+                translations = {}
+                if target_languages and len(target_languages) > 0 and content_parts:
+                    translations = self._generate_translations(
+                        segments, content_parts, target_languages, translation_model, extract_toc
+                    )
+
+                return self._create_zip_response(content, extracted_images, output_file, segments, translations)
 
             return content
         finally:
@@ -60,6 +73,7 @@ class PdfToMarkupServiceAdapter:
         extracted_images: list[ExtractedImage],
         output_filename: str,
         segments: list[SegmentBox],
+        translations: Optional[dict[str, str]] = None,
     ) -> Response:
         zip_buffer = io.BytesIO()
 
@@ -72,6 +86,12 @@ class PdfToMarkupServiceAdapter:
 
                 for image in extracted_images:
                     zip_file.writestr(f"{pictures_dir}{image.filename}", image.image_data)
+
+            if translations:
+                output_path = Path(output_filename)
+                for language, translated_content in translations.items():
+                    translated_filename = f"{output_path.stem}_{language}{output_path.suffix}"
+                    zip_file.writestr(translated_filename, translated_content.encode("utf-8"))
 
             base_name = Path(output_filename).stem
             segmentation_filename = f"{base_name}_segmentation.json"
@@ -92,6 +112,27 @@ class PdfToMarkupServiceAdapter:
         for segment in segments:
             segmentation_data.append(segment.to_dict())
         return json.dumps(segmentation_data, indent=4, ensure_ascii=False)
+
+    def _generate_translations(
+        self,
+        segments: list[SegmentBox],
+        content_parts: list[str],
+        target_languages: list[str],
+        translation_model: str,
+        extract_toc: bool = False,
+    ) -> dict[str, str]:
+        translations = {}
+
+        if not ensure_ollama_model(translation_model):
+            return translations
+
+        for target_language in target_languages:
+            translated_content = translate_markup(
+                self.output_format, segments, content_parts, translation_model, target_language, extract_toc
+            )
+            translations[target_language] = translated_content
+
+        return translations
 
     def _create_pdf_labels_from_segments(self, vgt_segments: list[SegmentBox]) -> PdfLabels:
         page_numbers = sorted(set(segment.page_number for segment in vgt_segments))
@@ -309,7 +350,7 @@ class PdfToMarkupServiceAdapter:
             for segment_index, segment in enumerate(segments):
                 segment.id = f"page-{page_number}-{segment_index}"
 
-    def _generate_content(
+    def _get_styled_content_parts(
         self,
         pdf_path: Path,
         vgt_segments: list[SegmentBox],
@@ -358,4 +399,4 @@ class PdfToMarkupServiceAdapter:
                         self._process_regular_segment(tokens_in_seg, segment, links_by_source, links_by_dest)
                     )
 
-        return "".join(content_parts)
+        return content_parts

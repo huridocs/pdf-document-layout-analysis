@@ -21,6 +21,8 @@ class ConvertToHtmlUseCase:
         extract_toc: bool = False,
         dpi: int = 120,
         output_file: Optional[str] = None,
+        target_languages: Optional[list[str]] = None,
+        translation_model: str = "gpt-oss",
     ) -> Union[str, Response]:
         if use_fast_mode:
             analysis_result = self.pdf_analysis_service.analyze_pdf_layout_fast(pdf_content, "", True, False)
@@ -45,4 +47,6 @@ class ConvertToHtmlUseCase:
             elif isinstance(item, SegmentBox):
                 segments.append(item)
 
-        return self.html_conversion_service.convert_to_html(pdf_content, segments, extract_toc, dpi, output_file)
+        return self.html_conversion_service.convert_to_html(
+            pdf_content, segments, extract_toc, dpi, output_file, target_languages, translation_model
+        )
