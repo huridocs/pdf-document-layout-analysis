@@ -12,12 +12,12 @@ prompt = """Please translate the following text into {target_language}. Follow t
 2. Translate all text accurately without omitting any part of the content.
 3. Preserve the tone and style of the original text.
 4. Do not include any additional comments, notes, or explanations in the output; provide only the translated text.
-5. Only translate the text between ``` and ```. Do not output any other text or character.
-6. Do not change, remove, or add any markdown symbols (such as *, _, #, [ ], ( ), -, or backticks). Only translate the visible text.
-7. Do not translate URLs, email addresses, or code snippets. Only translate the human-readable text.
-8. If you see custom tags (such as [DOC_REF], [IT], [B], [LINK]), **translate the text inside the tags, but do not change, remove, or translate the tags themselves.** The tags must appear in the same positions in the output as in the input.
-9. 
-The output must have the same number of lines as the input. Do not reorder any lines or sentences.
+5. Do not change, remove, or add any markdown symbols (such as *, _, #, [ ], ( ), -, or backticks). Only translate the visible text.
+6. Do not translate URLs, email addresses, or code snippets. Only translate the human-readable text.
+7. If you see custom tags (such as [DOC_REF], [IT], [B], [LINK]), **translate the text inside the tags, but do not change, remove, or translate the tags themselves.** The tags must appear in the same positions in the output as in the input.
+8. The output must have the same number of lines as the input. Do not reorder any lines or sentences.
+
+**Only translate the text between ``` and ```. Do not output any other text or character. Do not include the ``` characters in the output.**
 
 Here is the text to be translated:
 
