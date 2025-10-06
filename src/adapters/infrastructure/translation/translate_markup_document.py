@@ -11,11 +11,12 @@ prompt = """Please translate the following text into {target_language}. Follow t
 1. Maintain the original layout and formatting.
 2. Translate all text accurately without omitting any part of the content.
 3. Preserve the tone and style of the original text.
-4. Do not include any additional comments, notes, or explanations in the output; provide only the translated text.
-5. Do not change, remove, or add any markdown symbols (such as *, _, #, [ ], ( ), -, or backticks). Only translate the visible text.
-6. Do not translate URLs, email addresses, or code snippets. Only translate the human-readable text.
-7. If you see custom tags (such as [DOC_REF], [IT], [B], [LINK]), **translate the text inside the tags, but do not change, remove, or translate the tags themselves.** The tags must appear in the same positions in the output as in the input.
-8. The output must have the same number of lines as the input. Do not reorder any lines or sentences.
+4. Do not change, remove, or add any markdown symbols (such as *, _, #, [ ], ( ), -, or backticks). Only translate the visible text.
+5. Do not translate URLs, email addresses, or code snippets. Only translate the human-readable text.
+6. If you see custom tags (such as [DOC_REF], [IT], [B], [LINK]), **translate the text inside the tags, but do not change, remove, or translate the tags themselves.** The tags must appear in the same positions in the output as in the input.
+7. The output must have the same number of lines as the input. Do not reorder any lines or sentences.
+8. If a word is split across lines with a hyphen (e.g., “sec- onds”), treat it as a single word and translate it as one complete word in the target language.
+9. Do not include any additional comments, notes, or explanations in the output; provide only the translated text.
 
 **Only translate the text between ``` and ```. Do not output any other text or character. Do not include the ``` characters in the output.**
 
