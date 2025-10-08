@@ -2,6 +2,8 @@ import re
 
 
 def encode_html(text):
+    text = text.replace("</i> <i>", " ")
+
     link_map = []
     doc_ref_map = []
     bold_map = []
