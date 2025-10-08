@@ -10,6 +10,7 @@ from PIL.Image import Image
 from pdf2image import convert_from_path
 from starlette.responses import Response
 
+from configuration import service_logger
 from domain.SegmentBox import SegmentBox
 from pdf_features.PdfFeatures import PdfFeatures
 from pdf_features.PdfToken import PdfToken
@@ -22,7 +23,7 @@ from pdf_token_type_labels.TokenType import TokenType
 from adapters.infrastructure.markup_conversion.OutputFormat import OutputFormat
 from adapters.infrastructure.markup_conversion.Link import Link
 from adapters.infrastructure.markup_conversion.ExtractedImage import ExtractedImage
-from adapters.infrastructure.translation.download_translation_model import ensure_ollama_model
+from adapters.infrastructure.translation.ollama_container_manager import OllamaContainerManager
 from adapters.infrastructure.translation.translate_markup_document import translate_markup
 
 
@@ -123,12 +124,14 @@ class PdfToMarkupServiceAdapter:
     ) -> dict[str, str]:
         translations = {}
 
-        if not ensure_ollama_model(translation_model):
+        ollama_manager = OllamaContainerManager()
+        if not ollama_manager.ensure_service_ready(translation_model):
             return translations
 
         for target_language in target_languages:
+            service_logger.info(f"\033[96mTranslating content to {target_language}\033[0m")
             translated_content = translate_markup(
-                self.output_format, segments, content_parts, translation_model, target_language, extract_toc
+                ollama_manager, self.output_format, segments, content_parts, translation_model, target_language, extract_toc
             )
             translations[target_language] = translated_content
 

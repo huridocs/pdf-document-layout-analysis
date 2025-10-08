@@ -1,8 +1,29 @@
 services:
-  pdf-document-layout-analysis-gpu:
+  ollama-gpu:
     extends:
       file: docker-compose.yml
-      service: pdf-document-layout-analysis
+      service: ollama
+    container_name: ollama-service-gpu
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+
+  pdf-document-layout-analysis-gpu:
+    container_name: pdf-document-layout-analysis-gpu
+    entrypoint: [ "gunicorn", "-k", "uvicorn.workers.UvicornWorker", "--chdir", "./src", "app:app", "--bind", "0.0.0.0:5060", "--timeout", "10000"]
+    init: true
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5060:5060"
     deploy:
       resources:
         reservations:
@@ -12,3 +33,34 @@ services:
               capabilities: [ gpu ]
     environment:
       - RESTART_IF_NO_GPU=$RESTART_IF_NO_GPU
+      - OLLAMA_HOST=http://localhost:11434
+
+  pdf-document-layout-analysis-gpu-translation:
+    container_name: pdf-document-layout-analysis-gpu-translation
+    entrypoint: [ "gunicorn", "-k", "uvicorn.workers.UvicornWorker", "--chdir", "./src", "app:app", "--bind", "0.0.0.0:5060", "--timeout", "10000"]
+    init: true
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5060:5060"
+    depends_on:
+      ollama-gpu:
+        condition: service_healthy
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+    environment:
+      - RESTART_IF_NO_GPU=$RESTART_IF_NO_GPU
+      - OLLAMA_HOST=http://ollama-gpu:11434
+    networks:
+      - pdf-analysis-network
+
+networks:
+  pdf-analysis-network:
+    driver: bridge

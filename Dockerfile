@@ -23,7 +23,7 @@ RUN apt-get install -y tesseract-ocr-kor
 RUN apt-get install -y tesseract-ocr-kor-vert
 
 
-RUN curl -fsSL https://ollama.com/install.sh | sh
+# Ollama is now running in a separate container
 
 RUN mkdir -p /app/src
 RUN mkdir -p /app/models

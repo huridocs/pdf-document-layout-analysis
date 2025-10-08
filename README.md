@@ -66,17 +66,22 @@ This project provides a powerful and flexible PDF analysis microservice built wi
 
 ### 1. Start the Service
 
-**With GPU support (recommended for better performance):**
+**Standard PDF Analysis (recommended for most users):**
 ```bash
 make start
 ```
 
-**Without GPU support:**
+**With Translation Features (includes Ollama container):**
 ```bash
-make start_no_gpu
+make start_translation
 ```
 
 The service will be available at `http://localhost:5060`
+
+**See all available commands:**
+```bash
+make help
+```
 
 **Check service status:**
 
