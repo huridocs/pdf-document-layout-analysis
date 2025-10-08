@@ -23,16 +23,26 @@ def decode_html(text, link_map, doc_ref_map):
     # 4. Decode links
     def link_decoder(match):
         idx = int(match.group(1))
-        label, url = link_map[idx]
-        return f'<a href="{url}">{match.group(2)}</a>'
+        if idx < len(link_map):
+            label, url = link_map[idx]
+            return f'<a href="{url}">{match.group(2)}</a>'
+        else:
+            # Return original text if index is out of range
+            return match.group(0)
 
     text = re.sub(r"\[LINK(\d+)\](.*?)\[LINK\1\]", link_decoder, text)
 
     # 5. Decode doc refs (same as markdown since they're custom)
     def doc_ref_decoder(match):
         idx = int(match.group(1))
-        return doc_ref_map[idx]
+        if idx < len(doc_ref_map):
+            return doc_ref_map[idx]
+        else:
+            # Return original text if index is out of range
+            return match.group(0)
 
     text = re.sub(r"\[DOCREF(\d+)\]", doc_ref_decoder, text)
+    text = text.replace("] (#page", "](#page")
+    text = " ".join(text.split())
 
     return text
