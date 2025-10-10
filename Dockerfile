@@ -23,8 +23,6 @@ RUN apt-get install -y tesseract-ocr-kor
 RUN apt-get install -y tesseract-ocr-kor-vert
 
 
-# Ollama is now running in a separate container
-
 RUN mkdir -p /app/src
 RUN mkdir -p /app/models
 
@@ -54,4 +52,3 @@ RUN python src/download_models.py
 ENV PYTHONPATH "${PYTHONPATH}:/app/src"
 ENV TRANSFORMERS_VERBOSITY=error
 ENV TRANSFORMERS_NO_ADVISORY_WARNINGS=1
-
