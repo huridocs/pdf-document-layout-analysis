@@ -24,13 +24,14 @@
 
 ## 🚀 Overview
 
-This project provides a powerful and flexible PDF analysis microservice built with **Clean Architecture** principles. The service enables OCR, segmentation, and classification of different parts of PDF pages, identifying elements such as texts, titles, pictures, tables, formulas, and more. Additionally, it determines the correct reading order of these identified elements and can convert PDFs to various formats including Markdown and HTML.
+This project provides a powerful and flexible PDF analysis microservice built with **Clean Architecture** principles. The service enables OCR, segmentation, and classification of different parts of PDF pages, identifying elements such as texts, titles, pictures, tables, formulas, and more. Additionally, it determines the correct reading order of these identified elements and can convert PDFs to various formats including Markdown and HTML with **automatic translation support** powered by Ollama.
 
 ### ✨ Key Features
 
 - 🔍 **Advanced PDF Layout Analysis** - Segment and classify PDF content with high accuracy
 - 🖼️ **Visual & Fast Models** - Choose between VGT (Vision Grid Transformer) for accuracy or LightGBM for speed
 - 📝 **Multi-format Output** - Export to JSON, Markdown, HTML, and visualize PDF segmentations
+- 🌍 **Automatic Translation** - Translate documents to multiple languages using Ollama models
 - 🌐 **OCR Support** - 150+ language support with Tesseract OCR
 - 📊 **Table & Formula Extraction** - Extract tables as HTML and formulas as LaTeX
 - 🏗️ **Clean Architecture** - Modular, testable, and maintainable codebase
@@ -117,6 +118,7 @@ make stop
 - [📋 Requirements](#-requirements)
 - [📚 API Reference](#-api-reference)
 - [💡 Usage Examples](#-usage-examples)
+  - [Translation Features](#translation-features)
 - [🏗️ Architecture](#-architecture)
 - [🤖 Models](#-models)
 - [📊 Data](#-data)
@@ -469,8 +471,8 @@ src/
 │   ├── toc_extraction/    # Table of contents extraction
 │   ├── visualization/     # PDF visualization use case
 │   ├── ocr/              # OCR processing use case
-│   ├── markdown_conversion/ # Markdown conversion use case
-│   └── html_conversion/   # HTML conversion use case
+│   ├── markdown_conversion/ # Markdown conversion use case (with translation)
+│   └── html_conversion/   # HTML conversion use case (with translation)
 ├── adapters/              # Interface Adapters
 │   ├── infrastructure/    # External service adapters
 │   ├── ml/               # Machine learning model adapters
@@ -647,6 +649,10 @@ make start_detached_gpu
 
 # Without GPU  
 make start_detached
+
+# With translation features
+make start_translation
+make start_translation_no_gpu
 ```
 
 **Clean up Docker resources:**
@@ -691,6 +697,9 @@ MODELS_PATH=./models
 # Service configuration  
 HOST=0.0.0.0
 PORT=5060
+
+# Translation configuration (when using translation features)
+OLLAMA_HOST=http://ollama:11434  # Ollama service endpoint
 ```
 
 ### Adding New Features
