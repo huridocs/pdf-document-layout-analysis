@@ -281,7 +281,7 @@ curl -X POST http://localhost:5060/html \
   -F 'file=@document.pdf' \
   -F 'output_file=document.md' \
   -F 'target_languages=French, Russian' \
-  -F 'translation_model=llama2' \
+  -F 'translation_model=huihui_ai/hunyuan-mt-abliterated' \
   --output 'document.zip'
 ```
 
@@ -316,16 +316,16 @@ The `/markdown` and `/html` endpoints support automatic translation of the conve
    - Image references and tables
 4. Translated files are named: `{filename}_{language}.{extension}`
 
-_**Note that the quality of translations mostly depends on the models used. When using smaller models, the output may contain many unexpected or undesired elements. For regular users, we aimed for a balance between performance and quality, so we tested with different models with a reasonable size. The results for `gpt-oss` were satisfactory, which is why we set it as the default model.**_
+_**Note that the quality of translations mostly depends on the models used. When using smaller models, the output may contain many unexpected or undesired elements. For regular users, we aimed for a balance between performance and quality, so we tested with different models with a reasonable size. The results for `gpt-oss` were satisfactory, which is why we set it as the default model. If you need something smaller you can also try `huihui_ai/hunyuan-mt-abliterated`, we saw it gives decent results especially if the text does not have much styling.**_
 
 **Example Translation Output:**
 ```
 document.zip
-├── document.md              # Original English
-├── document_es.md           # Spanish translation  
-├── document_fr.md           # French translation
-├── document_de.md           # German translation
-├── document_segmentation.json
+├── document.md                   # Source text with markdown/html styling
+├── document_Spanish.md           # Spanish translation  
+├── document_French.md            # French translation
+├── document_Turkish.md           # Turkish translation
+├── document_segmentation.json    # Segmentation information
 └── document_pictures/       # (if images present)
     ├── document_1_1.png
     └── document_1_2.png
