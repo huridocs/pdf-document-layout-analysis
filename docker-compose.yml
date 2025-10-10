@@ -1,4 +1,21 @@
 services:
+  ollama:
+    container_name: ollama-service
+    build:
+      context: .
+      dockerfile: Dockerfile.ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - pdf-analysis-network
+
   pdf-document-layout-analysis:
     container_name: pdf-document-layout-analysis
     entrypoint: [ "gunicorn", "-k", "uvicorn.workers.UvicornWorker", "--chdir", "./src", "app:app", "--bind", "0.0.0.0:5060", "--timeout", "10000"]
@@ -9,3 +26,27 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5060:5060"
+    environment:
+      - OLLAMA_HOST=http://localhost:11434
+
+  pdf-document-layout-analysis-translation:
+    container_name: pdf-document-layout-analysis-translation
+    entrypoint: [ "gunicorn", "-k", "uvicorn.workers.UvicornWorker", "--chdir", "./src", "app:app", "--bind", "0.0.0.0:5060", "--timeout", "10000"]
+    init: true
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5060:5060"
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    networks:
+      - pdf-analysis-network
+
+networks:
+  pdf-analysis-network:
+    driver: bridge

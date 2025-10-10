@@ -92,7 +92,13 @@ class FastAPIControllers:
         extract_toc: bool = Form(False),
         dpi: int = Form(120),
         output_file: Optional[str] = Form(None),
+        target_languages: Optional[str] = Form(None),
+        translation_model: str = Form("gpt-oss"),
     ) -> Union[str, Response]:
+        target_languages_list = None
+        if target_languages:
+            target_languages_list = [lang.strip() for lang in target_languages.split(",") if lang.strip()]
+
         return await run_in_threadpool(
             self.convert_to_markdown_use_case.execute,
             file.file.read(),
@@ -100,6 +106,8 @@ class FastAPIControllers:
             extract_toc,
             dpi,
             output_file,
+            target_languages_list,
+            translation_model,
         )
 
     async def convert_to_html_endpoint(
@@ -109,7 +117,13 @@ class FastAPIControllers:
         extract_toc: bool = Form(False),
         dpi: int = Form(120),
         output_file: Optional[str] = Form(None),
+        target_languages: Optional[str] = Form(None),
+        translation_model: str = Form("gpt-oss"),
     ) -> Union[str, Response]:
+        target_languages_list = None
+        if target_languages:
+            target_languages_list = [lang.strip() for lang in target_languages.split(",") if lang.strip()]
+
         return await run_in_threadpool(
             self.convert_to_html_use_case.execute,
             file.file.read(),
@@ -117,4 +131,6 @@ class FastAPIControllers:
             extract_toc,
             dpi,
             output_file,
+            target_languages_list,
+            translation_model,
         )

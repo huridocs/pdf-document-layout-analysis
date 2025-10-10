@@ -66,17 +66,22 @@ This project provides a powerful and flexible PDF analysis microservice built wi
 
 ### 1. Start the Service
 
-**With GPU support (recommended for better performance):**
+**Standard PDF Analysis (recommended for most users):**
 ```bash
 make start
 ```
 
-**Without GPU support:**
+**With Translation Features (includes Ollama container):**
 ```bash
-make start_no_gpu
+make start_translation
 ```
 
 The service will be available at `http://localhost:5060`
+
+**See all available commands:**
+```bash
+make help
+```
 
 **Check service status:**
 
@@ -170,8 +175,8 @@ The service provides a comprehensive RESTful API with the following endpoints:
 
 | Endpoint | Method | Description | Parameters |
 |----------|--------|-------------|------------|
-| `/markdown` | POST | Convert PDF to Markdown (includes segmentation data in zip) | `file`, `fast`, `extract_toc`, `dpi`, `output_file` |
-| `/html` | POST | Convert PDF to HTML (includes segmentation data in zip) | `file`, `fast`, `extract_toc`, `dpi`, `output_file` |
+| `/markdown` | POST | Convert PDF to Markdown (includes segmentation data in zip) | `file`, `fast`, `extract_toc`, `dpi`, `output_file`, `target_languages`, `translation_model` |
+| `/html` | POST | Convert PDF to HTML (includes segmentation data in zip) | `file`, `fast`, `extract_toc`, `dpi`, `output_file`, `target_languages`, `translation_model` |
 | `/visualize` | POST | Visualize segmentation results on the PDF | `file`, `fast` |
 
 ### OCR & Utility Endpoints
@@ -192,6 +197,8 @@ The service provides a comprehensive RESTful API with the following endpoints:
 - **`types`**: Comma-separated content types to extract (string, default: "all")
 - **`extract_toc`**: Include table of contents at the beginning of the output (boolean, default: false)
 - **`dpi`**: Image resolution for conversion (integer, default: 120)
+- **`target_languages`**: Comma-separated list of target languages for translation (e.g. "Turkish, Spanish, French")
+- **`translation_model`**: Ollama model to use for translation (string, default: "gpt-oss")
 
 ## 💡 Usage Examples
 
@@ -254,15 +261,75 @@ curl -X POST http://localhost:5060/markdown \
 curl -X POST http://localhost:5060/html \
   -F 'file=@document.pdf' \
   -F 'extract_toc=true' \
-  -F 'output_file=document.html' \
+  -F 'output_file=document.md' \
   --output 'document.zip'
 ```
 
-> **📋 Segmentation Data**: Format conversion endpoints automatically include detailed segmentation data in the zip output. The resulting zip file contains a `{filename}_segmentation.json` file with information about each detected document segment including:
-> - **Coordinates**: `left`, `top`, `width`, `height`
-> - **Page information**: `page_number`, `page_width`, `page_height` 
-> - **Content**: `text` content and segment `type` (e.g., "Title", "Text", "Table", "Picture")
+**Convert to Markdown with Translation:**
+```bash
+curl -X POST http://localhost:5060/markdown \
+  -F 'file=@document.pdf' \
+  -F 'output_file=document.md' \
+  -F 'target_languages=Turkish, Spanish' \
+  -F 'translation_model=gpt-oss' \
+  --output 'document.zip'
+```
 
+**Convert to HTML with Translation:**
+```bash
+curl -X POST http://localhost:5060/html \
+  -F 'file=@document.pdf' \
+  -F 'output_file=document.md' \
+  -F 'target_languages=French, Russian' \
+  -F 'translation_model=huihui_ai/hunyuan-mt-abliterated' \
+  --output 'document.zip'
+```
+
+> **📋 Segmentation Data & Translations**: Format conversion endpoints automatically include detailed segmentation data in the zip output. The resulting zip file contains:
+> - **Original file**: The converted document in the requested format
+> - **Segmentation data**: `{filename}_segmentation.json` file with information about each detected document segment:
+>   - **Coordinates**: `left`, `top`, `width`, `height`
+>   - **Page information**: `page_number`, `page_width`, `page_height` 
+>   - **Content**: `text` content and segment `type` (e.g., "Title", "Text", "Table", "Picture")
+> - **Translated files** (if `target_languages` specified): `{filename}_{language}.{extension}` for each target language
+> - **Images** (if present): `{filename}_pictures/` directory containing extracted images
+
+### Translation Features
+
+The `/markdown` and `/html` endpoints support automatic translation of the converted content into multiple languages using Ollama models.
+
+**Translation Requirements:**
+- The specified translation model must be available in Ollama
+- An `output_file` must be specified (translations are only included in zip responses)
+
+**Supported Translation Models:**
+- Any Ollama-compatible model (e.g., `gpt-oss`, `llama2`, `mistral`, etc.)
+- Models are automatically downloaded if not present locally
+
+**Translation Process:**
+1. The service checks if the specified model is available in Ollama
+2. If not available, it attempts to download the model using `ollama pull`
+3. For each target language, the content is translated while preserving:
+   - Original formatting and structure
+   - Markdown/HTML syntax
+   - Links and references
+   - Image references and tables
+4. Translated files are named: `{filename}_{language}.{extension}`
+
+_**Note that the quality of translations mostly depends on the models used. When using smaller models, the output may contain many unexpected or undesired elements. For regular users, we aimed for a balance between performance and quality, so we tested with different models with a reasonable size. The results for `gpt-oss` were satisfactory, which is why we set it as the default model. If you need something smaller you can also try `huihui_ai/hunyuan-mt-abliterated`, we saw it gives decent results especially if the text does not have much styling.**_
+
+**Example Translation Output:**
+```
+document.zip
+├── document.md                   # Source text with markdown/html styling
+├── document_Spanish.md           # Spanish translation  
+├── document_French.md            # French translation
+├── document_Turkish.md           # Turkish translation
+├── document_segmentation.json    # Segmentation information
+└── document_pictures/       # (if images present)
+    ├── document_1_1.png
+    └── document_1_2.png
+```
 
 ### OCR Processing
 

@@ -2,7 +2,7 @@ FROM pytorch/pytorch:2.4.0-cuda11.8-cudnn9-runtime
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 RUN apt-get update
-RUN apt-get install --fix-missing -y -q --no-install-recommends libgomp1 ffmpeg libsm6 pdftohtml libxext6 git ninja-build g++ qpdf pandoc
+RUN apt-get install --fix-missing -y -q --no-install-recommends libgomp1 ffmpeg libsm6 pdftohtml libxext6 git ninja-build g++ qpdf pandoc curl
 
 
 RUN apt-get install -y ocrmypdf
@@ -52,4 +52,3 @@ RUN python src/download_models.py
 ENV PYTHONPATH "${PYTHONPATH}:/app/src"
 ENV TRANSFORMERS_VERBOSITY=error
 ENV TRANSFORMERS_NO_ADVISORY_WARNINGS=1
-

@@ -14,5 +14,7 @@ class MarkdownConversionService(ABC):
         extract_toc: bool = False,
         dpi: int = 120,
         output_file: Optional[str] = None,
+        target_languages: Optional[list[str]] = None,
+        translation_model: str = "gpt-oss",
     ) -> Union[str, Response]:
         pass

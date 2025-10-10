@@ -19,5 +19,9 @@ class MarkdownConversionServiceAdapter(MarkdownConversionService, PdfToMarkupSer
         extract_toc: bool = False,
         dpi: int = 120,
         output_file: Optional[str] = None,
+        target_languages: Optional[list[str]] = None,
+        translation_model: str = "gpt-oss",
     ) -> Union[str, Response]:
-        return self.convert_to_format(pdf_content, segments, extract_toc, dpi, output_file)
+        return self.convert_to_format(
+            pdf_content, segments, extract_toc, dpi, output_file, target_languages, translation_model
+        )
