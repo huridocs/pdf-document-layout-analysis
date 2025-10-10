@@ -9,35 +9,42 @@ from domain.SegmentBox import SegmentBox
 from pdf_token_type_labels.TokenType import TokenType
 from tqdm import tqdm
 
-prompt = """Please translate the following text into {target_language}. Follow these guidelines:
-1. Maintain the original layout and formatting.
-2. Translate all text accurately without omitting any part of the content.
-3. Preserve the tone and style of the original text.
-4. Do not change, remove, or add any markdown symbols (such as *, _, #, [ ], ( ), -, or backticks). Only translate the visible text.
-5. Do not translate URLs, email addresses, or code snippets. Only translate the human-readable text.
+prompt = """You are a professional translator. Your task is to translate the following text to {target_language}.
+
+**CRITICAL: You must output ONLY the {target_language} translation. Do NOT repeat the source text.**
+    
+    
+Follow these guidelines:
+
+1. Translate all text accurately without omitting any part of the content.
+2. Preserve the tone and style of the original text.
+3. Do not change, remove, or add any markdown symbols (such as *, _, #, [ ], ( ), -, or backticks). Only translate the visible text.
+4. Do not translate person names, URLs, email addresses, or code snippets. Only translate the human-readable text.
+5. Make sure that you are returning the translation, not the source text.
 6. If you see custom tags (such as [DOC_REF], [IT], [B], [LINK]), **translate the text inside the tags, but do not change, remove, or translate the tags themselves.** The tags must appear in the same positions in the output as in the input.
-7. If a word is split with a hyphen (e.g., "sec- onds"), treat it as a single word and translate it as one complete word in the target language.
+7. If a word is split with a hyphen (e.g., "sec- onds"), treat it as a single word, get rid of the hyphen and translate it as one complete word in the target language.
 8. Do not include any additional comments, notes, or explanations in the output; provide only the translated text.
 
-**Only translate the text between three backticks (```). Only output the translation.**
-
-**Make sure that you are actually giving the translation, not the source text.**
+**IMPORTANT: The text between the backticks below is the source text. You must output the {target_language} translation, NOT the source.**
 
 Here is the text to be translated:
 
 ```
 {text_to_translate}
 ```
-
-{target_language} translation:
 """
 
 
-def get_translation(ollama_manager: OllamaContainerManager, model: str, content: str) -> str:
-    response = ollama_manager.chat_with_timeout(model=model, messages=[{"role": "user", "content": content}])
+def get_translation(ollama_manager: OllamaContainerManager, model: str, content: str, source_markup: str) -> str:
+    response = ollama_manager.chat_with_timeout(
+        model=model, messages=[{"role": "user", "content": content}], source_markup=source_markup
+    )
 
     if response is None:
         raise Exception("Translation request failed or timed out")
+
+    if isinstance(response, str):
+        return response
 
     return response["message"]["content"].replace("```", "").strip()
 
@@ -82,13 +89,13 @@ def translate_markdown(
         if segments[index].type == TokenType.TABLE:
             anchor, table_html = markdown_part.split("\n", 1)
             content = prompt.format(target_language=target_language, text_to_translate=table_html)
-            response = get_translation(ollama_manager, model, content)
+            response = get_translation(ollama_manager, model, content, markdown_part)
             translated_markdown_parts.append(anchor + "\n" + response)
             continue
         if segments[index].type in {TokenType.TITLE, TokenType.SECTION_HEADER}:
             anchor, text = markdown_part.split("\n")
             content = prompt.format(target_language=target_language, text_to_translate=text)
-            response = get_translation(ollama_manager, model, content)
+            response = get_translation(ollama_manager, model, content, markdown_part)
             translated_markdown_parts.append(anchor + "\n" + response)
             if extract_toc:
                 title_segments.append(segments[index])
@@ -99,7 +106,7 @@ def translate_markdown(
             continue
         encoded_text, link_map, doc_ref_map = encode_markdown(markdown_part)
         content = prompt.format(target_language=target_language, text_to_translate=encoded_text)
-        response = get_translation(ollama_manager, model, content)
+        response = get_translation(ollama_manager, model, content, markdown_part)
         translated_markdown_parts.append(decode_markdown(response, link_map, doc_ref_map))
     service_logger.info("\033[92mTranslation of markdown segments completed\033[0m")
     if extract_toc:
@@ -133,13 +140,13 @@ def translate_html(
         if segments[index].type == TokenType.TABLE:
             anchor, table_html = html_part.split("\n", 1)
             content = prompt.format(target_language=target_language, text_to_translate=table_html)
-            response = get_translation(ollama_manager, model, content)
+            response = get_translation(ollama_manager, model, content, html_part)
             translated_html_parts.append(anchor + "\n" + response)
             continue
         if segments[index].type in {TokenType.TITLE, TokenType.SECTION_HEADER}:
             anchor, text = html_part.split("\n")
             content = prompt.format(target_language=target_language, text_to_translate=text)
-            response = get_translation(ollama_manager, model, content)
+            response = get_translation(ollama_manager, model, content, html_part)
             translated_html_parts.append(anchor + "\n" + response)
             if extract_toc:
                 title_segments.append(segments[index])
@@ -150,7 +157,7 @@ def translate_html(
             continue
         encoded_text, link_map, doc_ref_map = encode_html(html_part)
         content = prompt.format(target_language=target_language, text_to_translate=encoded_text)
-        response = get_translation(ollama_manager, model, content)
+        response = get_translation(ollama_manager, model, content, html_part)
         translated_html_parts.append(decode_html(response, link_map, doc_ref_map))
     service_logger.info("\033[92mTranslation of html segments completed\033[0m")
     if extract_toc:

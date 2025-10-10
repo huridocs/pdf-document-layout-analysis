@@ -11,7 +11,7 @@ class OllamaContainerManager:
     def __init__(self, ollama_host: str = None):
         self.ollama_host = ollama_host or os.getenv("OLLAMA_HOST", "http://ollama:11434")
         self.api_base_url = f"{self.ollama_host}/api"
-        self.timeout = 300
+        self.timeout = 600
         self.max_retries = 5
 
     def is_ollama_available(self) -> bool:
@@ -59,11 +59,11 @@ class OllamaContainerManager:
                 service_logger.error(f"Failed to start model download: {response.text}")
                 return False
 
-            for line in response.iter_lines():
+            for idx, line in enumerate(response.iter_lines()):
                 if line:
                     try:
                         data = json.loads(line)
-                        if "status" in data:
+                        if "status" in data and idx % 100 == 0:
                             service_logger.info(f"Model download: {data['status']}")
                         if data.get("status") == "success":
                             service_logger.info(f"Model '{model_name}' downloaded successfully")
@@ -77,7 +77,9 @@ class OllamaContainerManager:
             service_logger.error(f"Error downloading model '{model_name}': {e}")
             return False
 
-    def chat_with_timeout(self, model: str, messages: list[dict], timeout: Optional[int] = None) -> Optional[dict[str, Any]]:
+    def chat_with_timeout(
+        self, model: str, messages: list[dict], source_markup: str, timeout: Optional[int] = None
+    ) -> dict[str, Any] | str:
         timeout = timeout or self.timeout
 
         for attempt in range(self.max_retries + 1):
@@ -86,25 +88,29 @@ class OllamaContainerManager:
                     service_logger.info(f"Retrying chat request (attempt {attempt + 1}/{self.max_retries + 1})")
                     time.sleep(10)
 
-                return self._make_chat_request(model, messages, timeout)
+                return self._make_chat_request(
+                    model,
+                    messages,
+                    timeout,
+                )
 
             except requests.exceptions.Timeout:
-                service_logger.warning(f"Chat request timed out after {timeout} seconds (attempt {attempt + 1})")
+                service_logger.warning(f"Chat request timed out after {timeout} seconds (attempt {attempt})")
                 if attempt < self.max_retries:
                     continue
                 else:
-                    service_logger.error(f"Chat request failed after {self.max_retries + 1} attempts due to timeout")
-                    return None
+                    service_logger.error(f"Chat request failed after {self.max_retries} attempts due to timeout")
+                    return source_markup
 
             except Exception as e:
-                service_logger.error(f"Chat request failed (attempt {attempt + 1}): {e}")
+                service_logger.error(f"Chat request failed (attempt {attempt}): {e}")
                 if attempt < self.max_retries:
                     continue
                 else:
-                    service_logger.error(f"Chat request failed after {self.max_retries + 1} attempts")
-                    return None
+                    service_logger.error(f"Chat request failed after {self.max_retries} attempts")
+                    return source_markup
 
-        return None
+        return source_markup
 
     def _make_chat_request(self, model: str, messages: list, timeout: int) -> dict[str, Any]:
         payload = {"model": model, "messages": messages, "stream": False}
