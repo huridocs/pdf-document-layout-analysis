@@ -1,3 +1,8 @@
+import contextlib
+import warnings
+import logging
+import os
+import sys
 from domain.PdfImages import PdfImages
 from domain.PdfSegment import PdfSegment
 from ports.services.ml_model_service import MLModelService
@@ -12,9 +17,40 @@ from detectron2.data.datasets import register_coco_instances
 from detectron2.data import DatasetCatalog
 from configuration import JSON_TEST_FILE_PATH, IMAGES_ROOT_PATH
 
-configuration = get_model_configuration()
-model = VGTTrainer.build_model(configuration)
-DetectionCheckpointer(model, save_dir=configuration.OUTPUT_DIR).resume_or_load(configuration.MODEL.WEIGHTS, resume=True)
+
+
+@contextlib.contextmanager
+def suppress_logs():
+    # Suppress Python warnings
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        # Suppress Python logging
+        logging.disable(logging.CRITICAL)
+        # Redirect stdout and stderr at the OS level
+        with open(os.devnull, 'w') as devnull:
+            old_stdout = sys.stdout
+            old_stderr = sys.stderr
+            old_fdout = os.dup(1)
+            old_fderr = os.dup(2)
+            try:
+                sys.stdout = devnull
+                sys.stderr = devnull
+                os.dup2(devnull.fileno(), 1)
+                os.dup2(devnull.fileno(), 2)
+                yield
+            finally:
+                sys.stdout = old_stdout
+                sys.stderr = old_stderr
+                os.dup2(old_fdout, 1)
+                os.dup2(old_fderr, 2)
+                os.close(old_fdout)
+                os.close(old_fderr)
+                logging.disable(logging.NOTSET)
+
+with suppress_logs():
+    configuration = get_model_configuration()
+    model = VGTTrainer.build_model(configuration)
+    DetectionCheckpointer(model, save_dir=configuration.OUTPUT_DIR).resume_or_load(configuration.MODEL.WEIGHTS, resume=True)
 
 
 class VGTModelAdapter(MLModelService):
