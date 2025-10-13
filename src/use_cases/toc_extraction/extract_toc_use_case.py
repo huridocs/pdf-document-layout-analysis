@@ -21,3 +21,6 @@ class ExtractTOCUseCase:
     def execute_uwazi_compatible(self, file: UploadFile) -> list[dict]:
         toc_items = self.execute(file, use_fast_mode=True)
         return self.toc_service.format_toc_for_uwazi(toc_items)
+
+    def execute_with_segments(self, xml_content: str, segment_boxes: list[dict]) -> list[dict]:
+        return self.toc_service.extract_table_of_contents_from_xml(xml_content, segment_boxes)

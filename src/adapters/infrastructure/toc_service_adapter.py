@@ -31,6 +31,19 @@ class TOCServiceAdapter(TOCService):
         toc_instance: TOCExtractor = TOCExtractor(pdf_segmentation)
         return toc_instance.to_dict()
 
+    def extract_table_of_contents_from_xml(
+        self, xml_content: AnyStr, segment_boxes: list[dict], skip_document_name=False
+    ) -> list[dict]:
+        service_logger.info("Getting TOC")
+        pdf_features: PdfFeatures = PdfFeatures.from_poppler_etree_string(xml_content)
+        pdf_segments: list[PdfSegment] = self._get_pdf_segments_from_segment_boxes(pdf_features, segment_boxes)
+        title_segments = [segment for segment in pdf_segments if segment.segment_type in TITLE_TYPES]
+        if skip_document_name:
+            self._skip_name_of_the_document(pdf_segments, title_segments)
+        pdf_segmentation: PdfSegmentation = PdfSegmentation(pdf_features, title_segments)
+        toc_instance: TOCExtractor = TOCExtractor(pdf_segmentation)
+        return toc_instance.to_dict()
+
     def format_toc_for_uwazi(self, toc_items: list[dict]) -> list[dict]:
         toc_compatible = []
         for toc_item in toc_items:
