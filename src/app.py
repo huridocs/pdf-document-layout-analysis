@@ -8,6 +8,7 @@ from starlette.concurrency import run_in_threadpool
 import torch
 import sys
 import subprocess
+import json
 
 if RESTART_IF_NO_GPU:
     if not torch.cuda.is_available():
@@ -80,9 +81,11 @@ async def toc_legacy_uwazi_compatible(file: UploadFile = File(...)):
 
 @app.post("/toc_from_xml")
 @catch_exceptions
-async def toc_from_xml(file: UploadFile = File(...), segment_boxes: list[dict] = []):
+async def toc_from_xml(segment_boxes: str = Form(...), file: UploadFile = File(...)):
+    segment_boxes_list = json.loads(segment_boxes)
+    service_logger.info(f"Received {len(segment_boxes_list)} segment boxes for TOC extraction from XML.")
     file_content: bytes = await file.read()
-    return await run_in_threadpool(controllers.extract_toc_use_case.execute_with_segments, file_content, segment_boxes)
+    return await run_in_threadpool(controllers.extract_toc_use_case.execute_with_segments, file_content, segment_boxes_list)
 
 
 @app.post("/text")

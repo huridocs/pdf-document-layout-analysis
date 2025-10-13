@@ -215,6 +215,8 @@ class TestEndToEnd(TestCase):
             self.assertEqual(response_json[-1]["indentation"], 2)
 
     def test_toc_from_xml(self):
+        import json
+
         pdf_path = f"{ROOT_PATH}/test_pdfs/toc-test.pdf"
         xml_path = f"{ROOT_PATH}/test_pdfs/toc-test.xml"
 
@@ -223,17 +225,19 @@ class TestEndToEnd(TestCase):
             analyze_response = requests.post(f"{self.service_url}", files=files)
             segments = analyze_response.json()
 
-        with open(xml_path, "rb") as stream:
-            files = {"file": stream}
-            response = requests.post(f"{self.service_url}/toc_from_xml", files=files, json={"segment_boxes": segments})
+        files = [
+            ("segment_boxes", (None, json.dumps(segments))),
+            ("file", open(xml_path, "rb")),
+        ]
+        response = requests.post(f"{self.service_url}/toc_from_xml", files=files)
 
-            response_json = response.json()
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(len(response_json), 5)
-            self.assertEqual(response_json[0]["label"], "TEST")
-            self.assertEqual(response_json[0]["indentation"], 0)
-            self.assertEqual(response_json[-1]["label"], "C. TITLE LONGER")
-            self.assertEqual(response_json[-1]["indentation"], 2)
+        response_json = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response_json), 5)
+        self.assertEqual(response_json[0]["label"], "TEST")
+        self.assertEqual(response_json[0]["indentation"], 0)
+        self.assertEqual(response_json[-1]["label"], "C. TITLE LONGER")
+        self.assertEqual(response_json[-1]["indentation"], 2)
 
     def test_text_extraction(self):
         with open(f"{ROOT_PATH}/test_pdfs/test.pdf", "rb") as stream:

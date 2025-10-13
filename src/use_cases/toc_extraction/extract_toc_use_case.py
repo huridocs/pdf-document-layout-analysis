@@ -23,4 +23,5 @@ class ExtractTOCUseCase:
         return self.toc_service.format_toc_for_uwazi(toc_items)
 
     def execute_with_segments(self, xml_content: bytes, segment_boxes: list[dict]) -> list[dict]:
-        return self.toc_service.extract_table_of_contents_from_xml(xml_content, segment_boxes)
+        toc_items = self.toc_service.extract_table_of_contents_from_xml(xml_content, segment_boxes)
+        return self.toc_service.format_toc_for_uwazi(toc_items)
