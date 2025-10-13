@@ -1,4 +1,3 @@
-from cache_with_lock import cached_with_lock
 from configuration import RESTART_IF_NO_GPU, service_logger
 from drivers.web.dependency_injection import setup_dependencies
 from fastapi import FastAPI, UploadFile, File, Form

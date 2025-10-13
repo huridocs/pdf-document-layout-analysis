@@ -18,34 +18,62 @@ from detectron2.data import DatasetCatalog
 from configuration import JSON_TEST_FILE_PATH, IMAGES_ROOT_PATH
 
 
+class DevNull:
+    def write(self, msg):
+        pass
+
+    def flush(self):
+        pass
+
+    def fileno(self):
+        return -1
+
 
 @contextlib.contextmanager
 def suppress_logs():
-    # Suppress Python warnings
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        # Suppress Python logging
+
         logging.disable(logging.CRITICAL)
-        # Redirect stdout and stderr at the OS level
-        with open(os.devnull, 'w') as devnull:
-            old_stdout = sys.stdout
-            old_stderr = sys.stderr
-            old_fdout = os.dup(1)
-            old_fderr = os.dup(2)
-            try:
-                sys.stdout = devnull
-                sys.stderr = devnull
-                os.dup2(devnull.fileno(), 1)
-                os.dup2(devnull.fileno(), 2)
-                yield
-            finally:
-                sys.stdout = old_stdout
-                sys.stderr = old_stderr
-                os.dup2(old_fdout, 1)
-                os.dup2(old_fderr, 2)
-                os.close(old_fdout)
-                os.close(old_fderr)
-                logging.disable(logging.NOTSET)
+
+        old_stdout = sys.stdout
+        old_stderr = sys.stderr
+
+        devnull_obj = DevNull()
+        sys.stdout = devnull_obj
+        sys.stderr = devnull_obj
+
+        old_handler_streams = []
+        for logger_name in list(logging.Logger.manager.loggerDict.keys()) + [""]:
+            logger = logging.getLogger(logger_name)
+            for handler in logger.handlers:
+                if hasattr(handler, "stream"):
+                    old_handler_streams.append((handler, handler.stream))
+                    handler.stream = devnull_obj
+
+        old_fdout = os.dup(1)
+        old_fderr = os.dup(2)
+        devnull_fd = os.open(os.devnull, os.O_WRONLY)
+
+        try:
+            os.dup2(devnull_fd, 1)
+            os.dup2(devnull_fd, 2)
+            yield
+        finally:
+            os.dup2(old_fdout, 1)
+            os.dup2(old_fderr, 2)
+            os.close(old_fdout)
+            os.close(old_fderr)
+            os.close(devnull_fd)
+
+            sys.stdout = old_stdout
+            sys.stderr = old_stderr
+
+            for handler, stream in old_handler_streams:
+                handler.stream = stream
+
+            logging.disable(logging.NOTSET)
+
 
 with suppress_logs():
     configuration = get_model_configuration()
@@ -68,7 +96,8 @@ class VGTModelAdapter(MLModelService):
         get_annotations(pdf_images)
 
         self._register_data()
-        VGTTrainer.test(configuration, model)
+        with suppress_logs():
+            VGTTrainer.test(configuration, model)
 
         predicted_segments = get_most_probable_pdf_segments("doclaynet", pdf_images, False)
 

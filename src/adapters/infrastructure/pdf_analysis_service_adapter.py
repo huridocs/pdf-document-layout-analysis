@@ -31,7 +31,11 @@ class PDFAnalysisServiceAdapter(PDFAnalysisService):
 
         predicted_segments = self.vgt_model_service.predict_document_layout(pdf_images_list)
 
+        if predicted_segments:
+            service_logger.info(f"Predicted {len(predicted_segments)} segments")
+
         if parse_tables_and_math:
+            service_logger.info("Parsing tables and formulas")
             pdf_images_200_dpi = PdfImages.from_pdf_path(pdf_path, "", xml_filename, dpi=200)
             self.format_conversion_service.convert_formula_to_latex(pdf_images_200_dpi, predicted_segments)
             self.format_conversion_service.convert_table_to_html(pdf_images_200_dpi, predicted_segments)
