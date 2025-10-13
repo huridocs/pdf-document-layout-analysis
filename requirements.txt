@@ -26,4 +26,4 @@ latex2mathml==3.78.0
 PyMuPDF==1.25.5
 ollama==0.6.0
 cachetools==6.2.1
-git+https://github.com/huridocs/pdf-features.git@2025.10.13.2
+git+https://github.com/huridocs/pdf-features.git@2025.10.13.3

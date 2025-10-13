@@ -32,7 +32,7 @@ class TOCServiceAdapter(TOCService):
         return toc_instance.to_dict()
 
     def extract_table_of_contents_from_xml(
-        self, xml_content: AnyStr, segment_boxes: list[dict], skip_document_name=False
+        self, xml_content: bytes, segment_boxes: list[dict], skip_document_name=False
     ) -> list[dict]:
         service_logger.info("Getting TOC")
         pdf_features: PdfFeatures = PdfFeatures.from_poppler_etree_string(xml_content)

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pdf2xml SYSTEM "pdf2xml.dtd">
+
+<pdf2xml producer="poppler" version="25.09.1">
+<page number="1" position="absolute" top="0" left="0" height="792" width="612">
+	<fontspec id="0" size="11" family="AAAAAA+Arial" color="#000000"/>
+	<fontspec id="1" size="11" family="BAAAAA+ArialMT" color="#000000"/>
+<text top="72" left="292" width="28" height="12" font="0"><b>TEST</b></text>
+<text top="145" left="260" width="93" height="12" font="0"><b>Subtitle and more</b></text>
+<text top="160" left="290" width="33" height="12" font="0"><b>things</b></text>
+<text top="334" left="72" width="437" height="12" font="1">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla est purus, ultrices in porttitor</text>
+<text top="349" left="72" width="439" height="12" font="1">in, accumsan non quam. Nam consectetur porttitor rhoncus. Curabitur eu est et leo feugiat</text>
+<text top="363" left="72" width="318" height="12" font="1">auctor vel quis lorem. Ut et ligula dolor, sit amet consequat lorem.</text>
+</page>
+<page number="2" position="absolute" top="0" left="0" height="792" width="612">
+	<fontspec id="2" size="17" family="AAAAAA+Arial" color="#000000"/>
+	<fontspec id="3" size="15" family="AAAAAA+Arial" color="#000000"/>
+<text top="151" left="90" width="11" height="12" font="0"><b>A.</b></text>
+<text top="145" left="108" width="47" height="19" font="2"><b>TITLE</b></text>
+<text top="147" left="160" width="64" height="17" font="3"><b>LONGER</b></text>
+<text top="182" left="72" width="437" height="12" font="1">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla est purus, ultrices in porttitor</text>
+<text top="197" left="72" width="439" height="12" font="1">in, accumsan non quam. Nam consectetur porttitor rhoncus. Curabitur eu est et leo feugiat</text>
+<text top="211" left="72" width="434" height="12" font="1">auctor vel quis lorem. Ut et ligula dolor, sit amet consequat lorem. Aliquam porta eros sed</text>
+<text top="226" left="72" width="406" height="12" font="1">velit imperdiet egestas. Maecenas tempus eros ut diam ullamcorper id dictum libero</text>
+<text top="240" left="72" width="441" height="12" font="1">tempor. Donec quis augue quis magna condimentum lobortis. Quisque imperdiet ipsum vel</text>
+<text top="255" left="72" width="401" height="12" font="1">magna viverra rutrum. Cras viverra molestie urna, vitae vestibulum turpis varius id.</text>
+<text top="269" left="72" width="450" height="12" font="1">Vestibulum mollis, arcu iaculis bibendum varius, velit sapien blandit metus, ac posuere lorem</text>
+<text top="284" left="72" width="427" height="12" font="1">nulla ac dolor. Maecenas urna elit, tincidunt in dapibus nec, vehicula eu dui. Duis lacinia</text>
+<text top="298" left="72" width="428" height="12" font="1">fringilla massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur</text>
+<text top="313" left="72" width="447" height="12" font="1">ridiculus mus. Ut consequat ultricies est, non rhoncus mauris congue porta. Vivamus viverra</text>
+<text top="328" left="72" width="423" height="12" font="1">suscipit felis eget condimentum. Cum sociis natoque penatibus et magnis dis parturient</text>
+<text top="342" left="72" width="445" height="12" font="1">montes, nascetur ridiculus mus. Integer bibendum sagittis ligula, non faucibus nulla volutpat</text>
+<text top="357" left="72" width="452" height="12" font="1">vitae. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</text>
+<text top="371" left="72" width="436" height="12" font="1">In aliquet quam et velit bibendum accumsan. Cum sociis natoque penatibus et magnis dis</text>
+<text top="386" left="72" width="404" height="12" font="1">parturient montes, nascetur ridiculus mus. Vestibulum vitae ipsum nec arcu semper</text>
+<text top="400" left="72" width="447" height="12" font="1">adipiscing at ac lacus. Praesent id pellentesque orci. Morbi congue viverra nisl nec rhoncus.</text>
+<text top="415" left="72" width="447" height="12" font="1">Integer mattis, ipsum a tincidunt commodo, lacus arcu elementum elit, at mollis eros ante ac</text>
+<text top="429" left="72" width="438" height="12" font="1">risus. In volutpat, ante at pretium ultricies, velit magna suscipit enim, aliquet blandit massa</text>
+<text top="444" left="72" width="431" height="12" font="1">orci nec lorem. Nulla facilisi. Duis eu vehicula arcu. Nulla facilisi. Maecenas pellentesque</text>
+<text top="458" left="72" width="450" height="12" font="1">volutpat felis, quis tristique ligula luctus vel. Sed nec mi eros. Integer augue enim, sollicitudin</text>
+<text top="473" left="72" width="421" height="12" font="1">ullamcorper mattis eget, aliquam in est. Morbi sollicitudin libero nec augue dignissim ut</text>
+<text top="488" left="72" width="433" height="12" font="1">consectetur dui volutpat. Nulla facilisi. Mauris egestas vestibulum neque cursus tincidunt.</text>
+<text top="502" left="72" width="139" height="12" font="1">Donec sit amet pulvinar orci.</text>
+<text top="560" left="90" width="128" height="17" font="3"><b>B. TITLE LONGER</b></text>
+<text top="597" left="72" width="437" height="12" font="1">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla est purus, ultrices in porttitor</text>
+<text top="612" left="72" width="439" height="12" font="1">in, accumsan non quam. Nam consectetur porttitor rhoncus. Curabitur eu est et leo feugiat</text>
+<text top="626" left="72" width="434" height="12" font="1">auctor vel quis lorem. Ut et ligula dolor, sit amet consequat lorem. Aliquam porta eros sed</text>
+<text top="641" left="72" width="406" height="12" font="1">velit imperdiet egestas. Maecenas tempus eros ut diam ullamcorper id dictum libero</text>
+<text top="656" left="72" width="441" height="12" font="1">tempor. Donec quis augue quis magna condimentum lobortis. Quisque imperdiet ipsum vel</text>
+<text top="670" left="72" width="401" height="12" font="1">magna viverra rutrum. Cras viverra molestie urna, vitae vestibulum turpis varius id.</text>
+<text top="685" left="72" width="450" height="12" font="1">Vestibulum mollis, arcu iaculis bibendum varius, velit sapien blandit metus, ac posuere lorem</text>
+<text top="699" left="72" width="427" height="12" font="1">nulla ac dolor. Maecenas urna elit, tincidunt in dapibus nec, vehicula eu dui. Duis lacinia</text>
+</page>
+<page number="3" position="absolute" top="0" left="0" height="792" width="612">
+<text top="72" left="72" width="428" height="12" font="1">fringilla massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur</text>
+<text top="87" left="72" width="447" height="12" font="1">ridiculus mus. Ut consequat ultricies est, non rhoncus mauris congue porta. Vivamus viverra</text>
+<text top="101" left="72" width="423" height="12" font="1">suscipit felis eget condimentum. Cum sociis natoque penatibus et magnis dis parturient</text>
+<text top="116" left="72" width="445" height="12" font="1">montes, nascetur ridiculus mus. Integer bibendum sagittis ligula, non faucibus nulla volutpat</text>
+<text top="131" left="72" width="28" height="12" font="1">Vitae.</text>
+<text top="160" left="108" width="129" height="17" font="3"><b>C. TITLE LONGER</b></text>
+<text top="197" left="75" width="422" height="12" font="1">Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</text>
+<text top="211" left="72" width="436" height="12" font="1">In aliquet quam et velit bibendum accumsan. Cum sociis natoque penatibus et magnis dis</text>
+<text top="226" left="72" width="404" height="12" font="1">parturient montes, nascetur ridiculus mus. Vestibulum vitae ipsum nec arcu semper</text>
+<text top="240" left="72" width="447" height="12" font="1">adipiscing at ac lacus. Praesent id pellentesque orci. Morbi congue viverra nisl nec rhoncus.</text>
+<text top="255" left="72" width="447" height="12" font="1">Integer mattis, ipsum a tincidunt commodo, lacus arcu elementum elit, at mollis eros ante ac</text>
+<text top="269" left="72" width="438" height="12" font="1">risus. In volutpat, ante at pretium ultricies, velit magna suscipit enim, aliquet blandit massa</text>
+<text top="284" left="72" width="276" height="12" font="1">orci nec lorem. Nulla facilisi. Duis eu vehicula arcu. Nulla</text>
+</page>
+</pdf2xml>

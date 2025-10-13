@@ -81,7 +81,7 @@ async def toc_legacy_uwazi_compatible(file: UploadFile = File(...)):
 @app.post("/toc_from_xml")
 @catch_exceptions
 async def toc_from_xml(file: UploadFile = File(...), segment_boxes: list[dict] = []):
-    file_content = await file.read()
+    file_content: bytes = await file.read()
     return await run_in_threadpool(controllers.extract_toc_use_case.execute_with_segments, file_content, segment_boxes)
 
 
