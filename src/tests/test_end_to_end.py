@@ -199,6 +199,19 @@ class TestEndToEnd(TestCase):
             self.assertEqual(response_json[-1]["label"], "C. TITLE LONGER")
             self.assertEqual(response_json[-1]["indentation"], 2)
 
+    def test_word_positions(self):
+        with open(f"{ROOT_PATH}/test_pdfs/regular.pdf", "rb") as stream:
+            files = {"file": stream}
+
+            response = requests.post(f"{self.service_url}/word_positions", files=files)
+
+            response_json = response.json()
+            self.assertEqual(response.status_code, 200)
+            self.assertGreater(len(response_json), 50)
+
+            page_numbers = set(word["page_number"] for word in response_json)
+            self.assertEqual(len(page_numbers), 2)
+
     def test_toc_fast(self):
         with open(f"{ROOT_PATH}/test_pdfs/toc-test.pdf", "rb") as stream:
             files = {"file": stream}

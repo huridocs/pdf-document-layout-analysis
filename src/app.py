@@ -10,6 +10,8 @@ import sys
 import subprocess
 import json
 
+from use_cases.pdf_analysis.get_pdf_word_positions import get_pdf_word_positions
+
 if RESTART_IF_NO_GPU:
     if not torch.cuda.is_available():
         raise RuntimeError("No GPU available. Restarting the service is required.")
@@ -47,6 +49,12 @@ async def analyze_pdf(file: UploadFile = File(...), fast: bool = Form(False), pa
     return await run_in_threadpool(
         controllers.analyze_pdf_use_case.execute, file.file.read(), "", parse_tables_and_math, fast, False
     )
+
+
+@app.post("/word_positions")
+@catch_exceptions
+async def word_positions(file: UploadFile = File(...)):
+    return await run_in_threadpool(get_pdf_word_positions, file.file.read())
 
 
 @app.post("/save_xml/{xml_file_name}")
