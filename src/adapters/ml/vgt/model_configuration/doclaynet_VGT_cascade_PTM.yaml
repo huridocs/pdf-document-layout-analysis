@@ -29,7 +29,7 @@ MODEL:
     EMBEDDING_DIM: 64
     MODEL_PATH: ../models/layoutlm-base-uncased/
     USE_PRETRAIN_WEIGHT: true
-    VOCAB_SIZE: 30552
+    VOCAB_SIZE: 30522
 SOLVER:
   BASE_LR: 0.0002
   IMS_PER_BATCH: 12

@@ -36,7 +36,7 @@ class VGT(GeneralizedRCNN):
     def __init__(
         self,
         *,
-        vocab_size: int = 30552,
+        vocab_size: int = 30522,
         hidden_size: int = 768,
         embedding_dim: int = 64,
         bros_embedding_path: str = "",

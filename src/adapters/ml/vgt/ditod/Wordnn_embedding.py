@@ -1,7 +1,5 @@
-import numpy as np
 import torch
 from torch import nn
-from .tokenization_bros import BrosTokenizer
 
 
 def _init_weights(m):
@@ -20,7 +18,7 @@ class WordnnEmbedding(nn.Module):
 
     def __init__(
         self,
-        vocab_size=30552,
+        vocab_size=30522,
         hidden_size=768,
         embedding_dim=64,
         bros_embedding_path="/bros-base-uncased/",
