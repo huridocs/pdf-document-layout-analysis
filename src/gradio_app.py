@@ -341,7 +341,9 @@ with gr.Blocks(
 
                 with gr.Column(scale=2):
                     analyze_summary = gr.Textbox(label="Summary", lines=8)
-                    analyze_details = gr.Textbox(label="Detailed Results (JSON)", lines=15, elem_classes="output-text")
+                    analyze_details = gr.Textbox(
+                        label="Detailed Results (JSON)", lines=15, elem_classes="output-text", show_copy_button=True
+                    )
 
             analyze_btn.click(
                 fn=analyze_pdf,
@@ -363,7 +365,9 @@ with gr.Blocks(
 
                 with gr.Column(scale=2):
                     text_summary = gr.Textbox(label="Summary", lines=3)
-                    text_output = gr.Textbox(label="Extracted Text", lines=20, elem_classes="output-text")
+                    text_output = gr.Textbox(
+                        label="Extracted Text", lines=20, elem_classes="output-text", show_copy_button=True
+                    )
 
             extract_text_btn.click(
                 fn=extract_text, inputs=[pdf_input_text, fast_mode_text, types_input], outputs=[text_summary, text_output]
@@ -380,7 +384,9 @@ with gr.Blocks(
 
                 with gr.Column(scale=2):
                     toc_summary = gr.Textbox(label="Summary", lines=3)
-                    toc_output = gr.Textbox(label="Table of Contents", lines=20, elem_classes="output-text")
+                    toc_output = gr.Textbox(
+                        label="Table of Contents", lines=20, elem_classes="output-text", show_copy_button=True
+                    )
 
             toc_btn.click(fn=extract_toc, inputs=[pdf_input_toc, fast_mode_toc], outputs=[toc_summary, toc_output])
 
