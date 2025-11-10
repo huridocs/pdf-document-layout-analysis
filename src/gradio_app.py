@@ -3,6 +3,7 @@ import json
 import requests
 import os
 import tempfile
+import base64
 
 API_BASE_URL = os.environ.get("API_BASE_URL", "http://localhost:5060")
 
@@ -131,7 +132,7 @@ def visualize_pdf(pdf_file: str, fast_mode: bool = False):
     """Create visualization of PDF with detected segments"""
     try:
         if pdf_file is None:
-            return "Error: No PDF file provided", None
+            return "Error: No PDF file provided", "", None
 
         with open(pdf_file, "rb") as f:
             files = {"file": f}
@@ -143,9 +144,23 @@ def visualize_pdf(pdf_file: str, fast_mode: bool = False):
             tmp_file.write(response.content)
             output_path = tmp_file.name
 
-        return "✓ Visualization created successfully!", output_path
+        # Create an HTML iframe to display the PDF
+        # Encode PDF as base64 for embedding
+        pdf_base64 = base64.b64encode(response.content).decode("utf-8")
+        pdf_display_html = f"""
+        <iframe 
+            src="data:application/pdf;base64,{pdf_base64}" 
+            width="100%" 
+            height="800px" 
+            style="border: 1px solid #ccc; border-radius: 4px;">
+            <p>Your browser does not support PDFs. 
+            <a href="data:application/pdf;base64,{pdf_base64}" download="visualization.pdf">Download the PDF</a> instead.</p>
+        </iframe>
+        """
+
+        return "✓ Visualization created successfully!", pdf_display_html, output_path
     except Exception as e:
-        return f"Error: {str(e)}", None
+        return f"Error: {str(e)}", "", None
 
 
 def process_ocr(pdf_file: str, language: str = "en"):
@@ -307,9 +322,12 @@ with gr.Blocks(
 
                 with gr.Column(scale=2):
                     viz_summary = gr.Textbox(label="Summary", lines=2)
+                    viz_display = gr.HTML(label="Visualized PDF Preview")
                     viz_output = gr.File(label="Download Visualization PDF")
 
-            viz_btn.click(fn=visualize_pdf, inputs=[pdf_input_viz, fast_mode_viz], outputs=[viz_summary, viz_output])
+            viz_btn.click(
+                fn=visualize_pdf, inputs=[pdf_input_viz, fast_mode_viz], outputs=[viz_summary, viz_display, viz_output]
+            )
 
         # Tab 2: PDF Analysis
         with gr.Tab("📊 PDF Analysis"):
