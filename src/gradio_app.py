@@ -241,13 +241,21 @@ def convert_to_markdown(
     fast_mode: bool = False,
     extract_toc: bool = False,
     dpi: int = 120,
-    target_languages: str = "",
+    target_languages=None,
     translation_model: str = "gpt-oss",
 ):
     """Convert PDF to Markdown format"""
     try:
         if pdf_file is None:
             return "Error: No PDF file provided", None
+
+        # Convert target_languages list to comma-separated string
+        if isinstance(target_languages, list):
+            target_languages_str = ", ".join(target_languages)
+        elif target_languages:
+            target_languages_str = target_languages
+        else:
+            target_languages_str = ""
 
         # Get the original filename without extension
         original_filename = os.path.splitext(os.path.basename(pdf_file))[0]
@@ -259,7 +267,7 @@ def convert_to_markdown(
                 "fast": str(fast_mode).lower(),
                 "extract_toc": str(extract_toc).lower(),
                 "dpi": str(dpi),
-                "target_languages": target_languages if target_languages else "",
+                "target_languages": target_languages_str,
                 "translation_model": translation_model,
                 # Include output_file to get zip with images and segmentation
                 "output_file": output_filename,
@@ -274,8 +282,8 @@ def convert_to_markdown(
 
         summary = "✓ Converted to Markdown successfully!\n"
         summary += "Download the ZIP file below (contains markdown, images, and segmentation data)"
-        if target_languages and target_languages.strip():
-            summary += f"\nIncludes translations to: {target_languages}"
+        if target_languages_str and target_languages_str.strip():
+            summary += f"\nIncludes translations to: {target_languages_str}"
 
         return summary, output_path
     except Exception as e:
@@ -287,13 +295,21 @@ def convert_to_html(
     fast_mode: bool = False,
     extract_toc: bool = False,
     dpi: int = 120,
-    target_languages: str = "",
+    target_languages=None,
     translation_model: str = "gpt-oss",
 ):
     """Convert PDF to HTML format"""
     try:
         if pdf_file is None:
             return "Error: No PDF file provided", None
+
+        # Convert target_languages list to comma-separated string
+        if isinstance(target_languages, list):
+            target_languages_str = ", ".join(target_languages)
+        elif target_languages:
+            target_languages_str = target_languages
+        else:
+            target_languages_str = ""
 
         # Get the original filename without extension
         original_filename = os.path.splitext(os.path.basename(pdf_file))[0]
@@ -305,7 +321,7 @@ def convert_to_html(
                 "fast": str(fast_mode).lower(),
                 "extract_toc": str(extract_toc).lower(),
                 "dpi": str(dpi),
-                "target_languages": target_languages if target_languages else "",
+                "target_languages": target_languages_str,
                 "translation_model": translation_model,
                 # Include output_file to get zip with images and segmentation
                 "output_file": output_filename,
@@ -320,8 +336,8 @@ def convert_to_html(
 
         summary = "✓ Converted to HTML successfully!\n"
         summary += "Download the ZIP file below (contains HTML, images, and segmentation data)"
-        if target_languages and target_languages.strip():
-            summary += f"\nIncludes translations to: {target_languages}"
+        if target_languages_str and target_languages_str.strip():
+            summary += f"\nIncludes translations to: {target_languages_str}"
 
         return summary, output_path
     except Exception as e:
@@ -526,9 +542,41 @@ with gr.Blocks(
                     fast_mode_md = gr.Checkbox(label="Fast Mode", value=False)
                     extract_toc_md = gr.Checkbox(label="Add TOC", value=False)
                     dpi_md = gr.Slider(label="DPI", minimum=72, maximum=300, value=120, step=1)
-                    target_langs_md = gr.Textbox(
-                        label="Target Languages (comma-separated)",
-                        placeholder='e.g., "Turkish", "Spanish", "French" (leave empty for no translation)',
+                    target_langs_md = gr.Dropdown(
+                        label="Target Languages",
+                        choices=[
+                            "Arabic",
+                            "Chinese",
+                            "Czech",
+                            "Danish",
+                            "Dutch",
+                            "English",
+                            "Finnish",
+                            "French",
+                            "German",
+                            "Greek",
+                            "Hebrew",
+                            "Hindi",
+                            "Hungarian",
+                            "Indonesian",
+                            "Italian",
+                            "Japanese",
+                            "Korean",
+                            "Norwegian",
+                            "Polish",
+                            "Portuguese",
+                            "Romanian",
+                            "Russian",
+                            "Spanish",
+                            "Swedish",
+                            "Thai",
+                            "Turkish",
+                            "Ukrainian",
+                            "Vietnamese",
+                        ],
+                        multiselect=True,
+                        allow_custom_value=True,
+                        info="Select one or more languages for translation (leave empty for no translation)",
                     )
                     translation_model_md = gr.Dropdown(label="Translation Model", choices=["gpt-oss"], value="gpt-oss")
                     md_btn = gr.Button("Convert to Markdown", variant="primary")
@@ -556,9 +604,41 @@ with gr.Blocks(
                     fast_mode_html = gr.Checkbox(label="Fast Mode", value=False)
                     extract_toc_html = gr.Checkbox(label="Add TOC", value=False)
                     dpi_html = gr.Slider(label="DPI", minimum=72, maximum=300, value=120, step=1)
-                    target_langs_html = gr.Textbox(
-                        label="Target Languages (comma-separated)",
-                        placeholder='e.g., "Turkish", "Spanish", "French" (leave empty for no translation)',
+                    target_langs_html = gr.Dropdown(
+                        label="Target Languages",
+                        choices=[
+                            "Arabic",
+                            "Chinese",
+                            "Czech",
+                            "Danish",
+                            "Dutch",
+                            "English",
+                            "Finnish",
+                            "French",
+                            "German",
+                            "Greek",
+                            "Hebrew",
+                            "Hindi",
+                            "Hungarian",
+                            "Indonesian",
+                            "Italian",
+                            "Japanese",
+                            "Korean",
+                            "Norwegian",
+                            "Polish",
+                            "Portuguese",
+                            "Romanian",
+                            "Russian",
+                            "Spanish",
+                            "Swedish",
+                            "Thai",
+                            "Turkish",
+                            "Ukrainian",
+                            "Vietnamese",
+                        ],
+                        multiselect=True,
+                        allow_custom_value=True,
+                        info="Select one or more languages for translation (leave empty for no translation)",
                     )
                     translation_model_html = gr.Dropdown(label="Translation Model", choices=["gpt-oss"], value="gpt-oss")
                     html_btn = gr.Button("Convert to HTML", variant="primary")
