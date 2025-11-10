@@ -578,7 +578,14 @@ with gr.Blocks(
                         allow_custom_value=True,
                         info="Select one or more languages for translation (leave empty for no translation)",
                     )
-                    translation_model_md = gr.Dropdown(label="Translation Model", choices=["gpt-oss"], value="gpt-oss")
+                    translation_model_md = gr.Dropdown(
+                        label="Translation Model",
+                        choices=["gpt-oss", "aya:35b", "huihui_ai/hunyuan-mt-abliterated", "deepseek-r1:14b"],
+                        value="gpt-oss",
+                        allow_custom_value=True,
+                        info="Select a model or enter any model name from Ollama",
+                    )
+                    gr.Markdown("💡 Browse available models at [Ollama Model Library](https://ollama.com/search)")
                     md_btn = gr.Button("Convert to Markdown", variant="primary")
 
                 with gr.Column(scale=2):
@@ -640,7 +647,14 @@ with gr.Blocks(
                         allow_custom_value=True,
                         info="Select one or more languages for translation (leave empty for no translation)",
                     )
-                    translation_model_html = gr.Dropdown(label="Translation Model", choices=["gpt-oss"], value="gpt-oss")
+                    translation_model_html = gr.Dropdown(
+                        label="Translation Model",
+                        choices=["gpt-oss", "aya:35b", "huihui_ai/hunyuan-mt-abliterated", "deepseek-r1:14b"],
+                        value="gpt-oss",
+                        allow_custom_value=True,
+                        info="Select a model or enter any model name from Ollama",
+                    )
+                    gr.Markdown("💡 Browse available models at [Ollama Model Library](https://ollama.com/search)")
                     html_btn = gr.Button("Convert to HTML", variant="primary")
 
                 with gr.Column(scale=2):
