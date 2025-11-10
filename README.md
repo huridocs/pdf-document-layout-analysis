@@ -40,7 +40,7 @@ The service offers both a **user-friendly Gradio web interface** for interactive
 ### 1. Start the Service
 
 ```bash
-just start
+make start # or `just start` (https://github.com/casey/just)
 ```
 
 The service provides two interfaces:
@@ -49,7 +49,7 @@ The service provides two interfaces:
 
 **See all available commands:**
 ```bash
-just --list
+make --list
 ```
 
 **Check service status:**
@@ -84,7 +84,7 @@ curl -X POST -F 'file=@/path/to/your/document.pdf' -F "fast=true" http://localho
 ### 4. Stop the Service
 
 ```bash
-just stop
+make stop
 ```
 
 > 💡 **Tip**: The Web UI at `http://localhost:7860` is the easiest way to get started. For automation and integration, use the REST API at `http://localhost:5060`.
@@ -623,7 +623,7 @@ For detailed information about the dataset, visit the [DocLayNet repository](htt
 
 2. **Create virtual environment:**
    ```bash
-   just install_venv
+   make install_venv
    ```
 
 3. **Activate environment:**
@@ -633,26 +633,26 @@ For detailed information about the dataset, visit the [DocLayNet repository](htt
 
 4. **Install dependencies:**
    ```bash
-   just install
+   make install
    ```
 
 ### Code Quality
 
 **Format code:**
 ```bash
-just formatter
+make formatter
 ```
 
 **Check formatting:**
 ```bash
-just check_format
+make check_format
 ```
 
 ### Testing
 
 **Run tests:**
 ```bash
-just test
+make test
 ```
 
 **Integration tests:**
@@ -666,31 +666,31 @@ python -m pytest src/tests/integration/test_end_to_end.py
 **Build and start:**
 ```bash
 # Standard start (includes translation features)
-just start
+make start
 
 # Start without translation support
-just start_no_translation
+make start_no_translation
 
 # Start in detached mode (API only, no UI)
-just start_detached
+make start_detached
 
 # Start in detached mode with GPU (API only, no UI)
-just start_detached_gpu
+make start_detached_gpu
 
 # Force CPU mode with translation
-just start_no_gpu
+make start_no_gpu
 ```
 
 **Clean up Docker resources:**
 ```bash
 # Stop all services
-just stop
+make stop
 
 # Remove containers
-just remove_docker_containers
+make remove_docker_containers
 
 # Remove images
-just remove_docker_images
+make remove_docker_images
 ```
 
 ### Project Structure
@@ -756,7 +756,7 @@ docker exec -it pdf-document-layout-analysis /bin/bash
 
 **Free up disk space:**
 ```bash
-just free_up_space
+make free_up_space
 ```
 
 ### Order of Output Elements
@@ -959,8 +959,8 @@ We welcome contributions to improve the PDF Document Layout Analysis service!
 
 3. **Set Up Development Environment**
    ```bash
-   just install_venv
-   just install
+   make install_venv
+   make install
    ```
 
 4. **Make Your Changes**
@@ -970,8 +970,8 @@ We welcome contributions to improve the PDF Document Layout Analysis service!
 
 5. **Run Tests and Quality Checks**
    ```bash
-   just test
-   just check_format
+   make test
+   make check_format
    ```
 
 6. **Submit a Pull Request**
