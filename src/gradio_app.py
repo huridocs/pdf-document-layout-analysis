@@ -296,7 +296,22 @@ with gr.Blocks(
 
     # Main tabs for different functionalities
     with gr.Tabs():
-        # Tab 1: PDF Analysis
+        # Tab 1: Visualization
+        with gr.Tab("🎨 Visualization"):
+            gr.Markdown("Visualize the detected layout segments on your PDF pages.")
+            with gr.Row():
+                with gr.Column(scale=1):
+                    pdf_input_viz = gr.File(label="Upload PDF", file_types=[".pdf"])
+                    fast_mode_viz = gr.Checkbox(label="Fast Mode", value=False)
+                    viz_btn = gr.Button("Create Visualization", variant="primary")
+
+                with gr.Column(scale=2):
+                    viz_summary = gr.Textbox(label="Summary", lines=2)
+                    viz_output = gr.File(label="Download Visualization PDF")
+
+            viz_btn.click(fn=visualize_pdf, inputs=[pdf_input_viz, fast_mode_viz], outputs=[viz_summary, viz_output])
+
+        # Tab 2: PDF Analysis
         with gr.Tab("📊 PDF Analysis"):
             gr.Markdown("Analyze the layout and structure of your PDF document.")
             with gr.Row():
@@ -316,7 +331,7 @@ with gr.Blocks(
                 outputs=[analyze_summary, analyze_details],
             )
 
-        # Tab 2: Text Extraction
+        # Tab 3: Text Extraction
         with gr.Tab("📝 Text Extraction"):
             gr.Markdown("Extract text content from your PDF, optionally filtered by segment types.")
             with gr.Row():
@@ -336,7 +351,7 @@ with gr.Blocks(
                 fn=extract_text, inputs=[pdf_input_text, fast_mode_text, types_input], outputs=[text_summary, text_output]
             )
 
-        # Tab 3: Table of Contents
+        # Tab 4: Table of Contents
         with gr.Tab("📑 Table of Contents"):
             gr.Markdown("Extract the table of contents structure from your PDF.")
             with gr.Row():
@@ -350,21 +365,6 @@ with gr.Blocks(
                     toc_output = gr.Textbox(label="Table of Contents", lines=20, elem_classes="output-text")
 
             toc_btn.click(fn=extract_toc, inputs=[pdf_input_toc, fast_mode_toc], outputs=[toc_summary, toc_output])
-
-        # Tab 4: Visualization
-        with gr.Tab("🎨 Visualization"):
-            gr.Markdown("Visualize the detected layout segments on your PDF pages.")
-            with gr.Row():
-                with gr.Column(scale=1):
-                    pdf_input_viz = gr.File(label="Upload PDF", file_types=[".pdf"])
-                    fast_mode_viz = gr.Checkbox(label="Fast Mode", value=False)
-                    viz_btn = gr.Button("Create Visualization", variant="primary")
-
-                with gr.Column(scale=2):
-                    viz_summary = gr.Textbox(label="Summary", lines=2)
-                    viz_output = gr.File(label="Download Visualization PDF")
-
-            viz_btn.click(fn=visualize_pdf, inputs=[pdf_input_viz, fast_mode_viz], outputs=[viz_summary, viz_output])
 
         # Tab 5: OCR Processing
         with gr.Tab("🔍 OCR Processing"):
