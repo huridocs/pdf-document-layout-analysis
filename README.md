@@ -26,8 +26,74 @@
 
 This project provides a powerful and flexible PDF analysis microservice built with **Clean Architecture** principles. The service enables OCR, segmentation, and classification of different parts of PDF pages, identifying elements such as texts, titles, pictures, tables, formulas, and more. Additionally, it determines the correct reading order of these identified elements and can convert PDFs to various formats including Markdown and HTML with **automatic translation support** powered by Ollama.
 
-### ✨ Key Features
+The service offers both a **user-friendly Gradio web interface** for interactive use and a **comprehensive REST API** for programmatic access and integration.
 
+<div align="center">
+  <img src="https://raw.githubusercontent.com/huridocs/pdf-document-layout-analysis/main/images/ui.png" alt="Gradio Web UI" width="800"/>
+  <p><em>Gradio Web Interface - Easy-to-use UI for PDF analysis, conversion, and translation</em></p>
+</div>
+
+---
+
+## 🚀 Quick Start
+
+### 1. Start the Service
+
+```bash
+just start
+```
+
+The service provides two interfaces:
+- **🎨 Web UI (Gradio)**: `http://localhost:7860` - User-friendly interface for all features
+- **🔌 REST API**: `http://localhost:5060` - Programmatic access for integrations
+
+**See all available commands:**
+```bash
+just --list
+```
+
+**Check service status:**
+
+```bash
+curl http://localhost:5060/info
+```
+
+### 2. Using the Web UI
+
+Simply open your browser and navigate to `http://localhost:7860` to access the intuitive web interface. The UI provides:
+
+- 📄 **PDF Analysis** - Upload and analyze PDFs with visual results
+- 🔄 **Format Conversion** - Convert to Markdown or HTML
+- 🌍 **Translation** - Translate documents to multiple languages
+- 👁️ **Visualization** - View segmentation overlays on your PDFs
+- 🔍 **OCR Processing** - Apply OCR to scanned documents
+- 📑 **TOC Extraction** - Extract table of contents
+
+### 3. Using the REST API
+
+**Analyze a PDF document (VGT model - high accuracy):**
+```bash
+curl -X POST -F 'file=@/path/to/your/document.pdf' http://localhost:5060
+```
+
+**Fast analysis (LightGBM models - faster processing):**
+```bash
+curl -X POST -F 'file=@/path/to/your/document.pdf' -F "fast=true" http://localhost:5060
+```
+
+### 4. Stop the Service
+
+```bash
+just stop
+```
+
+> 💡 **Tip**: The Web UI at `http://localhost:7860` is the easiest way to get started. For automation and integration, use the REST API at `http://localhost:5060`.
+
+---
+
+## ✨ Key Features
+
+- 🎨 **User-Friendly Web UI** - Intuitive Gradio interface for easy PDF processing
 - 🔍 **Advanced PDF Layout Analysis** - Segment and classify PDF content with high accuracy
 - 🖼️ **Visual & Fast Models** - Choose between VGT (Vision Grid Transformer) for accuracy or LightGBM for speed
 - 📝 **Multi-format Output** - Export to JSON, Markdown, HTML, and visualize PDF segmentations
@@ -37,6 +103,8 @@ This project provides a powerful and flexible PDF analysis microservice built wi
 - 🏗️ **Clean Architecture** - Modular, testable, and maintainable codebase
 - 🐳 **Docker-Ready** - Easy deployment with GPU support
 - ⚡ **RESTful API** - Comprehensive API with 10+ endpoints
+
+### 📸 Example Results
 
 <table>
   <tr>
@@ -63,57 +131,11 @@ This project provides a powerful and flexible PDF analysis microservice built wi
 
 ---
 
-## 🚀 Quick Start
-
-### 1. Start the Service
-
-**Standard PDF Analysis (recommended for most users):**
-```bash
-make start
-```
-
-**With Translation Features (includes Ollama container):**
-```bash
-make start_translation
-```
-
-The service will be available at `http://localhost:5060`
-
-**See all available commands:**
-```bash
-make help
-```
-
-**Check service status:**
-
-```bash
-curl http://localhost:5060/info
-```
-
-### 2. Basic PDF Analysis
-
-**Analyze a PDF document (VGT model - high accuracy):**
-```bash
-curl -X POST -F 'file=@/path/to/your/document.pdf' http://localhost:5060
-```
-
-**Fast analysis (LightGBM models - faster processing):**
-```bash
-curl -X POST -F 'file=@/path/to/your/document.pdf' -F "fast=true" http://localhost:5060
-```
-
-### 3. Stop the Service
-
-```bash
-make stop
-```
-
-> 💡 **Tip**: Replace `/path/to/your/document.pdf` with the actual path to your PDF file. The service will return a JSON response with segmented content and metadata.
-
-
 ## 📋 Table of Contents
 
+- [🚀 Overview](#-overview)
 - [🚀 Quick Start](#-quick-start)
+- [✨ Key Features](#-key-features)
 - [⚙️ Dependencies](#-dependencies)
 - [📋 Requirements](#-requirements)
 - [📚 API Reference](#-api-reference)
@@ -601,37 +623,36 @@ For detailed information about the dataset, visit the [DocLayNet repository](htt
 
 2. **Create virtual environment:**
    ```bash
-   make install_venv
+   just install_venv
    ```
 
 3. **Activate environment:**
    ```bash
-   make activate
-   # or manually: source .venv/bin/activate
+   source .venv/bin/activate
    ```
 
 4. **Install dependencies:**
    ```bash
-   make install
+   just install
    ```
 
 ### Code Quality
 
 **Format code:**
 ```bash
-make formatter
+just formatter
 ```
 
 **Check formatting:**
 ```bash
-make check_format
+just check_format
 ```
 
 ### Testing
 
 **Run tests:**
 ```bash
-make test
+just test
 ```
 
 **Integration tests:**
@@ -642,26 +663,34 @@ python -m pytest src/tests/integration/test_end_to_end.py
 
 ### Docker Development
 
-**Build and start (detached mode):**
+**Build and start:**
 ```bash
-# With GPU
-make start_detached_gpu
+# Standard start (includes translation features)
+just start
 
-# Without GPU  
-make start_detached
+# Start without translation support
+just start_no_translation
 
-# With translation features
-make start_translation
-make start_translation_no_gpu
+# Start in detached mode (API only, no UI)
+just start_detached
+
+# Start in detached mode with GPU (API only, no UI)
+just start_detached_gpu
+
+# Force CPU mode with translation
+just start_no_gpu
 ```
 
 **Clean up Docker resources:**
 ```bash
+# Stop all services
+just stop
+
 # Remove containers
-make remove_docker_containers
+just remove_docker_containers
 
 # Remove images
-make remove_docker_images
+just remove_docker_images
 ```
 
 ### Project Structure
@@ -673,12 +702,15 @@ pdf-document-layout-analysis/
 │   ├── use_cases/         # Application logic
 │   ├── adapters/          # External integrations
 │   ├── ports/             # Interface definitions
-│   └── drivers/           # Framework configurations
+│   ├── drivers/           # Framework configurations
+│   ├── app.py             # FastAPI application
+│   └── gradio_app.py      # Gradio web interface
 ├── test_pdfs/             # Test PDF files
 ├── models/                # ML model storage
 ├── docker-compose.yml     # Docker configuration
-├── Dockerfile             # Container definition
-├── Makefile              # Development commands
+├── Dockerfile             # FastAPI container definition
+├── Dockerfile.gradio      # Gradio container definition
+├── justfile              # Development commands (just)
 ├── pyproject.toml        # Python project configuration
 └── requirements.txt      # Python dependencies
 ```
@@ -724,7 +756,7 @@ docker exec -it pdf-document-layout-analysis /bin/bash
 
 **Free up disk space:**
 ```bash
-make free_up_space
+just free_up_space
 ```
 
 ### Order of Output Elements
@@ -927,8 +959,8 @@ We welcome contributions to improve the PDF Document Layout Analysis service!
 
 3. **Set Up Development Environment**
    ```bash
-   make install_venv
-   make install
+   just install_venv
+   just install
    ```
 
 4. **Make Your Changes**
@@ -938,8 +970,8 @@ We welcome contributions to improve the PDF Document Layout Analysis service!
 
 5. **Run Tests and Quality Checks**
    ```bash
-   make test
-   make check_format
+   just test
+   just check_format
    ```
 
 6. **Submit a Pull Request**
