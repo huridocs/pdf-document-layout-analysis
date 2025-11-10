@@ -68,11 +68,53 @@ def analyze_pdf(pdf_file: str, fast_mode: bool = False, parse_tables_and_math: b
         return f"Error: {str(e)}", ""
 
 
-def extract_text(pdf_file: str, fast_mode: bool = False, types: str = "all"):
+def extract_text(
+    pdf_file: str,
+    fast_mode: bool = False,
+    caption: bool = True,
+    footnote: bool = True,
+    formula: bool = True,
+    list_item: bool = True,
+    page_footer: bool = True,
+    page_header: bool = True,
+    picture: bool = True,
+    section_header: bool = True,
+    table: bool = True,
+    text: bool = True,
+    title: bool = True,
+):
     """Extract text from PDF by segment types"""
     try:
         if pdf_file is None:
             return "Error: No PDF file provided", ""
+
+        # Build the types string from checkboxes
+        selected_types = []
+        if caption:
+            selected_types.append("Caption")
+        if footnote:
+            selected_types.append("Footnote")
+        if formula:
+            selected_types.append("Formula")
+        if list_item:
+            selected_types.append("List item")
+        if page_footer:
+            selected_types.append("Page footer")
+        if page_header:
+            selected_types.append("Page header")
+        if picture:
+            selected_types.append("Picture")
+        if section_header:
+            selected_types.append("Section header")
+        if table:
+            selected_types.append("Table")
+        if text:
+            selected_types.append("Text")
+        if title:
+            selected_types.append("Title")
+
+        # If no types selected, use "all"
+        types = ",".join(selected_types) if selected_types else "all"
 
         with open(pdf_file, "rb") as f:
             files = {"file": f}
@@ -89,6 +131,16 @@ def extract_text(pdf_file: str, fast_mode: bool = False, types: str = "all"):
         return summary, text_content
     except Exception as e:
         return f"Error: {str(e)}", ""
+
+
+def select_all_types():
+    """Select all segment types"""
+    return [True] * 11  # Return True for all 11 checkboxes
+
+
+def deselect_all_types():
+    """Deselect all segment types"""
+    return [False] * 11  # Return False for all 11 checkboxes
 
 
 def extract_toc(pdf_file: str, fast_mode: bool = False):
@@ -358,9 +410,24 @@ with gr.Blocks(
                 with gr.Column(scale=1):
                     pdf_input_text = gr.File(label="Upload PDF", file_types=[".pdf"])
                     fast_mode_text = gr.Checkbox(label="Fast Mode", value=False)
-                    types_input = gr.Textbox(
-                        label="Segment Types", placeholder="all (or comma-separated: title, text, list, etc.)", value="all"
-                    )
+
+                    gr.Markdown("**Segment Types:**")
+                    with gr.Row():
+                        select_all_btn = gr.Button("Select All", size="sm")
+                        deselect_all_btn = gr.Button("Deselect All", size="sm")
+
+                    caption_check = gr.Checkbox(label="Caption", value=True)
+                    footnote_check = gr.Checkbox(label="Footnote", value=True)
+                    formula_check = gr.Checkbox(label="Formula", value=True)
+                    list_item_check = gr.Checkbox(label="List item", value=True)
+                    page_footer_check = gr.Checkbox(label="Page footer", value=True)
+                    page_header_check = gr.Checkbox(label="Page header", value=True)
+                    picture_check = gr.Checkbox(label="Picture", value=True)
+                    section_header_check = gr.Checkbox(label="Section header", value=True)
+                    table_check = gr.Checkbox(label="Table", value=True)
+                    text_check = gr.Checkbox(label="Text", value=True)
+                    title_check = gr.Checkbox(label="Title", value=True)
+
                     extract_text_btn = gr.Button("Extract Text", variant="primary")
 
                 with gr.Column(scale=2):
@@ -369,8 +436,29 @@ with gr.Blocks(
                         label="Extracted Text", lines=20, elem_classes="output-text", show_copy_button=True
                     )
 
+            # Store all checkboxes in a list for easier management
+            type_checkboxes = [
+                caption_check,
+                footnote_check,
+                formula_check,
+                list_item_check,
+                page_footer_check,
+                page_header_check,
+                picture_check,
+                section_header_check,
+                table_check,
+                text_check,
+                title_check,
+            ]
+
+            # Select all and deselect all button functionality
+            select_all_btn.click(fn=select_all_types, outputs=type_checkboxes)
+            deselect_all_btn.click(fn=deselect_all_types, outputs=type_checkboxes)
+
             extract_text_btn.click(
-                fn=extract_text, inputs=[pdf_input_text, fast_mode_text, types_input], outputs=[text_summary, text_output]
+                fn=extract_text,
+                inputs=[pdf_input_text, fast_mode_text] + type_checkboxes,
+                outputs=[text_summary, text_output],
             )
 
         # Tab 4: Table of Contents
