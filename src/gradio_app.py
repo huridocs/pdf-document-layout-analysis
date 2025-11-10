@@ -4,6 +4,7 @@ import requests
 import os
 import tempfile
 import base64
+import zipfile
 
 API_BASE_URL = os.environ.get("API_BASE_URL", "http://localhost:5060")
 
@@ -289,7 +290,7 @@ def convert_to_markdown(
         # Validate PDF file
         is_valid, validation_msg = validate_pdf_file(pdf_file)
         if not is_valid:
-            return validation_msg, None
+            return validation_msg, "", None
 
         progress(0, desc="Preparing conversion...")
 
@@ -329,17 +330,74 @@ def convert_to_markdown(
             tmp_file.write(response.content)
             output_path = tmp_file.name
 
+        # Extract the base language markdown content from the ZIP
+        markdown_content = ""
+        try:
+            with zipfile.ZipFile(output_path, "r") as zip_ref:
+                # Look for the base markdown file (not translated versions)
+                markdown_files = [
+                    f
+                    for f in zip_ref.namelist()
+                    if f.endswith(".md")
+                    and not any(
+                        lang.lower() in f.lower()
+                        for lang in [
+                            "arabic",
+                            "chinese",
+                            "czech",
+                            "danish",
+                            "dutch",
+                            "english",
+                            "finnish",
+                            "french",
+                            "german",
+                            "greek",
+                            "hebrew",
+                            "hindi",
+                            "hungarian",
+                            "indonesian",
+                            "italian",
+                            "japanese",
+                            "korean",
+                            "norwegian",
+                            "polish",
+                            "portuguese",
+                            "romanian",
+                            "russian",
+                            "spanish",
+                            "swedish",
+                            "thai",
+                            "turkish",
+                            "ukrainian",
+                            "vietnamese",
+                        ]
+                        if target_languages_str and lang in target_languages_str
+                    )
+                ]
+
+                if not markdown_files:
+                    # If no base file found, just get the first .md file
+                    markdown_files = [f for f in zip_ref.namelist() if f.endswith(".md")]
+
+                if markdown_files:
+                    # Read the first markdown file
+                    with zip_ref.open(markdown_files[0]) as md_file:
+                        markdown_content = md_file.read().decode("utf-8", errors="ignore")
+        except Exception as e:
+            print(f"Error extracting markdown content: {e}")
+            markdown_content = "Could not extract markdown content from ZIP file."
+
         summary = "✅ Converted to Markdown successfully!\n"
         summary += "Download the ZIP file below (contains markdown, images, and segmentation data)"
         if target_languages_str and target_languages_str.strip():
             summary += f"\nIncludes translations to: {target_languages_str}"
 
         progress(1.0, desc="Done!")
-        return summary, output_path
+        return summary, markdown_content, output_path
     except Exception as e:
         error_msg = f"❌ Error: {str(e)}"
         print(f"Markdown conversion error: {e}")
-        return error_msg, None
+        return error_msg, "", None
 
 
 def convert_to_html(
@@ -356,7 +414,7 @@ def convert_to_html(
         # Validate PDF file
         is_valid, validation_msg = validate_pdf_file(pdf_file)
         if not is_valid:
-            return validation_msg, None
+            return validation_msg, "", None
 
         progress(0, desc="Preparing conversion...")
 
@@ -396,17 +454,74 @@ def convert_to_html(
             tmp_file.write(response.content)
             output_path = tmp_file.name
 
+        # Extract the base language HTML content from the ZIP
+        html_content = ""
+        try:
+            with zipfile.ZipFile(output_path, "r") as zip_ref:
+                # Look for the base HTML file (not translated versions)
+                html_files = [
+                    f
+                    for f in zip_ref.namelist()
+                    if f.endswith(".html")
+                    and not any(
+                        lang.lower() in f.lower()
+                        for lang in [
+                            "arabic",
+                            "chinese",
+                            "czech",
+                            "danish",
+                            "dutch",
+                            "english",
+                            "finnish",
+                            "french",
+                            "german",
+                            "greek",
+                            "hebrew",
+                            "hindi",
+                            "hungarian",
+                            "indonesian",
+                            "italian",
+                            "japanese",
+                            "korean",
+                            "norwegian",
+                            "polish",
+                            "portuguese",
+                            "romanian",
+                            "russian",
+                            "spanish",
+                            "swedish",
+                            "thai",
+                            "turkish",
+                            "ukrainian",
+                            "vietnamese",
+                        ]
+                        if target_languages_str and lang in target_languages_str
+                    )
+                ]
+
+                if not html_files:
+                    # If no base file found, just get the first .html file
+                    html_files = [f for f in zip_ref.namelist() if f.endswith(".html")]
+
+                if html_files:
+                    # Read the first HTML file
+                    with zip_ref.open(html_files[0]) as html_file:
+                        html_content = html_file.read().decode("utf-8", errors="ignore")
+        except Exception as e:
+            print(f"Error extracting HTML content: {e}")
+            html_content = "Could not extract HTML content from ZIP file."
+
         summary = "✅ Converted to HTML successfully!\n"
         summary += "Download the ZIP file below (contains HTML, images, and segmentation data)"
         if target_languages_str and target_languages_str.strip():
             summary += f"\nIncludes translations to: {target_languages_str}"
 
         progress(1.0, desc="Done!")
-        return summary, output_path
+        return summary, html_content, output_path
     except Exception as e:
         error_msg = f"❌ Error: {str(e)}"
         print(f"HTML conversion error: {e}")
-        return error_msg, None
+        return error_msg, "", None
 
 
 # Create the Gradio interface with modern Gradio 5 styling
@@ -631,7 +746,7 @@ with gr.Blocks(
                     extract_toc_md = gr.Checkbox(label="Add TOC", value=False)
                     dpi_md = gr.Slider(label="DPI", minimum=72, maximum=300, value=120, step=1)
                     target_langs_md = gr.Dropdown(
-                        label="Target Languages",
+                        label="Translate to:",
                         choices=[
                             "Arabic",
                             "Chinese",
@@ -678,12 +793,15 @@ with gr.Blocks(
 
                 with gr.Column(scale=2):
                     md_summary = gr.Textbox(label="Summary", lines=2)
+                    md_content = gr.Textbox(
+                        label="Markdown Output (Base Language)", lines=20, elem_classes="output-text", show_copy_button=True
+                    )
                     md_output = gr.File(label="Download ZIP (contains Markdown + images + segmentation)")
 
             md_btn.click(
                 fn=convert_to_markdown,
                 inputs=[pdf_input_md, fast_mode_md, extract_toc_md, dpi_md, target_langs_md, translation_model_md],
-                outputs=[md_summary, md_output],
+                outputs=[md_summary, md_content, md_output],
                 concurrency_limit=2,
                 show_progress="full",
             )
@@ -702,7 +820,7 @@ with gr.Blocks(
                     extract_toc_html = gr.Checkbox(label="Add TOC", value=False)
                     dpi_html = gr.Slider(label="DPI", minimum=72, maximum=300, value=120, step=1)
                     target_langs_html = gr.Dropdown(
-                        label="Target Languages",
+                        label="Translate to:",
                         choices=[
                             "Arabic",
                             "Chinese",
@@ -749,6 +867,9 @@ with gr.Blocks(
 
                 with gr.Column(scale=2):
                     html_summary = gr.Textbox(label="Summary", lines=2)
+                    html_content = gr.Textbox(
+                        label="HTML Output (Base Language)", lines=20, elem_classes="output-text", show_copy_button=True
+                    )
                     html_output = gr.File(label="Download ZIP (contains HTML + images + segmentation)")
 
             html_btn.click(
@@ -761,7 +882,7 @@ with gr.Blocks(
                     target_langs_html,
                     translation_model_html,
                 ],
-                outputs=[html_summary, html_output],
+                outputs=[html_summary, html_content, html_output],
                 concurrency_limit=2,
                 show_progress="full",
             )
