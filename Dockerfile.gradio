@@ -1,0 +1,35 @@
+FROM python:3.11-slim
+
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+# Install minimal system dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends curl && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /app/src
+
+RUN addgroup --system python && adduser --system --group python
+RUN chown -R python:python /app
+
+# Copy requirements before switching user
+COPY requirements-gradio.txt requirements-gradio.txt
+
+USER python
+
+ENV VIRTUAL_ENV=/app/.venv
+RUN python -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+# Set UV cache directory to a location the user can write to
+ENV UV_CACHE_DIR=/app/.cache/uv
+RUN uv pip install --upgrade pip
+RUN uv pip install -r requirements-gradio.txt
+
+WORKDIR /app
+
+COPY ./src/gradio_app.py ./src/gradio_app.py
+
+ENV PYTHONPATH "${PYTHONPATH}:/app/src"
+

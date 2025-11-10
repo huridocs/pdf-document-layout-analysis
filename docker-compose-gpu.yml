@@ -70,7 +70,7 @@ services:
     restart: unless-stopped
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.gradio
     ports:
       - "7860:7860"
     depends_on:
@@ -87,7 +87,7 @@ services:
     restart: unless-stopped
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.gradio
     ports:
       - "7860:7860"
     depends_on:
