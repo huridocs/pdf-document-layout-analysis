@@ -8,6 +8,26 @@ import base64
 API_BASE_URL = os.environ.get("API_BASE_URL", "http://localhost:5060")
 
 
+def validate_pdf_file(pdf_file):
+    """Validate that the uploaded file is a valid PDF"""
+    if pdf_file is None:
+        return False, "❌ No file uploaded"
+
+    if not pdf_file.endswith(".pdf"):
+        return False, "❌ File must be a PDF"
+
+    try:
+        file_size = os.path.getsize(pdf_file)
+        if file_size == 0:
+            return False, "❌ File is empty"
+        if file_size > 100 * 1024 * 1024:  # 100MB
+            return False, "❌ File is too large (max 100MB)"
+    except Exception as e:
+        return False, f"❌ Error reading file: {str(e)}"
+
+    return True, "✅ File is valid"
+
+
 # Helper function to make API calls
 def call_api(endpoint: str, files: dict = None, data: dict = None, method: str = "POST"):
     """Make API call to the FastAPI backend"""
@@ -34,21 +54,27 @@ def get_system_info():
         return f"Error: {str(e)}"
 
 
-def analyze_pdf(pdf_file: str, fast_mode: bool = False, parse_tables_and_math: bool = False):
+def analyze_pdf(pdf_file: str, fast_mode: bool = False, parse_tables_and_math: bool = False, progress=gr.Progress()):
     """Analyze PDF and return structured layout information"""
     try:
-        if pdf_file is None:
-            return "Error: No PDF file provided", ""
+        # Validate PDF file
+        is_valid, validation_msg = validate_pdf_file(pdf_file)
+        if not is_valid:
+            return validation_msg, ""
+
+        progress(0, desc="Uploading PDF...")
 
         with open(pdf_file, "rb") as f:
             files = {"file": f}
             data = {"fast": str(fast_mode).lower(), "parse_tables_and_math": str(parse_tables_and_math).lower()}
+            progress(0.3, desc="Analyzing document layout...")
             response = call_api("/", files=files, data=data)
 
+        progress(0.8, desc="Processing results...")
         result = response.json()
 
         # Format results
-        summary = "✓ Analysis complete!\n"
+        summary = "✅ Analysis complete!\n"
         summary += f"Found {len(result)} segments in the document.\n"
 
         # Count different types
@@ -63,9 +89,12 @@ def analyze_pdf(pdf_file: str, fast_mode: bool = False, parse_tables_and_math: b
 
         detailed_json = json.dumps(result, indent=2)
 
+        progress(1.0, desc="Done!")
         return summary, detailed_json
     except Exception as e:
-        return f"Error: {str(e)}", ""
+        error_msg = f"❌ Error: {str(e)}"
+        print(f"Analysis error: {e}")
+        return error_msg, ""
 
 
 def extract_text(
@@ -180,16 +209,23 @@ def extract_toc(pdf_file: str, fast_mode: bool = False):
         return f"Error: {str(e)}", ""
 
 
-def visualize_pdf(pdf_file: str, fast_mode: bool = False):
+def visualize_pdf(pdf_file: str, fast_mode: bool = False, progress=gr.Progress()):
     """Create visualization of PDF with detected segments"""
     try:
-        if pdf_file is None:
-            return "Error: No PDF file provided", "", None
+        # Validate PDF file
+        is_valid, validation_msg = validate_pdf_file(pdf_file)
+        if not is_valid:
+            return validation_msg, "", None
+
+        progress(0, desc="Uploading PDF...")
 
         with open(pdf_file, "rb") as f:
             files = {"file": f}
             data = {"fast": str(fast_mode).lower()}
+            progress(0.3, desc="Creating visualization...")
             response = call_api("/visualize", files=files, data=data)
+
+        progress(0.7, desc="Preparing output...")
 
         # Save the PDF response to a temporary file
         with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
@@ -210,9 +246,12 @@ def visualize_pdf(pdf_file: str, fast_mode: bool = False):
         </iframe>
         """
 
-        return "✓ Visualization created successfully!", pdf_display_html, output_path
+        progress(1.0, desc="Done!")
+        return "✅ Visualization created successfully!", pdf_display_html, output_path
     except Exception as e:
-        return f"Error: {str(e)}", "", None
+        error_msg = f"❌ Error: {str(e)}"
+        print(f"Visualization error: {e}")
+        return error_msg, "", None
 
 
 def process_ocr(pdf_file: str, language: str = "en"):
@@ -243,11 +282,16 @@ def convert_to_markdown(
     dpi: int = 120,
     target_languages=None,
     translation_model: str = "gpt-oss",
+    progress=gr.Progress(),
 ):
     """Convert PDF to Markdown format"""
     try:
-        if pdf_file is None:
-            return "Error: No PDF file provided", None
+        # Validate PDF file
+        is_valid, validation_msg = validate_pdf_file(pdf_file)
+        if not is_valid:
+            return validation_msg, None
+
+        progress(0, desc="Preparing conversion...")
 
         # Convert target_languages list to comma-separated string
         if isinstance(target_languages, list):
@@ -261,6 +305,8 @@ def convert_to_markdown(
         original_filename = os.path.splitext(os.path.basename(pdf_file))[0]
         output_filename = f"{original_filename}.md"
 
+        progress(0.2, desc="Uploading PDF...")
+
         with open(pdf_file, "rb") as f:
             files = {"file": f}
             data = {
@@ -272,7 +318,10 @@ def convert_to_markdown(
                 # Include output_file to get zip with images and segmentation
                 "output_file": output_filename,
             }
+            progress(0.4, desc="Converting to Markdown..." if not target_languages_str else "Converting and translating...")
             response = call_api("/markdown", files=files, data=data)
+
+        progress(0.9, desc="Packaging results...")
 
         # When output_file is provided, the API always returns a ZIP file
         # Save the ZIP file to a temporary location
@@ -280,14 +329,17 @@ def convert_to_markdown(
             tmp_file.write(response.content)
             output_path = tmp_file.name
 
-        summary = "✓ Converted to Markdown successfully!\n"
+        summary = "✅ Converted to Markdown successfully!\n"
         summary += "Download the ZIP file below (contains markdown, images, and segmentation data)"
         if target_languages_str and target_languages_str.strip():
             summary += f"\nIncludes translations to: {target_languages_str}"
 
+        progress(1.0, desc="Done!")
         return summary, output_path
     except Exception as e:
-        return f"Error: {str(e)}", None
+        error_msg = f"❌ Error: {str(e)}"
+        print(f"Markdown conversion error: {e}")
+        return error_msg, None
 
 
 def convert_to_html(
@@ -297,11 +349,16 @@ def convert_to_html(
     dpi: int = 120,
     target_languages=None,
     translation_model: str = "gpt-oss",
+    progress=gr.Progress(),
 ):
     """Convert PDF to HTML format"""
     try:
-        if pdf_file is None:
-            return "Error: No PDF file provided", None
+        # Validate PDF file
+        is_valid, validation_msg = validate_pdf_file(pdf_file)
+        if not is_valid:
+            return validation_msg, None
+
+        progress(0, desc="Preparing conversion...")
 
         # Convert target_languages list to comma-separated string
         if isinstance(target_languages, list):
@@ -315,6 +372,8 @@ def convert_to_html(
         original_filename = os.path.splitext(os.path.basename(pdf_file))[0]
         output_filename = f"{original_filename}.html"
 
+        progress(0.2, desc="Uploading PDF...")
+
         with open(pdf_file, "rb") as f:
             files = {"file": f}
             data = {
@@ -326,7 +385,10 @@ def convert_to_html(
                 # Include output_file to get zip with images and segmentation
                 "output_file": output_filename,
             }
+            progress(0.4, desc="Converting to HTML..." if not target_languages_str else "Converting and translating...")
             response = call_api("/html", files=files, data=data)
+
+        progress(0.9, desc="Packaging results...")
 
         # When output_file is provided, the API always returns a ZIP file
         # Save the ZIP file to a temporary location
@@ -334,28 +396,46 @@ def convert_to_html(
             tmp_file.write(response.content)
             output_path = tmp_file.name
 
-        summary = "✓ Converted to HTML successfully!\n"
+        summary = "✅ Converted to HTML successfully!\n"
         summary += "Download the ZIP file below (contains HTML, images, and segmentation data)"
         if target_languages_str and target_languages_str.strip():
             summary += f"\nIncludes translations to: {target_languages_str}"
 
+        progress(1.0, desc="Done!")
         return summary, output_path
     except Exception as e:
-        return f"Error: {str(e)}", None
+        error_msg = f"❌ Error: {str(e)}"
+        print(f"HTML conversion error: {e}")
+        return error_msg, None
 
 
-# Create the Gradio interface
+# Create the Gradio interface with modern Gradio 5 styling
 with gr.Blocks(
     title="PDF Document Layout Analysis",
-    theme=gr.themes.Soft(),
+    theme=gr.themes.Soft(
+        primary_hue="blue",
+        secondary_hue="slate",
+        font=gr.themes.GoogleFont("Inter"),
+    ),
     css="""
     .gradio-container {
         max-width: 1400px !important;
+        margin: 0 auto !important;
+        padding: 20px !important;
     }
     .output-text {
         font-family: 'Monaco', 'Courier New', monospace;
     }
+    footer {
+        display: none !important;
+    }
+    /* Center the main content */
+    body {
+        display: flex;
+        justify-content: center;
+    }
     """,
+    analytics_enabled=False,
 ) as app:
     gr.Markdown(
         f"""
@@ -365,6 +445,8 @@ with gr.Blocks(
         Upload a PDF and use the tabs below to perform various analyses.
         
         **Connected to API:** `{API_BASE_URL}`
+        
+        ---
         """
     )
 
@@ -394,7 +476,11 @@ with gr.Blocks(
                     viz_output = gr.File(label="Download Visualization PDF")
 
             viz_btn.click(
-                fn=visualize_pdf, inputs=[pdf_input_viz, fast_mode_viz], outputs=[viz_summary, viz_display, viz_output]
+                fn=visualize_pdf,
+                inputs=[pdf_input_viz, fast_mode_viz],
+                outputs=[viz_summary, viz_display, viz_output],
+                concurrency_limit=3,
+                show_progress="full",
             )
 
         # Tab 2: PDF Analysis
@@ -417,6 +503,8 @@ with gr.Blocks(
                 fn=analyze_pdf,
                 inputs=[pdf_input_analyze, fast_mode_analyze, parse_tables],
                 outputs=[analyze_summary, analyze_details],
+                concurrency_limit=3,
+                show_progress="full",
             )
 
         # Tab 3: Text Extraction
@@ -596,6 +684,8 @@ with gr.Blocks(
                 fn=convert_to_markdown,
                 inputs=[pdf_input_md, fast_mode_md, extract_toc_md, dpi_md, target_langs_md, translation_model_md],
                 outputs=[md_summary, md_output],
+                concurrency_limit=2,
+                show_progress="full",
             )
 
         # Tab 7: HTML Conversion
@@ -672,6 +762,8 @@ with gr.Blocks(
                     translation_model_html,
                 ],
                 outputs=[html_summary, html_output],
+                concurrency_limit=2,
+                show_progress="full",
             )
 
     gr.Markdown(
@@ -691,29 +783,4 @@ if __name__ == "__main__":
     print("Starting Gradio interface...")
     print(f"API Base URL: {API_BASE_URL}")
 
-    # Store the original get_api_info method
-    import gradio
-    from gradio_client import utils as client_utils
-
-    original_get_api_info = gradio.Blocks.get_api_info
-
-    # Monkey-patch the problematic json_schema_to_python_type function
-    # to handle the bool schema bug in Gradio 4.40.0
-    original_json_schema_to_python_type = client_utils.json_schema_to_python_type
-
-    def patched_json_schema_to_python_type(schema):
-        """Patched version that handles bool schemas"""
-        try:
-            # If schema is a bool (which causes the bug), convert it to a simple dict
-            if isinstance(schema, bool):
-                return "any"
-            return original_json_schema_to_python_type(schema)
-        except TypeError as e:
-            if "argument of type 'bool' is not iterable" in str(e):
-                return "any"
-            raise
-
-    # Apply the patch
-    client_utils.json_schema_to_python_type = patched_json_schema_to_python_type
-
-    app.launch(server_name="0.0.0.0", server_port=7860, share=False)
+    app.launch(server_name="0.0.0.0", server_port=7860, share=False, show_error=True, max_file_size="100mb")
