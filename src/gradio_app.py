@@ -524,7 +524,7 @@ with gr.Blocks(
                 with gr.Column(scale=1):
                     pdf_input_md = gr.File(label="Upload PDF", file_types=[".pdf"])
                     fast_mode_md = gr.Checkbox(label="Fast Mode", value=False)
-                    extract_toc_md = gr.Checkbox(label="Extract TOC", value=False)
+                    extract_toc_md = gr.Checkbox(label="Add TOC", value=False)
                     dpi_md = gr.Slider(label="DPI", minimum=72, maximum=300, value=120, step=1)
                     target_langs_md = gr.Textbox(
                         label="Target Languages (comma-separated)",
@@ -554,7 +554,7 @@ with gr.Blocks(
                 with gr.Column(scale=1):
                     pdf_input_html = gr.File(label="Upload PDF", file_types=[".pdf"])
                     fast_mode_html = gr.Checkbox(label="Fast Mode", value=False)
-                    extract_toc_html = gr.Checkbox(label="Extract TOC", value=False)
+                    extract_toc_html = gr.Checkbox(label="Add TOC", value=False)
                     dpi_html = gr.Slider(label="DPI", minimum=72, maximum=300, value=120, step=1)
                     target_langs_html = gr.Textbox(
                         label="Target Languages (comma-separated)",
@@ -588,7 +588,7 @@ with gr.Blocks(
         - **Parse Tables and Math**: Enables specialized extraction for tables and mathematical formulas
         - **DPI**: 
             - For OCR processing, the value specifies the DPI of the input PDF which is used for OCR.
-            - For conversion to Markdown and HTML, the value specifies the DPI of the extractedimages.
+            - For conversion to Markdown and HTML, the value specifies the DPI of the extracted images.
         """
     )
 
