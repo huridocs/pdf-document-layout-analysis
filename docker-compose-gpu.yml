@@ -34,6 +34,8 @@ services:
     environment:
       - RESTART_IF_NO_GPU=$RESTART_IF_NO_GPU
       - OLLAMA_HOST=http://localhost:11434
+    networks:
+      - pdf-analysis-network
 
   pdf-document-layout-analysis-gpu-translation:
     container_name: pdf-document-layout-analysis-gpu-translation
@@ -58,6 +60,43 @@ services:
     environment:
       - RESTART_IF_NO_GPU=$RESTART_IF_NO_GPU
       - OLLAMA_HOST=http://ollama-gpu:11434
+    networks:
+      - pdf-analysis-network
+
+  pdf-document-layout-analysis-gui-gpu:
+    container_name: pdf-document-layout-analysis-gui-gpu
+    entrypoint: [ "python", "./src/gradio_app.py" ]
+    init: true
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "7860:7860"
+    depends_on:
+      - pdf-document-layout-analysis-gpu
+    environment:
+      - API_BASE_URL=http://pdf-document-layout-analysis-gpu:5060
+    networks:
+      - pdf-analysis-network
+
+  pdf-document-layout-analysis-gui-gpu-translation:
+    container_name: pdf-document-layout-analysis-gui-gpu-translation
+    entrypoint: [ "python", "./src/gradio_app.py" ]
+    init: true
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "7860:7860"
+    depends_on:
+      ollama-gpu:
+        condition: service_healthy
+      pdf-document-layout-analysis-gpu-translation:
+        condition: service_started
+    environment:
+      - API_BASE_URL=http://pdf-document-layout-analysis-gpu-translation:5060
     networks:
       - pdf-analysis-network
 

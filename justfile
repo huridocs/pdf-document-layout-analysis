@@ -3,13 +3,13 @@ HAS_GPU := `command -v nvidia-smi > /dev/null && echo 1 || echo 0`
 help:
 	@echo "PDF Document Layout Analysis - Available Commands:"
 	@echo ""
-	@echo "📄 Standard PDF Analysis (main app only):"
-	@echo "  just start              - Auto-detects GPU, starts main app only"
-	@echo "  just start_no_gpu       - Forces CPU mode, starts main app only"
-	@echo "  just start_detached     - Background mode, main app only (CPU)"
-	@echo "  just start_detached_gpu - Background mode, main app only (GPU)"
+	@echo "📄 Standard PDF Analysis (API + Gradio UI):"
+	@echo "  just start              - Auto-detects GPU, starts API and UI"
+	@echo "  just start_no_gpu       - Forces CPU mode, starts API and UI"
+	@echo "  just start_detached     - Background mode, API only (CPU)"
+	@echo "  just start_detached_gpu - Background mode, API only (GPU)"
 	@echo ""
-	@echo "🌐 With Translation Features (includes Ollama):"
+	@echo "🌐 With Translation Features (API + UI + Ollama):"
 	@echo "  just start_translation           - Auto-detects GPU, includes Ollama"
 	@echo "  just start_translation_no_gpu    - Forces CPU mode, includes Ollama"
 	@echo ""
@@ -28,7 +28,7 @@ help:
 	@echo "  just remove_docker_images     - Remove Docker images"
 	@echo "  just free_up_space           - Free up system space"
 	@echo ""
-	@echo "💡 Tip: Use 'just start' for basic PDF analysis, 'just start_translation' for translation features"
+	@echo "💡 Tip: 'just start' launches both API (port 5060) and UI (port 7860)"
 
 install:
 	. .venv/bin/activate; pip install -Ur requirements.txt
@@ -57,16 +57,16 @@ start:
 	mkdir -p ./models
 	if [ {{HAS_GPU}} -eq 1 ]; then \
 		echo "NVIDIA GPU detected, using docker-compose-gpu.yml"; \
-		docker compose -f docker-compose-gpu.yml up --build pdf-document-layout-analysis-gpu; \
+		docker compose -f docker-compose-gpu.yml up --build pdf-document-layout-analysis-gpu pdf-document-layout-analysis-gui-gpu; \
 	else \
 		echo "No NVIDIA GPU detected, using docker-compose.yml"; \
-		docker compose -f docker-compose.yml up --build pdf-document-layout-analysis; \
+		docker compose -f docker-compose.yml up --build pdf-document-layout-analysis pdf-document-layout-analysis-gui; \
 	fi
 
 start_no_gpu:
 	mkdir -p ./models
 	@echo "Starting with CPU-only configuration"
-	docker compose up --build pdf-document-layout-analysis
+	docker compose up --build pdf-document-layout-analysis pdf-document-layout-analysis-gui
 
 start_translation:
 	#!/bin/bash
@@ -90,7 +90,7 @@ start_translation:
 			echo "Warning: Ollama GPU container may not be fully healthy yet, but continuing..."
 		fi
 		echo "Starting all services with translation support..."
-		docker compose -f docker-compose-gpu.yml up --build pdf-document-layout-analysis-gpu-translation
+		docker compose -f docker-compose-gpu.yml up --build pdf-document-layout-analysis-gpu-translation pdf-document-layout-analysis-gui-gpu-translation
 	else
 		echo "No NVIDIA GPU detected, starting with translation support (CPU Ollama)"
 		echo "Starting Ollama container first..."
@@ -110,7 +110,7 @@ start_translation:
 			echo "Warning: Ollama container may not be fully healthy yet, but continuing..."
 		fi
 		echo "Starting all services with translation support..."
-		docker compose -f docker-compose.yml up --build pdf-document-layout-analysis-translation
+		docker compose -f docker-compose.yml up --build pdf-document-layout-analysis-translation pdf-document-layout-analysis-gui-translation
 	fi
 
 start_translation_no_gpu:
@@ -134,7 +134,7 @@ start_translation_no_gpu:
 		echo "Warning: Ollama container may not be fully healthy yet, but continuing..."
 	fi
 	echo "Starting all services with translation support..."
-	docker compose up --build pdf-document-layout-analysis-translation
+	docker compose up --build pdf-document-layout-analysis-translation pdf-document-layout-analysis-gui-translation
 
 stop:
 	docker compose stop
