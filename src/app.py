@@ -5,6 +5,7 @@ from fastapi.responses import PlainTextResponse, Response
 from catch_exceptions import catch_exceptions
 from typing import Optional, Union
 from starlette.concurrency import run_in_threadpool
+from prometheus_fastapi_instrumentator import Instrumentator
 import torch
 import sys
 import subprocess
@@ -21,7 +22,7 @@ service_logger.info(f"Is PyTorch using GPU: {torch.cuda.is_available()}")
 controllers = setup_dependencies()
 
 app = FastAPI()
-
+Instrumentator().instrument(app).expose(app)
 
 @app.get("/")
 async def root():

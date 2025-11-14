@@ -13,6 +13,7 @@ dependencies = [
     "requests==2.32.3",
     "torch==2.4.0",
     "torchvision==0.19.0",
+    "prometheus-fastapi-instrumentator>=7.1.0,<8",
     "timm==1.0.8",
     "Pillow==10.4.0",
     "pdf-annotate==0.12.0",
