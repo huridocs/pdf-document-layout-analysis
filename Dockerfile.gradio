@@ -31,5 +31,6 @@ WORKDIR /app
 
 COPY ./src/gradio_app.py ./src/gradio_app.py
 
+ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH "${PYTHONPATH}:/app/src"
 

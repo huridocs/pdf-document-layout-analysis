@@ -24,29 +24,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5060:5060"
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [ gpu ]
-    environment:
-      - RESTART_IF_NO_GPU=$RESTART_IF_NO_GPU
-      - OLLAMA_HOST=http://localhost:11434
-    networks:
-      - pdf-analysis-network
-
-  pdf-document-layout-analysis-gpu-translation:
-    container_name: pdf-document-layout-analysis-gpu-translation
-    entrypoint: [ "gunicorn", "-k", "uvicorn.workers.UvicornWorker", "--chdir", "./src", "app:app", "--bind", "0.0.0.0:5060", "--timeout", "10000"]
-    init: true
-    restart: unless-stopped
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "5060:5060"
     depends_on:
       ollama-gpu:
         condition: service_healthy
@@ -74,29 +51,12 @@ services:
     ports:
       - "7860:7860"
     depends_on:
-      - pdf-document-layout-analysis-gpu
-    environment:
-      - API_BASE_URL=http://pdf-document-layout-analysis-gpu:5060
-    networks:
-      - pdf-analysis-network
-
-  pdf-document-layout-analysis-gui-gpu-translation:
-    container_name: pdf-document-layout-analysis-gui-gpu-translation
-    entrypoint: [ "python", "./src/gradio_app.py" ]
-    init: true
-    restart: unless-stopped
-    build:
-      context: .
-      dockerfile: Dockerfile.gradio
-    ports:
-      - "7860:7860"
-    depends_on:
       ollama-gpu:
         condition: service_healthy
-      pdf-document-layout-analysis-gpu-translation:
+      pdf-document-layout-analysis-gpu:
         condition: service_started
     environment:
-      - API_BASE_URL=http://pdf-document-layout-analysis-gpu-translation:5060
+      - API_BASE_URL=http://pdf-document-layout-analysis-gpu:5060
     networks:
       - pdf-analysis-network
 

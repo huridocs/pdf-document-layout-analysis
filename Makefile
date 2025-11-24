@@ -24,7 +24,7 @@ ifeq ($(HAS_GPU), 1)
 		echo "Warning: Ollama GPU container may not be fully healthy yet, but continuing..."; \
 	fi
 	@echo "Starting all services with translation support..."
-	docker compose -f docker-compose-gpu.yml up --build pdf-document-layout-analysis-gpu-translation pdf-document-layout-analysis-gui-gpu-translation
+	docker compose -f docker-compose-gpu.yml up --build pdf-document-layout-analysis-gpu pdf-document-layout-analysis-gui-gpu
 else
 	@echo "No NVIDIA GPU detected, starting with translation support (CPU Ollama)"
 	@echo "Starting Ollama container first..."
@@ -43,7 +43,7 @@ else
 		echo "Warning: Ollama container may not be fully healthy yet, but continuing..."; \
 	fi
 	@echo "Starting all services with translation support..."
-	docker compose -f docker-compose.yml up --build pdf-document-layout-analysis-translation pdf-document-layout-analysis-gui-translation
+	docker compose -f docker-compose.yml up --build pdf-document-layout-analysis pdf-document-layout-analysis-gui
 endif
 
 
@@ -66,7 +66,7 @@ start_no_gpu:
 		echo "Warning: Ollama container may not be fully healthy yet, but continuing..."; \
 	fi
 	@echo "Starting all services with translation support..."
-	docker compose up --build pdf-document-layout-analysis-translation pdf-document-layout-analysis-gui-translation
+	docker compose up --build pdf-document-layout-analysis pdf-document-layout-analysis-gui
 
 stop:
 	docker compose stop

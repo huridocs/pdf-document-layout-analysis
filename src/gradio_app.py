@@ -5,8 +5,42 @@ import os
 import tempfile
 import base64
 import zipfile
+import time
 
 API_BASE_URL = os.environ.get("API_BASE_URL", "http://localhost:5060")
+
+
+def wait_for_backend(max_retries: int = 60, retry_interval: int = 2) -> bool:
+    print("\n" + "=" * 80, flush=True)
+    print("⏳ Waiting for PDF Analysis backend service to be ready...".center(80), flush=True)
+    print("=" * 80 + "\n", flush=True)
+
+    for attempt in range(1, max_retries + 1):
+        try:
+            response = requests.get(f"{API_BASE_URL}/info", timeout=5)
+            if response.status_code == 200:
+                print("=" * 80, flush=True)
+                print("✅  PDF DOCUMENT LAYOUT ANALYSIS UI IS READY!".center(80), flush=True)
+                print("=" * 80, flush=True)
+                print("", flush=True)
+                print("🌐 Access the UI at:", flush=True)
+                print("   → http://localhost:7860", flush=True)
+                print("", flush=True)
+                print(f"🔗 Backend API: {API_BASE_URL}", flush=True)
+                print("", flush=True)
+                print("=" * 80, flush=True)
+                print("=" * 80 + "\n", flush=True)
+                return True
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+            time.sleep(retry_interval)
+        except Exception as e:
+            print(f"   Unexpected error while checking backend: {str(e)}", flush=True)
+            time.sleep(retry_interval)
+
+    print("\n" + "=" * 80, flush=True)
+    print("❌ Backend service did not become ready in time!".center(80), flush=True)
+    print("=" * 80 + "\n", flush=True)
+    return False
 
 
 def validate_pdf_file(pdf_file):
@@ -901,7 +935,8 @@ with gr.Blocks(
 
 
 if __name__ == "__main__":
-    print("Starting Gradio interface...")
-    print(f"API Base URL: {API_BASE_URL}")
+    if not wait_for_backend():
+        print("⚠️  Starting UI anyway, but backend may not be available.", flush=True)
+        print("   Please check that the API service is running.\n", flush=True)
 
     app.launch(server_name="0.0.0.0", server_port=7860, share=False, show_error=True, max_file_size="100mb")
