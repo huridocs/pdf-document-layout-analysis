@@ -1,6 +1,6 @@
 # Gradio container requirements - minimal dependencies for the UI
 # Using latest Gradio 5.x with all modern features
-gradio>=5.0.0
+gradio>=5.0.0,<6.0.0
 requests>=2.32.3
 # Optional: Add httpx for better async support if needed
 # httpx>=0.27.0
