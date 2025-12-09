@@ -558,34 +558,8 @@ def convert_to_html(
         return error_msg, "", None
 
 
-# Create the Gradio interface with modern Gradio 5 styling
-with gr.Blocks(
-    title="PDF Document Layout Analysis",
-    theme=gr.themes.Soft(
-        primary_hue="blue",
-        secondary_hue="slate",
-        font=gr.themes.GoogleFont("Inter"),
-    ),
-    css="""
-    .gradio-container {
-        max-width: 1400px !important;
-        margin: 0 auto !important;
-        padding: 20px !important;
-    }
-    .output-text {
-        font-family: 'Monaco', 'Courier New', monospace;
-    }
-    footer {
-        display: none !important;
-    }
-    /* Center the main content */
-    body {
-        display: flex;
-        justify-content: center;
-    }
-    """,
-    analytics_enabled=False,
-) as app:
+# Create the Gradio interface with modern Gradio 6 styling
+with gr.Blocks(title="PDF Document Layout Analysis") as app:
     gr.Markdown(
         f"""
         # 📄 PDF Document Layout Analysis Tool
@@ -645,7 +619,7 @@ with gr.Blocks(
                 with gr.Column(scale=2):
                     analyze_summary = gr.Textbox(label="Summary", lines=8)
                     analyze_details = gr.Textbox(
-                        label="Detailed Results (JSON)", lines=15, elem_classes="output-text", show_copy_button=True
+                        label="Detailed Results (JSON)", lines=15, elem_classes="output-text", buttons=["copy"]
                     )
 
             analyze_btn.click(
@@ -685,9 +659,7 @@ with gr.Blocks(
 
                 with gr.Column(scale=2):
                     text_summary = gr.Textbox(label="Summary", lines=3)
-                    text_output = gr.Textbox(
-                        label="Extracted Text", lines=20, elem_classes="output-text", show_copy_button=True
-                    )
+                    text_output = gr.Textbox(label="Extracted Text", lines=20, elem_classes="output-text", buttons=["copy"])
 
             # Store all checkboxes in a list for easier management
             type_checkboxes = [
@@ -726,7 +698,7 @@ with gr.Blocks(
                 with gr.Column(scale=2):
                     toc_summary = gr.Textbox(label="Summary", lines=3)
                     toc_output = gr.Textbox(
-                        label="Table of Contents", lines=20, elem_classes="output-text", show_copy_button=True
+                        label="Table of Contents", lines=20, elem_classes="output-text", buttons=["copy"]
                     )
 
             toc_btn.click(fn=extract_toc, inputs=[pdf_input_toc, fast_mode_toc], outputs=[toc_summary, toc_output])
@@ -828,7 +800,7 @@ with gr.Blocks(
                 with gr.Column(scale=2):
                     md_summary = gr.Textbox(label="Summary", lines=2)
                     md_content = gr.Textbox(
-                        label="Markdown Output (Base Language)", lines=20, elem_classes="output-text", show_copy_button=True
+                        label="Markdown Output (Base Language)", lines=20, elem_classes="output-text", buttons=["copy"]
                     )
                     md_output = gr.File(label="Download ZIP (contains Markdown + images + segmentation)")
 
@@ -902,7 +874,7 @@ with gr.Blocks(
                 with gr.Column(scale=2):
                     html_summary = gr.Textbox(label="Summary", lines=2)
                     html_content = gr.Textbox(
-                        label="HTML Output (Base Language)", lines=20, elem_classes="output-text", show_copy_button=True
+                        label="HTML Output (Base Language)", lines=20, elem_classes="output-text", buttons=["copy"]
                     )
                     html_output = gr.File(label="Download ZIP (contains HTML + images + segmentation)")
 
@@ -939,4 +911,33 @@ if __name__ == "__main__":
         print("⚠️  Starting UI anyway, but backend may not be available.", flush=True)
         print("   Please check that the API service is running.\n", flush=True)
 
-    app.launch(server_name="0.0.0.0", server_port=7860, share=False, show_error=True, max_file_size="100mb")
+    app.launch(
+        server_name="0.0.0.0",
+        server_port=7860,
+        share=False,
+        show_error=True,
+        max_file_size="100mb",
+        theme=gr.themes.Soft(
+            primary_hue="blue",
+            secondary_hue="slate",
+            font=gr.themes.GoogleFont("Inter"),
+        ),
+        css="""
+        .gradio-container {
+            max-width: 1400px !important;
+            margin: 0 auto !important;
+            padding: 20px !important;
+        }
+        .output-text {
+            font-family: 'Monaco', 'Courier New', monospace;
+        }
+        footer {
+            display: none !important;
+        }
+        /* Center the main content */
+        body {
+            display: flex;
+            justify-content: center;
+        }
+        """,
+    )
