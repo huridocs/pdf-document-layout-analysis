@@ -2,7 +2,7 @@ HAS_GPU := $(shell command -v nvidia-smi > /dev/null && echo 1 || echo 0)
 
 start:
 ifeq ($(OS), Windows_NT)
-	if not exist models mkdir models
+	cmd /C "if not exist models mkdir models"
 else
 	mkdir -p ./models
 endif
