@@ -18,7 +18,7 @@ services:
 
   pdf-document-layout-analysis:
     container_name: pdf-document-layout-analysis
-    entrypoint: [ "gunicorn", "-k", "uvicorn.workers.UvicornWorker", "--chdir", "./src", "app:app", "--bind", "0.0.0.0:5060", "--timeout", "10000"]
+    entrypoint: [ "gunicorn", "-k", "uvicorn.workers.UvicornWorker", "--chdir", "./src", "drivers.rest.app:app", "--bind", "0.0.0.0:5060", "--timeout", "10000"]
     init: true
     restart: unless-stopped
     build:
@@ -36,7 +36,7 @@ services:
 
   pdf-document-layout-analysis-gui:
     container_name: pdf-document-layout-analysis-gui
-    entrypoint: [ "python", "./src/gradio_app.py" ]
+    entrypoint: [ "python", "./src/drivers/gradio_app.py" ]
     init: true
     restart: unless-stopped
     build:

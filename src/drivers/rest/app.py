@@ -1,8 +1,8 @@
 from configuration import RESTART_IF_NO_GPU, service_logger
-from drivers.web.dependency_injection import setup_dependencies
+from drivers.rest.dependency_injection import setup_dependencies
+from drivers.rest.catch_exceptions import catch_exceptions
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.responses import PlainTextResponse, Response
-from catch_exceptions import catch_exceptions
 from typing import Optional, Union
 from starlette.concurrency import run_in_threadpool
 import torch

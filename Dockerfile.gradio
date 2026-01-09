@@ -8,7 +8,7 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /app/src
+RUN mkdir -p /app/src/drivers
 
 RUN addgroup --system python && adduser --system --group python
 RUN chown -R python:python /app
@@ -29,7 +29,7 @@ RUN uv pip install -r requirements-gradio.txt
 
 WORKDIR /app
 
-COPY ./src/gradio_app.py ./src/gradio_app.py
+COPY ./src/drivers/gradio_app.py ./src/drivers/gradio_app.py
 
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH "${PYTHONPATH}:/app/src"
