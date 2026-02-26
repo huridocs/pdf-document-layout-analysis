@@ -4,7 +4,7 @@ from pathlib import Path
 
 class OCRService(ABC):
     @abstractmethod
-    def process_pdf_ocr(self, filename: str, namespace: str, language: str = "en") -> Path:
+    def process_pdf_ocr(self, filename: str, namespace: str, language: str = "en", rotate_pages: bool = False, deskew: bool = False) -> Path:
         pass
 
     @abstractmethod
