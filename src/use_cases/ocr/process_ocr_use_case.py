@@ -11,7 +11,9 @@ class ProcessOCRUseCase:
         self.ocr_service = ocr_service
         self.file_repository = file_repository
 
-    def execute(self, file: UploadFile, language: str = "en", rotate_pages: bool = False, deskew: bool = False) -> FileResponse:
+    def execute(
+        self, file: UploadFile, language: str = "en", rotate_pages: bool = False, deskew: bool = False
+    ) -> FileResponse:
         namespace = "sync_pdfs"
 
         self.file_repository.save_pdf_to_directory(
