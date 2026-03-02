@@ -164,5 +164,7 @@ async def convert_to_html_endpoint(
 
 @app.post("/ocr")
 @catch_exceptions
-async def ocr_pdf_sync(file: UploadFile = File(...), language: str = Form("en")):
-    return await run_in_threadpool(controllers.process_ocr_use_case.execute, file, language)
+async def ocr_pdf_sync(
+    file: UploadFile = File(...), language: str = Form("en"), rotate_pages: bool = Form(False), deskew: bool = Form(False)
+):
+    return await run_in_threadpool(controllers.process_ocr_use_case.execute, file, language, rotate_pages, deskew)

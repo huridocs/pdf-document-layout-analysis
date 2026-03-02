@@ -8,7 +8,6 @@
   <img src="https://img.shields.io/badge/GPU-Supported-orange.svg" alt="GPU Support">
 </p>
 
-
 <div align="center">
   <p><strong>Built with ❤️ by <a href="https://huridocs.org">HURIDOCS</a></strong></p>
   <p>
@@ -17,8 +16,6 @@
     <a href="https://huggingface.co/HURIDOCS/pdf-document-layout-analysis">🤗 View on Hugging Face</a>
   </p>
 </div>
-
-
 
 ---
 
@@ -44,10 +41,12 @@ make start # or `just start` (https://github.com/casey/just)
 ```
 
 The service provides two interfaces:
+
 - **🎨 Web UI (Gradio)**: `http://localhost:7860` - User-friendly interface for all features
 - **🔌 REST API**: `http://localhost:5060` - Programmatic access for integrations
 
 **See all available commands:**
+
 ```bash
 make --list
 ```
@@ -72,11 +71,13 @@ Simply open your browser and navigate to `http://localhost:7860` to access the i
 ### 3. Using the REST API
 
 **Analyze a PDF document (VGT model - high accuracy):**
+
 ```bash
 curl -X POST -F 'file=@/path/to/your/document.pdf' http://localhost:5060
 ```
 
 **Fast analysis (LightGBM models - faster processing):**
+
 ```bash
 curl -X POST -F 'file=@/path/to/your/document.pdf' -F "fast=true" http://localhost:5060
 ```
@@ -152,26 +153,28 @@ make stop
 - [🔗 Related Services](#-related-services)
 - [🤝 Contributing](#-contributing)
 
-
-
 ## ⚙️ Dependencies
 
 ### Required
+
 - **Docker Desktop 4.25.0+** - [Installation Guide](https://www.docker.com/products/docker-desktop/)
 - **Python 3.10+** (for local development)
 
 ### Optional
+
 - **NVIDIA Container Toolkit** - [Installation Guide](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) (for GPU support)
 
 ## 📋 Requirements
 
 ### System Requirements
+
 - **RAM**: 2 GB minimum
 - **GPU Memory**: 5 GB (optional, will fallback to CPU if unavailable)
 - **Disk Space**: 10 GB for models and dependencies
 - **CPU**: Multi-core recommended for better performance
 
 ### Docker Requirements
+
 - Docker Engine 20.10+
 - Docker Compose 2.0+
 
@@ -181,36 +184,36 @@ The service provides a comprehensive RESTful API with the following endpoints:
 
 ### Core Analysis Endpoints
 
-| Endpoint | Method | Description | Parameters |
-|----------|--------|-------------|------------|
-| `/` | POST | Analyze PDF layout and extract segments | `file`, `fast`, `parse_tables_and_math` |
-| `/save_xml/{filename}` | POST | Analyze PDF and save XML output | `file`, `xml_file_name`, `fast` |
-| `/get_xml/{filename}` | GET | Retrieve saved XML analysis | `xml_file_name` |
+| Endpoint               | Method | Description                             | Parameters                              |
+| ---------------------- | ------ | --------------------------------------- | --------------------------------------- |
+| `/`                    | POST   | Analyze PDF layout and extract segments | `file`, `fast`, `parse_tables_and_math` |
+| `/save_xml/{filename}` | POST   | Analyze PDF and save XML output         | `file`, `xml_file_name`, `fast`         |
+| `/get_xml/{filename}`  | GET    | Retrieve saved XML analysis             | `xml_file_name`                         |
 
 ### Content Extraction Endpoints
 
-| Endpoint | Method | Description | Parameters |
-|----------|--------|-------------|------------|
-| `/text` | POST | Extract text by content types | `file`, `fast`, `types` |
-| `/toc` | POST | Extract table of contents | `file`, `fast` |
-| `/toc_legacy_uwazi_compatible` | POST | Extract TOC (Uwazi compatible) | `file` |
+| Endpoint                       | Method | Description                    | Parameters              |
+| ------------------------------ | ------ | ------------------------------ | ----------------------- |
+| `/text`                        | POST   | Extract text by content types  | `file`, `fast`, `types` |
+| `/toc`                         | POST   | Extract table of contents      | `file`, `fast`          |
+| `/toc_legacy_uwazi_compatible` | POST   | Extract TOC (Uwazi compatible) | `file`                  |
 
 ### Format Conversion Endpoints
 
-| Endpoint | Method | Description | Parameters |
-|----------|--------|-------------|------------|
-| `/markdown` | POST | Convert PDF to Markdown (includes segmentation data in zip) | `file`, `fast`, `extract_toc`, `dpi`, `output_file`, `target_languages`, `translation_model` |
-| `/html` | POST | Convert PDF to HTML (includes segmentation data in zip) | `file`, `fast`, `extract_toc`, `dpi`, `output_file`, `target_languages`, `translation_model` |
-| `/visualize` | POST | Visualize segmentation results on the PDF | `file`, `fast` |
+| Endpoint     | Method | Description                                                 | Parameters                                                                                   |
+| ------------ | ------ | ----------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `/markdown`  | POST   | Convert PDF to Markdown (includes segmentation data in zip) | `file`, `fast`, `extract_toc`, `dpi`, `output_file`, `target_languages`, `translation_model` |
+| `/html`      | POST   | Convert PDF to HTML (includes segmentation data in zip)     | `file`, `fast`, `extract_toc`, `dpi`, `output_file`, `target_languages`, `translation_model` |
+| `/visualize` | POST   | Visualize segmentation results on the PDF                   | `file`, `fast`                                                                               |
 
 ### OCR & Utility Endpoints
 
-| Endpoint | Method | Description | Parameters |
-|----------|--------|-------------|------------|
-| `/ocr` | POST | Apply OCR to PDF | `file`, `language` |
-| `/info` | GET | Get service information | - |
-| `/` | GET | Health check and system info | - |
-| `/error` | GET | Test error handling | - |
+| Endpoint | Method | Description                  | Parameters                                   |
+| -------- | ------ | ---------------------------- | -------------------------------------------- |
+| /ocr     | POST   | Apply OCR to PDF             | `file`, `language`, `rotate_pages`, `deskew` |
+| `/info`  | GET    | Get service information      | -                                            |
+| `/`      | GET    | Health check and system info | -                                            |
+| `/error` | GET    | Test error handling          | -                                            |
 
 ### Common Parameters
 
@@ -229,6 +232,7 @@ The service provides a comprehensive RESTful API with the following endpoints:
 ### Basic PDF Analysis
 
 **Standard analysis with VGT model:**
+
 ```bash
 curl -X POST \
   -F 'file=@document.pdf' \
@@ -236,6 +240,7 @@ curl -X POST \
 ```
 
 **Fast analysis with LightGBM models:**
+
 ```bash
 curl -X POST \
   -F 'file=@document.pdf' \
@@ -244,6 +249,7 @@ curl -X POST \
 ```
 
 **Analysis with table and math parsing:**
+
 ```bash
 curl -X POST \
   -F 'file=@document.pdf' \
@@ -254,6 +260,7 @@ curl -X POST \
 ### Text Extraction
 
 **Extract all text:**
+
 ```bash
 curl -X POST \
   -F 'file=@document.pdf' \
@@ -262,6 +269,7 @@ curl -X POST \
 ```
 
 **Extract specific content types:**
+
 ```bash
 curl -X POST \
   -F 'file=@document.pdf' \
@@ -272,6 +280,7 @@ curl -X POST \
 ### Format Conversion
 
 **Convert to Markdown:**
+
 ```bash
 curl -X POST http://localhost:5060/markdown \
   -F 'file=@document.pdf' \
@@ -281,6 +290,7 @@ curl -X POST http://localhost:5060/markdown \
 ```
 
 **Convert to HTML:**
+
 ```bash
 curl -X POST http://localhost:5060/html \
   -F 'file=@document.pdf' \
@@ -290,6 +300,7 @@ curl -X POST http://localhost:5060/html \
 ```
 
 **Convert to Markdown with Translation:**
+
 ```bash
 curl -X POST http://localhost:5060/markdown \
   -F 'file=@document.pdf' \
@@ -300,6 +311,7 @@ curl -X POST http://localhost:5060/markdown \
 ```
 
 **Convert to HTML with Translation:**
+
 ```bash
 curl -X POST http://localhost:5060/html \
   -F 'file=@document.pdf' \
@@ -310,10 +322,11 @@ curl -X POST http://localhost:5060/html \
 ```
 
 > **📋 Segmentation Data & Translations**: Format conversion endpoints automatically include detailed segmentation data in the zip output. The resulting zip file contains:
+>
 > - **Original file**: The converted document in the requested format
 > - **Segmentation data**: `{filename}_segmentation.json` file with information about each detected document segment:
 >   - **Coordinates**: `left`, `top`, `width`, `height`
->   - **Page information**: `page_number`, `page_width`, `page_height` 
+>   - **Page information**: `page_number`, `page_width`, `page_height`
 >   - **Content**: `text` content and segment `type` (e.g., "Title", "Text", "Table", "Picture")
 > - **Translated files** (if `target_languages` specified): `{filename}_{language}.{extension}` for each target language
 > - **Images** (if present): `{filename}_pictures/` directory containing extracted images
@@ -323,14 +336,17 @@ curl -X POST http://localhost:5060/html \
 The `/markdown` and `/html` endpoints support automatic translation of the converted content into multiple languages using Ollama models.
 
 **Translation Requirements:**
+
 - The specified translation model must be available in Ollama
 - An `output_file` must be specified (translations are only included in zip responses)
 
 **Supported Translation Models:**
+
 - Any Ollama-compatible model (e.g., `gpt-oss`, `llama2`, `mistral`, etc.)
 - Models are automatically downloaded if not present locally
 
 **Translation Process:**
+
 1. The service checks if the specified model is available in Ollama
 2. If not available, it attempts to download the model using `ollama pull`
 3. For each target language, the content is translated while preserving:
@@ -343,10 +359,11 @@ The `/markdown` and `/html` endpoints support automatic translation of the conve
 _**Note that the quality of translations mostly depends on the models used. When using smaller models, the output may contain many unexpected or undesired elements. For regular users, we aimed for a balance between performance and quality, so we tested with different models with a reasonable size. The results for `gpt-oss` were satisfactory, which is why we set it as the default model. If you need something smaller you can also try `huihui_ai/hunyuan-mt-abliterated`, we saw it gives decent results especially if the text does not have much styling.**_
 
 **Example Translation Output:**
+
 ```
 document.zip
 ├── document.md                   # Source text with markdown/html styling
-├── document_Spanish.md           # Spanish translation  
+├── document_Spanish.md           # Spanish translation
 ├── document_French.md            # French translation
 ├── document_Turkish.md           # Turkish translation
 ├── document_segmentation.json    # Segmentation information
@@ -358,6 +375,7 @@ document.zip
 ### OCR Processing
 
 **OCR in English:**
+
 ```bash
 curl -X POST \
   -F 'file=@scanned_document.pdf' \
@@ -367,6 +385,7 @@ curl -X POST \
 ```
 
 **OCR in other languages:**
+
 ```bash
 # French
 curl -X POST \
@@ -383,9 +402,32 @@ curl -X POST \
   --output ocr_spanish.pdf
 ```
 
+**OCR with rotation fix for sideways scanned documents**
+
+```bash
+curl -X POST \
+  -F 'file=@scanned_document.pdf' \
+  -F 'language=en' \
+  -F 'rotate_pages=true' \
+  http://localhost:5060/ocr \
+  --output ocr_processed.pdf
+```
+
+**OCR with deskew for crooked scans**
+
+```bash
+curl -X POST \
+  -F 'file=@scanned_document.pdf' \
+  -F 'language=en' \
+  -F 'deskew=true' \
+  http://localhost:5060/ocr \
+  --output ocr_processed.pdf
+```
+
 ### Visualization
 
 **Generate visualization PDF:**
+
 ```bash
 curl -X POST \
   -F 'file=@document.pdf' \
@@ -396,6 +438,7 @@ curl -X POST \
 ### Table of Contents Extraction
 
 **Extract structured TOC:**
+
 ```bash
 curl -X POST \
   -F 'file=@document.pdf' \
@@ -405,6 +448,7 @@ curl -X POST \
 ### XML Storage and Retrieval
 
 **Analyze and save XML:**
+
 ```bash
 curl -X POST \
   -F 'file=@document.pdf' \
@@ -412,6 +456,7 @@ curl -X POST \
 ```
 
 **Retrieve saved XML:**
+
 ```bash
 curl http://localhost:5060/get_xml/my_analysis.xml
 ```
@@ -419,11 +464,13 @@ curl http://localhost:5060/get_xml/my_analysis.xml
 ### Service Information
 
 **Get service info and supported languages:**
+
 ```bash
 curl http://localhost:5060/info
 ```
 
 **Health check:**
+
 ```bash
 curl http://localhost:5060/
 ```
@@ -473,7 +520,6 @@ Most endpoints return JSON with segment information:
 - `Text` - Regular text paragraphs
 - `Title` - Document and section titles
 
-
 ## 🏗️ Architecture
 
 This project follows **Clean Architecture** principles, ensuring separation of concerns, testability, and maintainability. The codebase is organized into distinct layers:
@@ -521,7 +567,6 @@ src/
 - 🔧 **Maintainability**: Changes to external frameworks don't affect business rules
 - 📈 **Scalability**: Easy to add new features without modifying existing code
 
-  
 ## 🤖 Models
 
 The service offers two complementary model approaches, each optimized for different use cases:
@@ -531,12 +576,14 @@ The service offers two complementary model approaches, each optimized for differ
 **Overview**: A state-of-the-art visual model developed by Alibaba Research Group that "sees" the entire page layout.
 
 **Key Features**:
+
 - 🎯 **High Accuracy**: Best-in-class performance on document layout analysis
 - 👁️ **Visual Understanding**: Analyzes the entire page context including spatial relationships
 - 📊 **Trained on DocLayNet**: Uses the comprehensive [DocLayNet dataset](https://github.com/DS4SD/DocLayNet)
 - 🔬 **Research-Backed**: Based on [Advanced Literate Machinery](https://github.com/AlibabaResearch/AdvancedLiterateMachinery)
 
 **Resource Requirements**:
+
 - GPU: 5GB+ VRAM (recommended)
 - CPU: Falls back automatically if GPU unavailable
 - Processing Speed: ~1.75 seconds/page (GPU [GTX 1070]) or ~13.5 seconds/page (CPU [i7-8700])
@@ -546,6 +593,7 @@ The service offers two complementary model approaches, each optimized for differ
 **Overview**: Lightweight ensemble of two specialized models using XML-based features from Poppler.
 
 **Key Features**:
+
 - ⚡ **High Speed**: ~0.42 seconds per page on CPU (i7-8700)
 - 💾 **Low Resource Usage**: CPU-only, minimal memory footprint
 - 🔄 **Dual Model Approach**:
@@ -554,6 +602,7 @@ The service offers two complementary model approaches, each optimized for differ
 - 📄 **XML-Based**: Uses Poppler's PDF-to-XML conversion for feature extraction
 
 **Trade-offs**:
+
 - Slightly lower accuracy compared to VGT
 - No visual context understanding
 - Excellent for batch processing and resource-constrained environments
@@ -569,14 +618,14 @@ Both models integrate seamlessly with OCR capabilities:
 
 ### Model Selection Guide
 
-| Use Case | Recommended Model | Reason |
-|----------|------------------|---------|
-| High accuracy requirements | VGT | Superior visual understanding |
-| Batch processing | LightGBM | Faster processing, lower resources |
-| GPU available | VGT | Leverages GPU acceleration |
-| CPU-only environment | LightGBM | Optimized for CPU processing |
-| Real-time applications | LightGBM | Consistent fast response times |
-| Research/analysis | VGT | Best accuracy for detailed analysis |
+| Use Case                   | Recommended Model | Reason                              |
+| -------------------------- | ----------------- | ----------------------------------- |
+| High accuracy requirements | VGT               | Superior visual understanding       |
+| Batch processing           | LightGBM          | Faster processing, lower resources  |
+| GPU available              | VGT               | Leverages GPU acceleration          |
+| CPU-only environment       | LightGBM          | Optimized for CPU processing        |
+| Real-time applications     | LightGBM          | Consistent fast response times      |
+| Research/analysis          | VGT               | Best accuracy for detailed analysis |
 
 ## 📊 Data
 
@@ -588,19 +637,19 @@ Both model types are trained on the comprehensive [DocLayNet dataset](https://gi
 
 The models can identify and classify 11 distinct content types:
 
-| ID | Category | Description |
-|----|----------|-------------|
-| 1 | **Caption** | Image and table captions |
-| 2 | **Footnote** | Footnote references and text |
-| 3 | **Formula** | Mathematical equations and formulas |
-| 4 | **List item** | Bulleted and numbered list items |
-| 5 | **Page footer** | Footer content and page numbers |
-| 6 | **Page header** | Header content and titles |
-| 7 | **Picture** | Images, figures, and graphics |
-| 8 | **Section header** | Section and subsection headings |
-| 9 | **Table** | Tabular data and structures |
-| 10 | **Text** | Regular paragraph text |
-| 11 | **Title** | Document and chapter titles |
+| ID  | Category           | Description                         |
+| --- | ------------------ | ----------------------------------- |
+| 1   | **Caption**        | Image and table captions            |
+| 2   | **Footnote**       | Footnote references and text        |
+| 3   | **Formula**        | Mathematical equations and formulas |
+| 4   | **List item**      | Bulleted and numbered list items    |
+| 5   | **Page footer**    | Footer content and page numbers     |
+| 6   | **Page header**    | Header content and titles           |
+| 7   | **Picture**        | Images, figures, and graphics       |
+| 8   | **Section header** | Section and subsection headings     |
+| 9   | **Table**          | Tabular data and structures         |
+| 10  | **Text**           | Regular paragraph text              |
+| 11  | **Title**          | Document and chapter titles         |
 
 ### Dataset Characteristics
 
@@ -616,17 +665,20 @@ For detailed information about the dataset, visit the [DocLayNet repository](htt
 ### Local Development Setup
 
 1. **Clone the repository:**
+
    ```bash
    git clone https://github.com/huridocs/pdf-document-layout-analysis.git
    cd pdf-document-layout-analysis
    ```
 
 2. **Create virtual environment:**
+
    ```bash
    make install_venv
    ```
 
 3. **Activate environment:**
+
    ```bash
    source .venv/bin/activate
    ```
@@ -639,11 +691,13 @@ For detailed information about the dataset, visit the [DocLayNet repository](htt
 ### Code Quality
 
 **Format code:**
+
 ```bash
 make formatter
 ```
 
 **Check formatting:**
+
 ```bash
 make check_format
 ```
@@ -651,11 +705,13 @@ make check_format
 ### Testing
 
 **Run tests:**
+
 ```bash
 make test
 ```
 
 **Integration tests:**
+
 ```bash
 # Tests are located in src/tests/integration/
 python -m pytest src/tests/integration/test_end_to_end.py
@@ -664,6 +720,7 @@ python -m pytest src/tests/integration/test_end_to_end.py
 ### Docker Development
 
 **Build and start:**
+
 ```bash
 # Standard start (includes translation features)
 make start
@@ -682,6 +739,7 @@ make start_no_gpu
 ```
 
 **Clean up Docker resources:**
+
 ```bash
 # Stop all services
 make stop
@@ -726,7 +784,7 @@ OCR_SOURCE=/tmp/ocr_source
 # Model paths (auto-configured)
 MODELS_PATH=./models
 
-# Service configuration  
+# Service configuration
 HOST=0.0.0.0
 PORT=5060
 
@@ -745,16 +803,19 @@ OLLAMA_HOST=http://ollama:11434  # Ollama service endpoint
 ### Debugging
 
 **View logs:**
+
 ```bash
 docker compose logs -f
 ```
 
 **Access container:**
+
 ```bash
 docker exec -it pdf-document-layout-analysis /bin/bash
 ```
 
 **Free up disk space:**
+
 ```bash
 make free_up_space
 ```
@@ -775,6 +836,7 @@ The service returns SegmentBox elements in a carefully determined reading order:
 #### Non-Text Elements
 
 For segments without text (e.g., images):
+
 - Processed after text-based sorting
 - Positioned based on nearest text segment proximity
 - Uses spatial distance as the primary criterion
@@ -782,6 +844,7 @@ For segments without text (e.g., images):
 ### Advanced Table and Formula Extraction
 
 #### Default Behavior
+
 - **Formulas**: Automatically extracted as LaTeX format in the `text` property
 - **Tables**: Basic text extraction included by default
 
@@ -793,11 +856,10 @@ Parse tables and extract them in HTML format by setting `parse_tables_and_math=t
 curl -X POST -F 'file=@document.pdf' -F 'parse_tables_and_math=true' http://localhost:5060
 ```
 
-
 #### Extraction Engines
+
 - **Formulas**: [LaTeX-OCR](https://github.com/lukas-blecher/LaTeX-OCR)
 - **Tables**: [RapidTable](https://github.com/RapidAI/RapidTable)
-
 
 ## 📈 Benchmarks
 
@@ -805,9 +867,9 @@ curl -X POST -F 'file=@document.pdf' -F 'parse_tables_and_math=true' http://loca
 
 VGT model performance on PubLayNet dataset:
 
-| Metric | Overall | Text | Title | List | Table | Figure |
-|--------|---------|------|-------|------|-------|--------|
-| **F1 Score** | **0.962** | 0.950 | 0.939 | 0.968 | 0.981 | 0.971 |
+| Metric       | Overall   | Text  | Title | List  | Table | Figure |
+| ------------ | --------- | ----- | ----- | ----- | ----- | ------ |
+| **F1 Score** | **0.962** | 0.950 | 0.939 | 0.968 | 0.981 | 0.971  |
 
 > 📊 **Comparison**: View comprehensive model comparisons at [Papers With Code](https://paperswithcode.com/sota/document-layout-analysis-on-publaynet-val)
 
@@ -815,11 +877,11 @@ VGT model performance on PubLayNet dataset:
 
 Performance benchmarks on 15-page academic documents:
 
-| Model | Hardware | Speed (sec/page) | Use Case |
-|-------|----------|------------------|----------|
-| **LightGBM** | CPU (i7-8700 3.2GHz) | **0.42** | Fast processing |
-| **VGT** | GPU (GTX 1070) | **1.75** | High accuracy |
-| **VGT** | CPU (i7-8700 3.2GHz) | 13.5 | CPU fallback |
+| Model        | Hardware             | Speed (sec/page) | Use Case        |
+| ------------ | -------------------- | ---------------- | --------------- |
+| **LightGBM** | CPU (i7-8700 3.2GHz) | **0.42**         | Fast processing |
+| **VGT**      | GPU (GTX 1070)       | **1.75**         | High accuracy   |
+| **VGT**      | CPU (i7-8700 3.2GHz) | 13.5             | CPU fallback    |
 
 ### Performance Recommendations
 
@@ -828,7 +890,6 @@ Performance benchmarks on 15-page academic documents:
 - **Batch Processing**: LightGBM for consistent throughput
 - **High Accuracy**: VGT with GPU for best results
 
-
 ## 🌐 Installation of More Languages for OCR
 
 The service uses Tesseract OCR with support for 150+ languages. The Docker image includes only common languages to minimize image size.
@@ -836,11 +897,13 @@ The service uses Tesseract OCR with support for 150+ languages. The Docker image
 ### Installing Additional Languages
 
 #### 1. Access the Container
+
 ```bash
 docker exec -it --user root pdf-document-layout-analysis /bin/bash
 ```
 
 #### 2. Install Language Packs
+
 ```bash
 # Install specific language
 apt-get update
@@ -853,7 +916,7 @@ apt-get install tesseract-ocr-[LANGCODE]
 # Korean
 apt-get install tesseract-ocr-kor
 
-# German  
+# German
 apt-get install tesseract-ocr-deu
 
 # French
@@ -885,8 +948,9 @@ Find Tesseract language codes in the [ISO to Tesseract mapping](https://github.c
 ### Supported Languages
 
 Common language codes:
+
 - `eng` - English
-- `fra` - French  
+- `fra` - French
 - `deu` - German
 - `spa` - Spanish
 - `ita` - Italian
@@ -910,24 +974,27 @@ curl -X POST \
   --output french_ocr.pdf
 ```
 
-
 ## 🔗 Related Services
 
 Explore our ecosystem of PDF processing services built on this foundation:
 
 ### [PDF Table of Contents Extractor](https://github.com/huridocs/pdf-table-of-contents-extractor)
+
 🔍 **Purpose**: Intelligent extraction of structured table of contents from PDF documents
 
 **Key Features**:
+
 - Leverages layout analysis for accurate TOC identification
 - Hierarchical structure recognition
 - Multiple output formats supported
 - Integration-ready API
 
 ### [PDF Text Extraction](https://github.com/huridocs/pdf-text-extraction)
+
 📝 **Purpose**: Advanced text extraction with layout awareness
 
 **Key Features**:
+
 - Content-type aware extraction
 - Preserves document structure
 - Reading order optimization
@@ -936,6 +1003,7 @@ Explore our ecosystem of PDF processing services built on this foundation:
 ### Integration Benefits
 
 These services work seamlessly together:
+
 - **Shared Analysis**: Reuse layout analysis results across services
 - **Consistent Output**: Standardized JSON format for easy integration
 - **Scalable Architecture**: Deploy services independently or together
@@ -948,16 +1016,19 @@ We welcome contributions to improve the PDF Document Layout Analysis service!
 ### How to Contribute
 
 1. **Fork the Repository**
+
    ```bash
    git clone https://github.com/your-username/pdf-document-layout-analysis.git
    ```
 
 2. **Create a Feature Branch**
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
 
 3. **Set Up Development Environment**
+
    ```bash
    make install_venv
    make install
@@ -969,6 +1040,7 @@ We welcome contributions to improve the PDF Document Layout Analysis service!
    - Update documentation as needed
 
 5. **Run Tests and Quality Checks**
+
    ```bash
    make test
    make check_format
@@ -982,6 +1054,7 @@ We welcome contributions to improve the PDF Document Layout Analysis service!
 ### Contribution Guidelines
 
 #### Code Standards
+
 - **Python**: Follow PEP 8 with 125-character line length
 - **Architecture**: Maintain Clean Architecture boundaries
 - **Testing**: Include unit tests for new functionality

@@ -8,20 +8,22 @@ from adapters.infrastructure.ocr.languages import iso_to_tesseract, supported_la
 
 
 class OCRServiceAdapter(OCRService):
-    def process_pdf_ocr(self, filename: str, namespace: str, language: str = "en") -> Path:
+    def process_pdf_ocr(
+        self, filename: str, namespace: str, language: str = "en", rotate_pages: bool = False, deskew: bool = False
+    ) -> Path:
         source_pdf_filepath, processed_pdf_filepath, failed_pdf_filepath = self._get_paths(namespace, filename)
         os.makedirs(processed_pdf_filepath.parent, exist_ok=True)
 
-        result = subprocess.run(
-            [
-                "ocrmypdf",
-                "-l",
-                iso_to_tesseract[language],
-                source_pdf_filepath,
-                processed_pdf_filepath,
-                "--force-ocr",
-            ]
-        )
+        cmd = ["ocrmypdf", "-l", iso_to_tesseract[language], "--force-ocr"]
+
+        if rotate_pages:
+            cmd.append("--rotate-pages")
+        if deskew:
+            cmd.append("--deskew")
+
+        cmd += [source_pdf_filepath, processed_pdf_filepath]
+
+        result = subprocess.run(cmd)
 
         if result.returncode == 0:
             return processed_pdf_filepath
