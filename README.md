@@ -19,6 +19,13 @@
 
 ---
 
+## 📣 Feedback & Use Cases
+
+Are you using this tool in your workflow? We’d love to learn more about your experience. Sharing your use case helps us improve the service for everyone.
+
+[👉 Submit your use case here](https://huridocs.org/contact/)
+
+
 ## 🚀 Overview
 
 This project provides a powerful and flexible PDF analysis microservice built with **Clean Architecture** principles. The service enables OCR, segmentation, and classification of different parts of PDF pages, identifying elements such as texts, titles, pictures, tables, formulas, and more. Additionally, it determines the correct reading order of these identified elements and can convert PDFs to various formats including Markdown and HTML with **automatic translation support** powered by Ollama.
