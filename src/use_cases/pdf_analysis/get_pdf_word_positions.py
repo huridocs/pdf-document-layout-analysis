@@ -10,7 +10,7 @@ def get_pdf_word_positions(file_content: bytes) -> list[PdfWord]:
         tmp_path = tmp_file.name
 
     try:
-        pdf_text_position = PdfTextPosition(tmp_path)
+        pdf_text_position = PdfTextPosition.from_pdf_path(tmp_path)
         return pdf_text_position.get_all_pdf_words()
     finally:
         os.unlink(tmp_path)

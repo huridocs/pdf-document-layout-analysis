@@ -11,7 +11,7 @@ def extract_table_format(pdf_images: PdfImages, predicted_segments: list[PdfSegm
     if not table_segments:
         return
 
-    input_args = RapidTableInput(model_type=ModelType["SLANETPLUS"])
+    input_args = RapidTableInput(model_type=ModelType.SLANETPLUS)
 
     ocr_engine = RapidOCR()
     table_engine = RapidTable(input_args)
@@ -28,6 +28,6 @@ def extract_table_format(pdf_images: PdfImages, predicted_segments: list[PdfSegm
         ori_ocr_res = ocr_engine(table_image)
         if not ori_ocr_res.txts:
             continue
-        ocr_results = [ori_ocr_res.boxes, ori_ocr_res.txts, ori_ocr_res.scores]
+        ocr_results = [(ori_ocr_res.boxes, ori_ocr_res.txts, ori_ocr_res.scores)]
         table_result = table_engine(table_image, ocr_results=ocr_results)
-        table_segment.text_content = table_result.pred_html
+        table_segment.text_content = table_result.pred_htmls[0]
