@@ -42,3 +42,7 @@ HURIDOCS = "https://huridocs.org"
 GitHub = "https://github.com/huridocs/pdf-document-layout-analysis"
 HuggingFace = "https://huggingface.co/HURIDOCS/pdf-document-layout-analysis"
 DockerHub = "https://hub.docker.com/r/huridocs/pdf-document-layout-analysis"
+
+[tool.black]
+line-length = 125
+target-version = ["py311"]
