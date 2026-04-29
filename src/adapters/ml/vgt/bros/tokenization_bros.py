@@ -14,7 +14,6 @@
 # limitations under the License.
 """Tokenization classes for BROS."""
 
-
 import collections
 
 from transformers.models.bert.tokenization_bert import BertTokenizer
