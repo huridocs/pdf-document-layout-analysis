@@ -36,7 +36,7 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 COPY requirements.txt requirements.txt
 RUN uv pip install --upgrade pip
-RUN uv pip install -r requirements.txt
+RUN uv pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu128 --index-strategy unsafe-best-match
 
 WORKDIR /app
 
