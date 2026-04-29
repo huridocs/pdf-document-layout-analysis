@@ -7,7 +7,7 @@ import latex2mathml.converter
 
 
 def has_arabic(text: str) -> bool:
-    return any("\u0600" <= char <= "\u06FF" or "\u0750" <= char <= "\u077F" for char in text)
+    return any("\u0600" <= char <= "\u06ff" or "\u0750" <= char <= "\u077f" for char in text)
 
 
 def is_valid_latex(formula: str) -> bool:
