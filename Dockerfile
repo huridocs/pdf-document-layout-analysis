@@ -1,12 +1,11 @@
 FROM nvidia/cuda:12.8.0-cudnn-devel-ubuntu24.04 AS builder
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
 
-ARG DEBIAN_FRONTEND=noninteractive
-
 ENV VIRTUAL_ENV=/app/.venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     ca-certificates \
     python3.12 \
     python3.12-venv \
@@ -36,8 +35,6 @@ RUN uv pip install --no-cache --python "$VIRTUAL_ENV/bin/python" pycocotools==2.
 
 FROM nvidia/cuda:12.8.0-cudnn-runtime-ubuntu24.04
 
-ARG DEBIAN_FRONTEND=noninteractive
-
 ENV VIRTUAL_ENV=/app/.venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 ENV HF_HOME=/app/models/.cache/huggingface
@@ -45,7 +42,8 @@ ENV PYTHONPATH=/app/src
 ENV TRANSFORMERS_VERBOSITY=error
 ENV TRANSFORMERS_NO_ADVISORY_WARNINGS=1
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     ca-certificates \
     python3.12 \
     ffmpeg \
