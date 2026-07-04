@@ -441,3 +441,59 @@ class TestEndToEnd(TestCase):
 
         for heading_element in heading_elements:
             self.assertIn(heading_element, result)
+
+    def test_markdown_extraction_with_segment_boxes(self):
+        import json
+
+        with open(f"{ROOT_PATH}/test_pdfs/regular.pdf", "rb") as stream:
+            analyze_response = requests.post(f"{self.service_url}", files={"file": stream})
+            segments = analyze_response.json()
+
+        with open(f"{ROOT_PATH}/test_pdfs/regular.pdf", "rb") as stream:
+            files = {"file": stream}
+            data = {"segment_boxes": json.dumps(segments)}
+
+            results = requests.post(f"{self.service_url}/markdown", files=files, data=data)
+
+        with open(f"{ROOT_PATH}/test_pdfs/regular.pdf", "rb") as stream:
+            baseline = requests.post(f"{self.service_url}/markdown", files={"file": stream})
+
+        self.assertEqual(200, results.status_code)
+        self.assertEqual(baseline.json(), results.json())
+
+    def test_html_extraction_with_segment_boxes(self):
+        import json
+
+        with open(f"{ROOT_PATH}/test_pdfs/regular.pdf", "rb") as stream:
+            analyze_response = requests.post(f"{self.service_url}", files={"file": stream})
+            segments = analyze_response.json()
+
+        with open(f"{ROOT_PATH}/test_pdfs/regular.pdf", "rb") as stream:
+            files = {"file": stream}
+            data = {"segment_boxes": json.dumps(segments)}
+
+            results = requests.post(f"{self.service_url}/html", files=files, data=data)
+
+        with open(f"{ROOT_PATH}/test_pdfs/regular.pdf", "rb") as stream:
+            baseline = requests.post(f"{self.service_url}/html", files={"file": stream})
+
+        self.assertEqual(200, results.status_code)
+        self.assertEqual(baseline.json(), results.json())
+
+    def test_markdown_malformed_segment_boxes_returns_4xx(self):
+        with open(f"{ROOT_PATH}/test_pdfs/regular.pdf", "rb") as stream:
+            files = {"file": stream}
+            data = {"segment_boxes": "not-json"}
+
+            results = requests.post(f"{self.service_url}/markdown", files=files, data=data)
+
+        self.assertEqual(422, results.status_code)
+
+    def test_html_malformed_segment_boxes_returns_4xx(self):
+        with open(f"{ROOT_PATH}/test_pdfs/regular.pdf", "rb") as stream:
+            files = {"file": stream}
+            data = {"segment_boxes": "not-json"}
+
+            results = requests.post(f"{self.service_url}/html", files=files, data=data)
+
+        self.assertEqual(422, results.status_code)
