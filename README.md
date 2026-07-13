@@ -209,8 +209,8 @@ The service provides a comprehensive RESTful API with the following endpoints:
 
 | Endpoint     | Method | Description                                                 | Parameters                                                                                   |
 | ------------ | ------ | ----------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `/markdown`  | POST   | Convert PDF to Markdown (includes segmentation data in zip) | `file`, `fast`, `extract_toc`, `dpi`, `output_file`, `target_languages`, `translation_model` |
-| `/html`      | POST   | Convert PDF to HTML (includes segmentation data in zip)     | `file`, `fast`, `extract_toc`, `dpi`, `output_file`, `target_languages`, `translation_model` |
+| `/markdown`  | POST   | Convert PDF to Markdown (includes segmentation data in zip) | `file`, `fast`, `extract_toc`, `dpi`, `output_file`, `target_languages`, `translation_model`, `segment_boxes` |
+| `/html`      | POST   | Convert PDF to HTML (includes segmentation data in zip)     | `file`, `fast`, `extract_toc`, `dpi`, `output_file`, `target_languages`, `translation_model`, `segment_boxes` |
 | `/visualize` | POST   | Visualize segmentation results on the PDF                   | `file`, `fast`                                                                               |
 
 ### OCR & Utility Endpoints
@@ -233,6 +233,7 @@ The service provides a comprehensive RESTful API with the following endpoints:
 - **`dpi`**: Image resolution for conversion (integer, default: 120)
 - **`target_languages`**: Comma-separated list of target languages for translation (e.g. "Turkish, Spanish, French")
 - **`translation_model`**: Ollama model to use for translation (string, default: "gpt-oss")
+- **`segment_boxes`**: JSON-encoded list of segment boxes from a prior analysis of the same document (e.g. the response of `POST /`). When provided, `/markdown` and `/html` skip re-running layout analysis and convert using these segments directly — the same pattern `/toc_from_xml` already uses for its own `segment_boxes` parameter
 
 ## 💡 Usage Examples
 
@@ -303,6 +304,19 @@ curl -X POST http://localhost:5060/html \
   -F 'file=@document.pdf' \
   -F 'extract_toc=true' \
   -F 'output_file=document.md' \
+  --output 'document.zip'
+```
+
+**Convert to Markdown reusing segments from a prior analysis (skips re-analysis):**
+
+```bash
+# 1. Analyze once and keep the segments
+curl -X POST http://localhost:5060 -F 'file=@document.pdf' > segments.json
+
+# 2. Reuse them for both /markdown and /html without re-running analysis
+curl -X POST http://localhost:5060/markdown \
+  -F 'file=@document.pdf' \
+  -F "segment_boxes=$(cat segments.json)" \
   --output 'document.zip'
 ```
 

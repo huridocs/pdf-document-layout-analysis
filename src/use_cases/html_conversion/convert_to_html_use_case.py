@@ -23,8 +23,14 @@ class ConvertToHtmlUseCase:
         output_file: Optional[str] = None,
         target_languages: Optional[list[str]] = None,
         translation_model: str = "gpt-oss",
+        segment_boxes: Optional[list[dict]] = None,
     ) -> Union[str, Response]:
-        if use_fast_mode:
+        if segment_boxes is not None:
+            # Precomputed segments (e.g. from a prior /markdown or / call on the
+            # same document) skip re-running layout analysis entirely, mirroring
+            # /toc_from_xml's existing segment_boxes pattern.
+            analysis_result = segment_boxes
+        elif use_fast_mode:
             analysis_result = self.pdf_analysis_service.analyze_pdf_layout_fast(pdf_content, "", True, False)
         else:
             analysis_result = self.pdf_analysis_service.analyze_pdf_layout(pdf_content, "", True, False)

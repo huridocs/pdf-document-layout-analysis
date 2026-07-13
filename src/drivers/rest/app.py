@@ -118,10 +118,15 @@ async def convert_to_markdown_endpoint(
     output_file: Optional[str] = Form(None),
     target_languages: Optional[str] = Form(None),
     translation_model: str = Form("gpt-oss"),
+    segment_boxes: Optional[str] = Form(None),
 ) -> Union[str, Response]:
     target_languages_list = None
     if target_languages:
         target_languages_list = [lang.strip() for lang in target_languages.split(",") if lang.strip()]
+
+    segment_boxes_list = json.loads(segment_boxes) if segment_boxes else None
+    if segment_boxes_list is not None:
+        service_logger.info(f"Received {len(segment_boxes_list)} segment boxes for /markdown; skipping analysis.")
 
     return await run_in_threadpool(
         controllers.convert_to_markdown_use_case.execute,
@@ -132,6 +137,7 @@ async def convert_to_markdown_endpoint(
         output_file,
         target_languages_list,
         translation_model,
+        segment_boxes_list,
     )
 
 
@@ -145,10 +151,15 @@ async def convert_to_html_endpoint(
     output_file: Optional[str] = Form(None),
     target_languages: Optional[str] = Form(None),
     translation_model: str = Form("gpt-oss"),
+    segment_boxes: Optional[str] = Form(None),
 ) -> Union[str, Response]:
     target_languages_list = None
     if target_languages:
         target_languages_list = [lang.strip() for lang in target_languages.split(",") if lang.strip()]
+
+    segment_boxes_list = json.loads(segment_boxes) if segment_boxes else None
+    if segment_boxes_list is not None:
+        service_logger.info(f"Received {len(segment_boxes_list)} segment boxes for /html; skipping analysis.")
 
     return await run_in_threadpool(
         controllers.convert_to_html_use_case.execute,
@@ -159,6 +170,7 @@ async def convert_to_html_endpoint(
         output_file,
         target_languages_list,
         translation_model,
+        segment_boxes_list,
     )
 
 
