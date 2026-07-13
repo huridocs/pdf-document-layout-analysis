@@ -29,7 +29,7 @@ help:
 	@echo "  just free_up_space           - Free up system space"
 	@echo ""
 	@echo "💡 Tip: 'just start' launches API (port 5060), UI (port 7860) and translation support"
-	@echo "💡 GPU stack override: GPU_STACK_PROFILE=legacy|nextgen just start"
+	@echo "💡 GPU stack override: GPU_STACK_PROFILE=legacy|nextgen|grace just start"
 
 install:
 	. .venv/bin/activate; pip install -Ur requirements.txt

@@ -185,6 +185,44 @@ make stop
 - Docker Engine 20.10+
 - Docker Compose 2.0+
 
+### 🖥️ ARM64 / NVIDIA Grace-Blackwell (e.g. DGX Spark)
+
+The GPU stack is picked by [`select_gpu_stack.sh`](select_gpu_stack.sh) based on
+compute capability, and its `legacy`/`nextgen` profiles already build and run
+on aarch64 hosts — their CUDA base images ship arm64 manifests, and `nextgen`'s
+compute-capability check (`>= 10.0`) already matches Blackwell GPUs like the
+GB10, running via PTX JIT.
+
+For native aarch64 hardware such as the DGX Spark (Grace CPU + GB10 GPU,
+`sm_121`), this adds an explicit `grace` profile that targets CUDA 13 and
+compiles native SASS for the GPU instead of relying on `nextgen`'s PTX JIT
+fallback:
+
+```bash
+GPU_STACK_PROFILE=grace just start_detached_gpu
+```
+
+which resolves to:
+
+| Build arg               | Value                                          |
+| ------------------------ | ----------------------------------------------- |
+| `BUILDER_IMAGE`           | `nvidia/cuda:13.0.3-cudnn-devel-ubuntu24.04`     |
+| `TORCH_INDEX_URL`         | `https://download.pytorch.org/whl/cu130`         |
+| `TORCH_CUDA_ARCH_LIST`    | `12.0;12.1`                                      |
+
+**Verified on:** DGX Spark, aarch64, NVIDIA GB10 (compute capability 12.1),
+driver 580 / CUDA 13.0. No pin relaxation was needed — cu130 ships
+`manylinux_2_28_aarch64` wheels for the exact `torch`/`torchvision` versions
+this project already pins, and `13.0.3-cudnn-devel-ubuntu24.04` is the newest
+`cudnn-devel-ubuntu24.04` tag with an arm64 manifest at the time of writing.
+
+| Note | Detail |
+| --- | --- |
+| Native vs. PTX JIT | `nextgen` (cu128, `12.0+PTX`) also runs on the GB10 via PTX JIT; `grace` compiles native `sm_120`/`sm_121` SASS to match the host's CUDA 13 driver, avoiding first-call JIT compilation. |
+| GPU device-name log line | Upstream's `get_model_configuration` device-name log line was not observed to fire on this hardware; GPU use is still confirmed via `nvidia-smi` and the "Is PyTorch using GPU: True" log line. |
+| `detectron2` build | Compiles from source at the pinned commit against the `grace` arch list; no changes were needed beyond the existing `TORCH_CUDA_ARCH_LIST` build arg. |
+| Build time | Docker's layer cache makes rebuilds after the first near-instant; the first build compiles `detectron2` and downloads several GB of wheels/models, same as any other profile. |
+
 ## 📚 API Reference
 
 The service provides a comprehensive RESTful API with the following endpoints:
