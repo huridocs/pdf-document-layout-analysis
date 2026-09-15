@@ -560,7 +560,8 @@ def convert_to_html(
 
 # Create the Gradio interface with modern Gradio 6 styling
 with gr.Blocks(title="PDF Document Layout Analysis") as app:
-    gr.Markdown(f"""
+    gr.Markdown(
+        f"""
         # 📄 PDF Document Layout Analysis Tool
         
         A comprehensive tool for analyzing PDF documents using deep learning models.
@@ -569,7 +570,8 @@ with gr.Blocks(title="PDF Document Layout Analysis") as app:
         **Connected to API:** `{API_BASE_URL}`
         
         ---
-        """)
+        """
+    )
 
     # System Info Section
     with gr.Accordion("ℹ️ System Information", open=False):
@@ -891,7 +893,8 @@ with gr.Blocks(title="PDF Document Layout Analysis") as app:
                 show_progress="full",
             )
 
-    gr.Markdown("""
+    gr.Markdown(
+        """
         ---
         ### 💡 Tips
         - **Fast Mode**: Uses a lighter model for faster processing with slightly reduced accuracy
@@ -899,7 +902,8 @@ with gr.Blocks(title="PDF Document Layout Analysis") as app:
         - **DPI**: 
             - For OCR processing, the value specifies the DPI of the input PDF which is used for OCR.
             - For conversion to Markdown and HTML, the value specifies the DPI of the extracted images.
-        """)
+        """
+    )
 
 
 if __name__ == "__main__":

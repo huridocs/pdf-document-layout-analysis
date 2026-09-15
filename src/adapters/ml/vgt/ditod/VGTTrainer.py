@@ -122,7 +122,8 @@ def default_argument_parser(epilog=None):
         argparse.ArgumentParser:
     """
     parser = argparse.ArgumentParser(
-        epilog=epilog or f"""
+        epilog=epilog
+        or f"""
 Examples:
 
 Run on single machine:
