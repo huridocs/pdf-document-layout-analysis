@@ -1,5 +1,10 @@
 HAS_GPU := `command -v nvidia-smi > /dev/null && echo 1 || echo 0`
 
+# Black's output changes between releases, so a stale local venv can pass
+# `just check_format` while CI (which installs dev-requirements.txt) fails.
+# The formatter targets below assert the installed version matches this pin.
+BLACK_PIN := `sed -n 's/^black==//p' dev-requirements.txt`
+
 help:
 	@echo "PDF Document Layout Analysis - Available Commands:"
 	@echo ""
@@ -42,11 +47,22 @@ install_venv:
 	. .venv/bin/activate; python -m pip install --upgrade pip
 	. .venv/bin/activate; python -m pip install -r dev-requirements.txt
 
-formatter:
-	. .venv/bin/activate; command black --line-length 125 .
+check_black_version:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	. .venv/bin/activate
+	installed="$( { command black --version 2>/dev/null || true; } | sed -n 's/^black, \([^ ]*\).*/\1/p')"
+	if [ "$installed" != "{{BLACK_PIN}}" ]; then
+		echo "black $installed does not match dev-requirements.txt pin {{BLACK_PIN}}" >&2
+		echo "Run 'just install_venv' to install the pinned version." >&2
+		exit 1
+	fi
 
-check_format:
-	. .venv/bin/activate; command black --line-length 125 . --check
+formatter: check_black_version
+	. .venv/bin/activate; command black .
+
+check_format: check_black_version
+	. .venv/bin/activate; command black . --check
 
 remove_docker_containers:
 	docker compose ps -q | xargs docker rm

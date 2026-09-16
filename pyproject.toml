@@ -46,3 +46,8 @@ DockerHub = "https://hub.docker.com/r/huridocs/pdf-document-layout-analysis"
 [tool.black]
 line-length = 125
 target-version = ["py311"]
+# Notebooks are exploratory artifacts. Black only formats them when the
+# `black[jupyter]` extra is installed, so leaving them in scope makes `just
+# formatter`/CI results depend on whether that extra happens to be present.
+# Exclude them so formatting is deterministic everywhere.
+extend-exclude = '\.ipynb$'

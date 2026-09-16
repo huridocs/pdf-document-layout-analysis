@@ -55,7 +55,7 @@ The service provides two interfaces:
 **See all available commands:**
 
 ```bash
-make --list
+make help
 ```
 
 **Check service status:**
@@ -772,8 +772,8 @@ make test
 **Integration tests:**
 
 ```bash
-# Tests are located in src/tests/integration/
-python -m pytest src/tests/integration/test_end_to_end.py
+# End-to-end tests require a running service on http://localhost:5060
+python -m pytest src/tests/test_end_to_end.py
 ```
 
 ### Docker Development
