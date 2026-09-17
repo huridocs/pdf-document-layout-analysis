@@ -34,6 +34,18 @@ class FileSystemRepository(FileRepository):
 
         return xml_path.read_text()
 
+    def get_xml_and_delete(self, filename: str) -> str:
+        if not filename.endswith(".xml"):
+            filename = f"{filename}.xml"
+
+        xml_path = Path(XMLS_PATH, filename)
+        if not xml_path.exists():
+            raise FileNotFoundError(f"XML file {filename} not found")
+
+        content = xml_path.read_text()
+        xml_path.unlink(missing_ok=True)
+        return content
+
     def delete_file(self, filepath: Path) -> None:
         filepath.unlink(missing_ok=True)
 

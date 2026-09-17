@@ -72,7 +72,7 @@ async def analyze_and_save_xml(xml_file_name: str, file: UploadFile = File(...),
 async def get_xml_by_name(xml_file_name: str):
     if not xml_file_name.endswith(".xml"):
         xml_file_name = f"{xml_file_name}.xml"
-    return await run_in_threadpool(controllers.file_repository.get_xml, xml_file_name)
+    return await run_in_threadpool(controllers.file_repository.get_xml_and_delete, xml_file_name)
 
 
 @app.post("/toc")

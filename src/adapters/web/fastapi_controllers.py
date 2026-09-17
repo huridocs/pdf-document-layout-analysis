@@ -68,7 +68,7 @@ class FastAPIControllers:
     async def get_xml_by_name(self, xml_file_name: str):
         if not xml_file_name.endswith(".xml"):
             xml_file_name = f"{xml_file_name}.xml"
-        return await run_in_threadpool(self.file_repository.get_xml, xml_file_name)
+        return await run_in_threadpool(self.file_repository.get_xml_and_delete, xml_file_name)
 
     async def get_toc_endpoint(self, file: UploadFile = File(...), fast: bool = Form(False)):
         return await run_in_threadpool(self.extract_toc_use_case.execute, file, fast)

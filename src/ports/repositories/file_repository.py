@@ -17,6 +17,10 @@ class FileRepository(ABC):
         pass
 
     @abstractmethod
+    def get_xml_and_delete(self, filename: str) -> str:
+        pass
+
+    @abstractmethod
     def delete_file(self, filepath: Path) -> None:
         pass
 
