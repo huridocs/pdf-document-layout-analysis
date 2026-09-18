@@ -14,3 +14,11 @@ class PDFAnalysisService(ABC):
         self, pdf_content: AnyStr, xml_filename: str = "", parse_tables_and_math: bool = False, keep_pdf: bool = False
     ) -> list[dict]:
         pass
+
+    @abstractmethod
+    def analyze_pdf_layout_with_xml(self, pdf_content: AnyStr) -> tuple[list[dict], str]:
+        pass
+
+    @abstractmethod
+    def analyze_pdf_layout_fast_with_xml(self, pdf_content: AnyStr) -> tuple[list[dict], str]:
+        pass

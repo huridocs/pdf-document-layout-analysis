@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 import requests
 from unittest import TestCase
@@ -150,6 +151,120 @@ class TestEndToEnd(TestCase):
         result_xml = requests.get(f"{self.service_url}/get_xml/{xml_name}")
         self.assertEqual(200, result_xml.status_code)
         self.assertIsNotNone(result_xml.text)
+
+    def test_analyze_endpoint(self):
+        with open(f"{ROOT_PATH}/test_pdfs/regular.pdf", "rb") as stream:
+            files = {"file": stream}
+            data = {"fast": "False"}
+            results = requests.post(f"{self.service_url}/analyze", files=files, data=data)
+
+        self.assertEqual(200, results.status_code)
+        body = results.json()
+        self.assertEqual(
+            "RESOLUCIÓN DE LA CORTE INTERAMERICANA DE DERECHOS HUMANOS DEL 29 DE JULIO DE 1991",
+            body["segmentation"][0]["text"],
+        )
+        self.assertEqual(157, body["segmentation"][0]["left"])
+        self.assertEqual(105, body["segmentation"][0]["top"])
+        self.assertEqual(282, body["segmentation"][0]["width"])
+        self.assertEqual(36, body["segmentation"][0]["height"])
+        self.assertEqual(1, body["segmentation"][0]["page_number"])
+        self.assertEqual(595, body["segmentation"][0]["page_width"])
+        self.assertEqual(842, body["segmentation"][0]["page_height"])
+        self.assertEqual("Section header", body["segmentation"][0]["type"])
+        self.assertTrue(body["xml"].startswith("<?xml"))
+        self.assertIn("<pdf2xml", body["xml"])
+        self.assertIn("RESOLUCIÓN DE LA", body["xml"])
+
+    def test_analyze_endpoint_fast(self):
+        with open(f"{ROOT_PATH}/test_pdfs/regular.pdf", "rb") as stream:
+            files = {"file": stream}
+            data = {"fast": "True"}
+            results = requests.post(f"{self.service_url}/analyze", files=files, data=data)
+
+        self.assertEqual(200, results.status_code)
+        body = results.json()
+        self.assertEqual("RESOLUCIÓN DE LA CORTE INTERAMERICANA DE DERECHOS HUMANOS", body["segmentation"][0]["text"])
+        self.assertEqual(157, body["segmentation"][0]["left"])
+        self.assertEqual(106, body["segmentation"][0]["top"])
+        self.assertEqual(278, body["segmentation"][0]["width"])
+        self.assertEqual(24, body["segmentation"][0]["height"])
+        self.assertEqual(1, body["segmentation"][0]["page_number"])
+        self.assertEqual(595, body["segmentation"][0]["page_width"])
+        self.assertEqual(842, body["segmentation"][0]["page_height"])
+        self.assertEqual("Section header", body["segmentation"][0]["type"])
+
+    def test_analyze_xml_matches_get_xml(self):
+        xml_name = "test_analyze_parity.xml"
+        with open(f"{ROOT_PATH}/test_pdfs/regular.pdf", "rb") as stream:
+            files = {"file": stream}
+            data = {"fast": "False"}
+            analyze_results = requests.post(f"{self.service_url}/analyze", files=files, data=data)
+
+        self.assertEqual(200, analyze_results.status_code)
+        analyze_xml = analyze_results.json()["xml"]
+
+        with open(f"{ROOT_PATH}/test_pdfs/regular.pdf", "rb") as stream:
+            files = {"file": stream}
+            data = {"fast": "False"}
+            requests.post(f"{self.service_url}/save_xml/{xml_name}", files=files, data=data)
+
+        get_xml_results = requests.get(f"{self.service_url}/get_xml/{xml_name}")
+        self.assertEqual(200, get_xml_results.status_code)
+        self.assertEqual(get_xml_results.text, analyze_xml)
+
+    def test_analyze_leaves_no_xml(self):
+        xml_name = "test_analyze_leaves_no_xml.xml"
+        with open(f"{ROOT_PATH}/test_pdfs/regular.pdf", "rb") as stream:
+            files = {"file": stream}
+            data = {"fast": "False"}
+            results = requests.post(f"{self.service_url}/analyze", files=files, data=data)
+
+        self.assertEqual(200, results.status_code)
+
+        get_xml_results = requests.get(f"{self.service_url}/get_xml/{xml_name}")
+        self.assertEqual(404, get_xml_results.status_code)
+
+    def test_analyze_concurrent_requests_do_not_corrupt(self):
+        pdf_content = Path(ROOT_PATH, "test_pdfs", "regular.pdf").read_bytes()
+
+        def post_analyze(_):
+            response = requests.post(
+                f"{self.service_url}/analyze",
+                files={"file": ("regular.pdf", pdf_content)},
+                data={"fast": "False"},
+                timeout=600,
+            )
+            return response.status_code, response.json() if response.status_code == 200 else None
+
+        with ThreadPoolExecutor(max_workers=4) as executor:
+            outcomes = list(executor.map(post_analyze, range(4)))
+
+        for status_code, body in outcomes:
+            self.assertEqual(200, status_code)
+            self.assertEqual(22, len(body["segmentation"]))
+            self.assertTrue(body["xml"].startswith("<?xml"))
+
+    def test_analyze_concurrent_mixed_modes_do_not_corrupt(self):
+        pdf_content = Path(ROOT_PATH, "test_pdfs", "regular.pdf").read_bytes()
+        fast_flags = ["False", "True", "False", "True"]
+
+        def post_analyze(fast):
+            response = requests.post(
+                f"{self.service_url}/analyze",
+                files={"file": ("regular.pdf", pdf_content)},
+                data={"fast": fast},
+                timeout=600,
+            )
+            return response.status_code, response.json() if response.status_code == 200 else None
+
+        with ThreadPoolExecutor(max_workers=4) as executor:
+            outcomes = list(executor.map(post_analyze, fast_flags))
+
+        for status_code, body in outcomes:
+            self.assertEqual(200, status_code)
+            self.assertTrue(body["xml"].startswith("<?xml"))
+            self.assertGreater(len(body["segmentation"]), 0)
 
     def test_korean(self):
         with open(f"{ROOT_PATH}/test_pdfs/korean.pdf", "rb") as stream:

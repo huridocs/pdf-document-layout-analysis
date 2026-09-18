@@ -1,8 +1,10 @@
 import os
 import shutil
+import subprocess
 
 import cv2
 import numpy as np
+from lxml import etree
 from os import makedirs
 from os.path import join
 from pathlib import Path
@@ -10,7 +12,7 @@ from PIL import Image
 from pdf2image import convert_from_path
 from pdf_features import PdfFeatures
 
-from src.configuration import IMAGES_ROOT_PATH, XMLS_PATH
+from configuration import IMAGES_ROOT_PATH, XMLS_PATH
 
 
 class PdfImages:
@@ -53,3 +55,40 @@ class PdfImages:
             pdf_features.file_name = pdf_name
         pdf_images = convert_from_path(pdf_path, dpi=dpi)
         return PdfImages(pdf_features, pdf_images, dpi)
+
+    @staticmethod
+    def _pdftohtml_stdout(pdf_path: str | Path, hidden: bool) -> bytes:
+        args = ["pdftohtml", "-nodrm", "-i", "-xml", "-zoom", "1.0"]
+        if hidden:
+            args += ["-hidden"]
+        args += ["-stdout", str(pdf_path)]
+        return subprocess.run(args, capture_output=True).stdout
+
+    @staticmethod
+    def _xml_has_text(xml_bytes: bytes) -> bool:
+        try:
+            root = etree.fromstring(xml_bytes)
+            return len(root.findall(".//text")) > 0
+        except Exception:
+            return False
+
+    @staticmethod
+    def from_pdf_path_capture_xml(pdf_path: str | Path, pdf_name: str = "", dpi: int = 72) -> tuple["PdfImages", str]:
+        if PdfFeatures.is_pdf_encrypted(pdf_path):
+            subprocess.run(["qpdf", "--decrypt", "--replace-input", pdf_path])
+
+        xml_bytes = PdfImages._pdftohtml_stdout(pdf_path, hidden=False)
+        if not PdfImages._xml_has_text(xml_bytes):
+            xml_bytes = PdfImages._pdftohtml_stdout(pdf_path, hidden=True)
+
+        pdf_features: PdfFeatures = PdfFeatures.from_poppler_etree_string(xml_bytes, file_name=Path(pdf_path).name)
+        xml_content: str = xml_bytes.decode("utf-8")
+
+        if pdf_name:
+            pdf_features.file_name = pdf_name
+        else:
+            pdf_name = Path(pdf_path).parent.name if Path(pdf_path).name == "document.pdf" else Path(pdf_path).stem
+            pdf_features.file_name = pdf_name
+
+        pdf_images = convert_from_path(pdf_path, dpi=dpi)
+        return PdfImages(pdf_features, pdf_images, dpi), xml_content

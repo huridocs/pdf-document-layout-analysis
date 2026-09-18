@@ -33,3 +33,10 @@ class AnalyzePDFUseCase:
         service_logger.info(f"analyze_and_save_xml: using {model_name} model")
         result = self.execute(pdf_content, xml_filename, False, use_fast_mode, keep_pdf=False)
         return result
+
+    def execute_with_xml(self, pdf_content: AnyStr, use_fast_mode: bool = False) -> tuple[list[dict], str]:
+        model_name = "VGT" if not use_fast_mode else "LightGBM (fast)"
+        service_logger.info(f"analyze_with_xml: using {model_name} model")
+        if use_fast_mode:
+            return self.pdf_analysis_service.analyze_pdf_layout_fast_with_xml(pdf_content)
+        return self.pdf_analysis_service.analyze_pdf_layout_with_xml(pdf_content)

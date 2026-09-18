@@ -232,6 +232,7 @@ The service provides a comprehensive RESTful API with the following endpoints:
 | Endpoint               | Method | Description                             | Parameters                              |
 | ---------------------- | ------ | --------------------------------------- | --------------------------------------- |
 | `/`                    | POST   | Analyze PDF layout and extract segments | `file`, `fast`, `parse_tables_and_math` |
+| `/analyze`             | POST   | Analyze PDF and return segments + XML in one response | `file`, `fast`              |
 | `/save_xml/{filename}` | POST   | Analyze PDF and save XML output         | `file`, `xml_file_name`, `fast`         |
 | `/get_xml/{filename}`  | GET    | Retrieve saved XML analysis             | `xml_file_name`                         |
 
@@ -505,6 +506,16 @@ curl -X POST \
 ```
 
 ### XML Storage and Retrieval
+
+**Analyze and get segmentation plus XML in one call:**
+
+```bash
+curl -X POST \
+  -F 'file=@document.pdf' \
+  http://localhost:5060/analyze
+```
+
+Returns `{"segmentation": [...], "xml": "<pdftohtml XML>"}`. Nothing is persisted to disk, so no follow-up retrieval call is needed.
 
 **Analyze and save XML:**
 

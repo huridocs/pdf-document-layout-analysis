@@ -1,3 +1,4 @@
+import threading
 from typing import AnyStr
 from domain.PdfImages import PdfImages
 from domain.SegmentBox import SegmentBox
@@ -20,6 +21,7 @@ class PDFAnalysisServiceAdapter(PDFAnalysisService):
         self.fast_model_service = fast_model_service
         self.format_conversion_service = format_conversion_service
         self.file_repository = file_repository
+        self._predict_lock = threading.Lock()
 
     def analyze_pdf_layout(
         self, pdf_content: AnyStr, xml_filename: str = "", parse_tables_and_math: bool = False, keep_pdf: bool = False
@@ -29,7 +31,8 @@ class PDFAnalysisServiceAdapter(PDFAnalysisService):
 
         pdf_images_list: list[PdfImages] = [PdfImages.from_pdf_path(pdf_path, "", xml_filename)]
 
-        predicted_segments = self.vgt_model_service.predict_document_layout(pdf_images_list)
+        with self._predict_lock:
+            predicted_segments = self.vgt_model_service.predict_document_layout(pdf_images_list)
 
         if predicted_segments:
             service_logger.info(f"Predicted {len(predicted_segments)} segments")
@@ -56,7 +59,8 @@ class PDFAnalysisServiceAdapter(PDFAnalysisService):
 
         pdf_images_list: list[PdfImages] = [PdfImages.from_pdf_path(pdf_path, "", xml_filename)]
 
-        predicted_segments = self.fast_model_service.predict_layout_fast(pdf_images_list)
+        with self._predict_lock:
+            predicted_segments = self.fast_model_service.predict_layout_fast(pdf_images_list)
 
         if parse_tables_and_math:
             pdf_images_200_dpi = PdfImages.from_pdf_path(pdf_path, "", xml_filename, dpi=200)
@@ -70,3 +74,42 @@ class PDFAnalysisServiceAdapter(PDFAnalysisService):
             SegmentBox.from_pdf_segment(pdf_segment, pdf_images_list[0].pdf_features.pages).to_dict()
             for pdf_segment in predicted_segments
         ]
+
+    def analyze_pdf_layout_with_xml(self, pdf_content: AnyStr) -> tuple[list[dict], str]:
+        pdf_path = self.file_repository.save_pdf(pdf_content)
+        service_logger.info("Creating PDF images")
+
+        with self._predict_lock:
+            pdf_images, xml_content = PdfImages.from_pdf_path_capture_xml(pdf_path)
+            pdf_images_list: list[PdfImages] = [pdf_images]
+
+            predicted_segments = self.vgt_model_service.predict_document_layout(pdf_images_list)
+
+        if predicted_segments:
+            service_logger.info(f"Predicted {len(predicted_segments)} segments")
+
+        segments = [
+            SegmentBox.from_pdf_segment(pdf_segment, pdf_images_list[0].pdf_features.pages).to_dict()
+            for pdf_segment in predicted_segments
+        ]
+
+        self.file_repository.delete_file(pdf_path)
+        return segments, xml_content
+
+    def analyze_pdf_layout_fast_with_xml(self, pdf_content: AnyStr) -> tuple[list[dict], str]:
+        pdf_path = self.file_repository.save_pdf(pdf_content)
+        service_logger.info("Creating PDF images for fast analysis")
+
+        with self._predict_lock:
+            pdf_images, xml_content = PdfImages.from_pdf_path_capture_xml(pdf_path)
+            pdf_images_list: list[PdfImages] = [pdf_images]
+
+            predicted_segments = self.fast_model_service.predict_layout_fast(pdf_images_list)
+
+        segments = [
+            SegmentBox.from_pdf_segment(pdf_segment, pdf_images_list[0].pdf_features.pages).to_dict()
+            for pdf_segment in predicted_segments
+        ]
+
+        self.file_repository.delete_file(pdf_path)
+        return segments, xml_content

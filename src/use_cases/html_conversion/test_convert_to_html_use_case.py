@@ -11,6 +11,12 @@ class FailingPDFAnalysisService(PDFAnalysisService):
     def analyze_pdf_layout_fast(self, pdf_content, xml_filename="", parse_tables_and_math=False, keep_pdf=False):
         raise AssertionError("analyze_pdf_layout_fast should not be called when segment_boxes is provided")
 
+    def analyze_pdf_layout_with_xml(self, pdf_content):
+        raise AssertionError("should not be called")
+
+    def analyze_pdf_layout_fast_with_xml(self, pdf_content):
+        raise AssertionError("should not be called")
+
 
 class StubPDFAnalysisService(PDFAnalysisService):
     def __init__(self, segments):
@@ -24,6 +30,14 @@ class StubPDFAnalysisService(PDFAnalysisService):
     def analyze_pdf_layout_fast(self, pdf_content, xml_filename="", parse_tables_and_math=False, keep_pdf=False):
         self.calls.append("analyze_pdf_layout_fast")
         return self.segments
+
+    def analyze_pdf_layout_with_xml(self, pdf_content):
+        self.calls.append("analyze_pdf_layout_with_xml")
+        return self.segments, ""
+
+    def analyze_pdf_layout_fast_with_xml(self, pdf_content):
+        self.calls.append("analyze_pdf_layout_fast_with_xml")
+        return self.segments, ""
 
 
 class RecordingHtmlConversionService(HtmlConversionService):

@@ -57,6 +57,12 @@ async def word_positions(file: UploadFile = File(...)):
     return await run_in_threadpool(get_pdf_word_positions, file.file.read())
 
 
+@app.post("/analyze")
+@catch_exceptions
+async def analyze(file: UploadFile = File(...), fast: bool = Form(False)):
+    return await controllers.analyze_and_get_xml(file, fast)
+
+
 @app.post("/save_xml/{xml_file_name}")
 @catch_exceptions
 async def analyze_and_save_xml(xml_file_name: str, file: UploadFile = File(...), fast: bool = Form(False)):

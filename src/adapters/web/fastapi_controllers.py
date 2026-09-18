@@ -65,6 +65,10 @@ class FastAPIControllers:
             xml_file_name = f"{xml_file_name}.xml"
         return await run_in_threadpool(self.analyze_pdf_use_case.execute_and_save_xml, file.file.read(), xml_file_name, fast)
 
+    async def analyze_and_get_xml(self, file: UploadFile = File(...), fast: bool = Form(False)):
+        segments, xml_content = await run_in_threadpool(self.analyze_pdf_use_case.execute_with_xml, file.file.read(), fast)
+        return {"segmentation": segments, "xml": xml_content}
+
     async def get_xml_by_name(self, xml_file_name: str):
         if not xml_file_name.endswith(".xml"):
             xml_file_name = f"{xml_file_name}.xml"
