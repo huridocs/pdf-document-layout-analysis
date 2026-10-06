@@ -2,6 +2,8 @@ import tempfile
 import uuid
 from pathlib import Path
 from typing import AnyStr
+
+from file_utils import sanitize_filename
 from ports.repositories.file_repository import FileRepository
 from configuration import XMLS_PATH
 
@@ -53,12 +55,15 @@ class FileSystemRepository(FileRepository):
         pass
 
     def save_pdf_to_directory(self, content: AnyStr, filename: str, directory: Path, namespace: str = "") -> Path:
-        if namespace:
-            target_path = Path(directory, namespace, filename)
-        else:
-            target_path = Path(directory, filename)
+        filename = sanitize_filename(filename)
+
+        base_dir = Path(directory, namespace) if namespace else Path(directory)
+        target_path = base_dir / filename
 
         target_path.parent.mkdir(parents=True, exist_ok=True)
+        if not target_path.resolve().is_relative_to(base_dir.resolve()):
+            raise ValueError(f"Invalid filename: {filename}")
+
         target_path.write_bytes(content)
         return target_path
 
