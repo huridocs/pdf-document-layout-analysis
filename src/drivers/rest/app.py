@@ -1,6 +1,7 @@
 from configuration import RESTART_IF_NO_GPU, service_logger
 from drivers.rest.dependency_injection import setup_dependencies
 from drivers.rest.catch_exceptions import catch_exceptions
+from file_utils import sanitize_filename
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.responses import PlainTextResponse, Response
 from typing import Optional, Union
@@ -66,6 +67,7 @@ async def analyze(file: UploadFile = File(...), fast: bool = Form(False)):
 @app.post("/save_xml/{xml_file_name}")
 @catch_exceptions
 async def analyze_and_save_xml(xml_file_name: str, file: UploadFile = File(...), fast: bool = Form(False)):
+    xml_file_name = sanitize_filename(xml_file_name)
     if not xml_file_name.endswith(".xml"):
         xml_file_name = f"{xml_file_name}.xml"
     return await run_in_threadpool(
@@ -76,6 +78,7 @@ async def analyze_and_save_xml(xml_file_name: str, file: UploadFile = File(...),
 @app.get("/get_xml/{xml_file_name}", response_class=PlainTextResponse)
 @catch_exceptions
 async def get_xml_by_name(xml_file_name: str):
+    xml_file_name = sanitize_filename(xml_file_name)
     if not xml_file_name.endswith(".xml"):
         xml_file_name = f"{xml_file_name}.xml"
     return await run_in_threadpool(controllers.file_repository.get_xml_and_delete, xml_file_name)

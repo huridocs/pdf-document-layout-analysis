@@ -10,6 +10,7 @@ from configuration import XMLS_PATH
 
 class FileSystemRepository(FileRepository):
     def save_pdf(self, content: AnyStr, filename: str = "") -> Path:
+        filename = sanitize_filename(filename)
         if not filename:
             filename = str(uuid.uuid1())
 
@@ -18,6 +19,7 @@ class FileSystemRepository(FileRepository):
         return pdf_path
 
     def save_xml(self, content: str, filename: str) -> Path:
+        filename = sanitize_filename(filename)
         if not filename.endswith(".xml"):
             filename = f"{filename}.xml"
 
@@ -27,6 +29,7 @@ class FileSystemRepository(FileRepository):
         return xml_path
 
     def get_xml(self, filename: str) -> str:
+        filename = sanitize_filename(filename)
         if not filename.endswith(".xml"):
             filename = f"{filename}.xml"
 
@@ -37,6 +40,7 @@ class FileSystemRepository(FileRepository):
         return xml_path.read_text()
 
     def get_xml_and_delete(self, filename: str) -> str:
+        filename = sanitize_filename(filename)
         if not filename.endswith(".xml"):
             filename = f"{filename}.xml"
 
@@ -60,9 +64,9 @@ class FileSystemRepository(FileRepository):
         base_dir = Path(directory, namespace) if namespace else Path(directory)
         target_path = base_dir / filename
 
-        target_path.parent.mkdir(parents=True, exist_ok=True)
         if not target_path.resolve().is_relative_to(base_dir.resolve()):
             raise ValueError(f"Invalid filename: {filename}")
+        target_path.parent.mkdir(parents=True, exist_ok=True)
 
         target_path.write_bytes(content)
         return target_path
