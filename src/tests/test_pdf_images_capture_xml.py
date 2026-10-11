@@ -4,7 +4,10 @@ import uuid
 from pathlib import Path
 from unittest import TestCase
 
-from configuration import ROOT_PATH
+from lxml import etree
+from pdf_features import PdfFeatures
+
+from configuration import IMAGES_ROOT_PATH, ROOT_PATH
 from domain.PdfImages import PdfImages
 
 
@@ -54,3 +57,23 @@ class TestPdfImagesCaptureXml(TestCase):
             self.assertIn("<pdf2xml", xml_content)
         finally:
             pdf_path.unlink(missing_ok=True)
+
+    def test_capture_xml_non_utf8_font_name(self):
+        pdf_path = self._write_temp_pdf("korean.pdf")
+        disk_xml_path = Path(tempfile.gettempdir(), f"{uuid.uuid1()}.xml")
+        pdf_images = None
+        try:
+            pdf_images, xml_content = PdfImages.from_pdf_path_capture_xml(pdf_path)
+            disk_features = PdfFeatures.from_pdf_path(pdf_path, disk_xml_path)
+
+            etree.fromstring(xml_content.encode("utf-8"))
+            self.assertEqual(
+                [[token.content for token in page.tokens] for page in disk_features.pages],
+                [[token.content for token in page.tokens] for page in pdf_images.pdf_features.pages],
+            )
+        finally:
+            pdf_path.unlink(missing_ok=True)
+            disk_xml_path.unlink(missing_ok=True)
+            if pdf_images:
+                for index in range(len(pdf_images.pdf_images)):
+                    Path(IMAGES_ROOT_PATH, f"{pdf_path.stem}_{index}.jpg").unlink(missing_ok=True)
