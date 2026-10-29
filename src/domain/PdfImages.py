@@ -81,8 +81,12 @@ class PdfImages:
         if not PdfImages._xml_has_text(xml_bytes):
             xml_bytes = PdfImages._pdftohtml_stdout(pdf_path, hidden=True)
 
-        pdf_features: PdfFeatures = PdfFeatures.from_poppler_etree_string(xml_bytes, file_name=Path(pdf_path).name)
-        xml_content: str = xml_bytes.decode("utf-8")
+        # pdftohtml can write font names in a legacy encoding such as EUC-KR; drop the bytes that are not
+        # UTF-8, as PdfFeatures.from_poppler_etree does when it reads the XML from a file
+        xml_content: str = xml_bytes.decode("utf-8", errors="ignore")
+        pdf_features: PdfFeatures = PdfFeatures.from_poppler_etree_string(
+            xml_content.encode("utf-8"), file_name=Path(pdf_path).name
+        )
 
         if pdf_name:
             pdf_features.file_name = pdf_name
